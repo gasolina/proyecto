@@ -1,0 +1,20 @@
+int buscaridplaca(char placa[])
+{
+	automotor A;
+	FILE *ptr=fopen("Automotor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&A,sizeof(A),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(strcmp(A.placa,placa)==0)
+			{
+				return A.idauto;
+			}
+			fread(&A,sizeof(A),1,ptr);
+		}return (-1);
+	}
+	else{
+	cout<<"no existe el archivo";return 0;
+	}
+}
