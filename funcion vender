@@ -1,0 +1,70 @@
+#include <iostream>
+#include<conio.h>
+#include<stdlib.h>
+#include <stdio.h>
+#include<string.h>
+using namespace std;
+struct venta{
+	int idventa;
+	char fecha[10];
+	int idprod;
+	float cantidad;
+	float preciototal;
+	int idbomba;
+	int idauto;
+};
+bool validarplaca(char placa[]);
+int buscaridplaca(char placa[]);
+int generarid(int tipo);
+char fecha(char fecha[] );
+void menuventas(venta &v);
+void anhadirventa(venta v);
+void anhadirautomotor();
+void vender()
+{ 
+	venta v;int op2,op;
+	char placa[12];
+   do{		 op=3;
+	  do{ op2=1;
+		  do{
+			cout<<endl<<"ingrese placa";
+			fflush(stdin);
+			gets(placa);
+			if(validarplaca(placa)==false)
+			{
+				cout<<"\n placa no valida";
+			}
+		}while(validarplaca(placa)==false);
+		v.idauto=buscaridplaca(placa);
+		if(v.idauto>0)
+		{
+			v.idventa=generarid(7);
+			fecha(v.fecha);
+			menuventas(v);
+			do{cout<<"\n esta seguro que sus datos son correctos?";
+			cout<<"1.si\n2.volver a intentar";
+			cin>>op2;}while(op2!=1&&op2!=2);
+			anhadirventa(v);
+		}
+		
+		else
+		{
+					cout<<"\n este automotor no se encuentra registrado";
+					do{
+						cout<<"\n1.-registrar auto\n2.-volver a intentar\n3.-volver al menu";
+						cin>>op;
+					}while(op!=1&&op!=2&&op!=3);
+					switch(op){
+					case 1:
+						anhadirautomotor();
+						break;
+					case 2:
+						break;
+					case 3:
+						break;
+					}
+					system("cls");         
+			}
+	  }while(op2==2);
+   }while(op==1||op==2);
+}
