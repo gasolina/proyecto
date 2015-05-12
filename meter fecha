@@ -1,0 +1,74 @@
+
+void fecha(char fecha[]){
+	int day, month, year,fechatotal,band=1;
+	char fechaaux[10];
+
+do{band=1;
+	cout << "Ingrese el d\241a: "; cin >> day; //Día 
+	cout << "\nIngrese el mes: "; cin >> month; //Mes 
+	cout << "\nIngrese el a\244o: "; cin >> year; //Año 
+
+	if ((month == 2) && !((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 28) || (day <= 0)))
+	{cout << "\n\nFecha incorrecta: Este mes solo tiene 28 d\241as"; band=2;}
+
+	else
+	{
+		if ((month == 2) && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 29) || (day <= 0)))
+		{cout << "\n\nFecha incorrecta: Este mes solo tiene 29 d\241as"; band=2;}
+
+	
+
+
+			else
+			{
+				if (((month == 1) || (month == 3) || (month == 5) || (month == 7) || (month == 8) || (month == 10) || (month == 12)) && ((day > 31) || (day <= 0)))
+				{cout << "\n\nFecha incorrecta: Este mes solo tiene 31 d\241as"; band=2;}
+
+				else
+				{
+					if (((month == 4) || (month == 6) || (month == 9) || (month == 11)) && ((day > 30) || (day <= 0)))
+					{cout << "\n\nFecha incorrecta: Este mes solo tiene 30 d\241as"; band=2;}
+
+					else
+					{
+						if ((month > 12) || (month <= 0))
+						{cout << "\n\nFecha incorrecta: El a\244o solo tiene 12 meses"; band=2;}
+						else{
+							if(year<2000||year>2100)
+							{cout << "\n\nFecha incorrecta"; band=2;}
+						else{
+							if (day < 10 && month < 10)
+								{
+							fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							fecha[0]='0';
+							itoa(fechatotal,fechaaux,10);
+							strcat(fecha,fechaaux);
+							     
+							     }
+							else
+							{
+								if (day < 10 && month >= 10)
+									{
+								        fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							fecha[0]='0';
+							itoa(fechatotal,fechaaux,10);
+							strcat(fecha,fechaaux);
+								    }
+
+
+								else
+								{
+									  fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							            itoa(fechatotal,fecha,10);
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}while(band==2);
+
+}
