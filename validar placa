@@ -1,0 +1,22 @@
+bool validarplaca(char placa[])
+{
+	int i=0;
+	if(strlen(placa)!=7)
+	{return false;
+    }
+	else {
+				for(i=0;i<4;i++)
+				{
+					if(placa[i]!='0'&&placa[i]!='1'&&placa[i]!='2'&&placa[i]!='3'&&placa[i]!='4'&&placa[i]!='5'&&placa[i]!='6'&&placa[i]!='7'&&placa[i]!='8'&&placa[i]!='9')
+					{
+						return false;
+					}     
+				}
+				for(i=i;i<7;i++)
+				{
+					if(placa[i]<'A'||placa[i]>'Z')
+						return false;
+				}
+	     }
+	return true;
+}
