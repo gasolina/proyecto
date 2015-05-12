@@ -1,0 +1,19 @@
+int generarid(int tipo){
+	FILE *ptr;venta V;
+	switch(tipo){
+	case 7:
+		ptr=fopen("Ventas.dat","rb");
+		fread(&V,sizeof(V),1,ptr);
+		if(feof(ptr)==true)
+		{
+			V.idventa=1;return V.idventa;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(V),SEEK_END);
+			fread(&V,sizeof(V),1,ptr);
+			V.idventa++;return V.idventa;
+		}
+	}
+
+}
