@@ -1,0 +1,468 @@
+#include <iostream>
+#include<conio.h>
+#include<stdlib.h>
+#include <stdio.h>
+#include<string.h>
+using namespace std;
+//estructuras
+struct venta{
+	int idventa;
+	char fecha[10];
+	int idprod;
+	float cantidad;
+	float preciototal;
+	int idbomba;
+	int idauto;
+	char estado;
+};
+struct automotor{
+	int idauto;
+	char placa[10];
+	int idcliente;
+	char estado;
+};
+struct cliente{
+int idcliente;
+char nombre[30];
+char email[30];
+char telefono[12];
+char nit[10];
+char estado;
+};
+struct vendedor{
+int idvendedor;
+char nombre[30];
+char email[30];
+char telefono[12];
+char estado;
+};
+struct producto{
+int idprod;
+char nombre[30];
+float preciounit;
+float stock;
+char estado;
+};
+struct compras{
+int idcompra;
+char fecha[10];
+int idprod;
+float cantidad;
+float preciototal;
+};
+struct bomba{
+int idbomba;
+char descripcion[30];
+int idprod;
+int idvendedor;
+};
+//funciones
+bool validarplaca(char placa[]);
+int buscaridplaca(char placa[]);
+int generarid(int tipo);
+void fecha(char fecha[10] );
+void menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad
+void anhadirventa(venta v);
+void anhadirautomotor();
+char barrafecha(char fecha[10]);
+int buscaridbomba(int idvendedor);//busca y devuelve el id bomba de un vendedor 
+//desarrollo
+void vender()
+{ 
+	venta v;int op2,op;
+	char placa[12];
+   do{		 op=3;
+	  do{ op2=1;
+		  do{
+			cout<<endl<<"ingrese placa";
+			fflush(stdin);
+			gets(placa);
+			if(validarplaca(placa)==false)
+			{
+				cout<<"\n placa no valida";
+			}
+		}while(validarplaca(placa)==false);
+		v.idauto=buscaridplaca(placa);
+		if(v.idauto>0)
+		{
+			v.idventa=generarid(7);
+			fecha(v.fecha);
+			barrafecha(v.fecha);
+			menuventas(v);
+			do{cout<<"\n esta seguro que sus datos son correctos?";
+			cout<<"1.si\n2.volver a intentar";
+			cin>>op2;}while(op2!=1&&op2!=2);
+			anhadirventa(v);
+		}
+		
+		else
+		{
+					cout<<"\n este automotor no se encuentra registrado";
+					do{
+						cout<<"\n1.-registrar auto\n2.-volver a intentar\n3.-volver al menu";
+						cin>>op;
+					}while(op!=1&&op!=2&&op!=3);
+					switch(op){
+					case 1:
+						anhadirautomotor();
+						break;
+					case 2:
+						break;
+					case 3:
+						break;
+					}
+					system("cls");         
+			}
+	  }while(op2==2);
+   }while(op==1||op==2);
+}
+//desarrollo de funciones
+char barrafecha(char fecha[10])
+{char aux[10];
+  aux[0]=fecha[0];
+  aux[1]=fecha[1];
+  aux[2]='/';
+  aux[3]=fecha[2];
+  aux[4]=fecha[3];
+  aux[5]='/';
+  aux[6]=fecha[4];
+  aux[7]=fecha[5];
+  aux[8]=fecha[6];
+  aux[9]=fecha[7];
+}
+void fecha(char fecha[]){
+	int day, month, year,fechatotal,band=1;
+	char fechaaux[10];
+
+do{band=1;
+	cout << "Ingrese el d\241a: "; cin >> day; //Día 
+	cout << "\nIngrese el mes: "; cin >> month; //Mes 
+	cout << "\nIngrese el a\244o: "; cin >> year; //Año 
+
+	if ((month == 2) && !((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 28) || (day <= 0)))
+	{cout << "\n\nFecha incorrecta: Este mes solo tiene 28 d\241as"; band=2;}
+
+	else
+	{
+		if ((month == 2) && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 29) || (day <= 0)))
+		{cout << "\n\nFecha incorrecta: Este mes solo tiene 29 d\241as"; band=2;}
+
+	
+
+
+			else
+			{
+				if (((month == 1) || (month == 3) || (month == 5) || (month == 7) || (month == 8) || (month == 10) || (month == 12)) && ((day > 31) || (day <= 0)))
+				{cout << "\n\nFecha incorrecta: Este mes solo tiene 31 d\241as"; band=2;}
+
+				else
+				{
+					if (((month == 4) || (month == 6) || (month == 9) || (month == 11)) && ((day > 30) || (day <= 0)))
+					{cout << "\n\nFecha incorrecta: Este mes solo tiene 30 d\241as"; band=2;}
+
+					else
+					{
+						if ((month > 12) || (month <= 0))
+						{cout << "\n\nFecha incorrecta: El a\244o solo tiene 12 meses"; band=2;}
+						else{
+							if(year<2000||year>2100)
+							{cout << "\n\nFecha incorrecta"; band=2;}
+						else{
+							if (day < 10 && month < 10)
+								{
+							fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							fecha[0]='0';
+							itoa(fechatotal,fechaaux,10);
+							strcat(fecha,fechaaux);
+							     
+							     }
+							else
+							{
+								if (day < 10 && month >= 10)
+									{
+								        fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							fecha[0]='0';
+							itoa(fechatotal,fechaaux,10);
+							strcat(fecha,fechaaux);
+								    }
+
+
+								else
+								{
+									  fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							            itoa(fechatotal,fecha,10);
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}while(band==2);
+
+}
+bool validarplaca(char placa[])
+{
+	int i=0;
+	if(strlen(placa)!=7)
+	{return false;
+    }
+	else {
+				for(i=0;i<4;i++)
+				{
+					if(placa[i]!='0'&&placa[i]!='1'&&placa[i]!='2'&&placa[i]!='3'&&placa[i]!='4'&&placa[i]!='5'&&placa[i]!='6'&&placa[i]!='7'&&placa[i]!='8'&&placa[i]!='9')
+					{
+						return false;
+					}     
+				}
+				for(i=i;i<7;i++)
+				{
+					if(placa[i]<'A'||placa[i]>'Z')
+						return false;
+				}
+	     }
+	return true;
+}
+int buscaridplaca(char placa[])
+{
+	automotor A;
+	FILE *ptr=fopen("Automotor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&A,sizeof(A),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(strcmp(A.placa,placa)==0&& A.estado=='S')
+			{fclose(ptr);
+				return A.idauto;
+			}
+			fread(&A,sizeof(A),1,ptr);
+		}fclose(ptr);
+		return (-1);
+	}
+	else{fclose(ptr);
+	cout<<"no existe el archivo";return 0;
+	}
+}
+int generarid(int tipo){
+	FILE *ptr;venta V;
+	switch(tipo){
+	case 1:
+		cliente C;
+		ptr=fopen("Clientes.dat","rb");
+		fread(&V,sizeof(C),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		C.idcliente=1;return C.idcliente;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(C),SEEK_END);
+			fread(&V,sizeof(C),1,ptr);
+			fclose(ptr);
+			C.idcliente++;return C.idcliente;
+		}
+		break;
+	case 2:
+		vendedor ven;
+		ptr=fopen("Vendedor.dat","rb");
+		fread(&ven,sizeof(ven),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		ven.idvendedor=1;return ven.idvendedor ;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(ven),SEEK_END);
+			fread(&V,sizeof(ven),1,ptr);
+			fclose(ptr);
+			ven.idvendedor++;return ven.idvendedor;
+		}
+		break;
+	case 3:
+		producto p;
+		ptr=fopen("Vendedor.dat","rb");
+		fread(&p,sizeof(p),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		p.idprod=1;return p.idprod ;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(p),SEEK_END);
+			fread(&p,sizeof(p),1,ptr);
+			fclose(ptr);
+			p.idprod++;return p.idprod;
+		}
+		break;
+	case 4:
+	automotor a;
+		ptr=fopen("Automotor.dat","rb");
+		fread(&a,sizeof(a),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		a.idauto=1;return a.idauto ;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(a),SEEK_END);
+			fread(&a,sizeof(a),1,ptr);
+			fclose(ptr);
+			a.idauto++;return a.idauto;
+		}
+		break;
+	case 5:
+		bomba b;
+				ptr=fopen("Bomba.dat","rb");
+		fread(&b,sizeof(b),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		b.idbomba=1;return b.idbomba ;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(b),SEEK_END);
+			fread(&b,sizeof(b),1,ptr);
+			fclose(ptr);
+			b.idbomba++;return b.idbomba;
+		}
+		break;
+	case 6:
+		compras com;
+	    ptr=fopen("Compras.dat","rb");
+		fread(&com,sizeof(com),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+		com.idcompra=1;return com.idcompra ;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(com),SEEK_END);
+			fread(&com,sizeof(com),1,ptr);
+			fclose(ptr);
+			com.idcompra++;return com.idcompra;
+		}
+		break;
+	case 7:
+		ptr=fopen("Ventas.dat","rb");
+		fread(&V,sizeof(V),1,ptr);
+		if(feof(ptr)==true)
+		{    fclose(ptr);
+			V.idventa=1;return V.idventa;
+			
+		}
+		else{
+			fseek(ptr,-sizeof(V),SEEK_END);
+			fread(&V,sizeof(V),1,ptr);
+			fclose(ptr);
+			V.idventa++;return V.idventa;
+		}
+		break;
+	}
+
+}
+//falta validacion de cantidad si es numero y si alcanza el stock
+void menuventas(venta &v){
+	producto p;
+
+	vendedor ven;int cont=1,op,band=0;
+   //preguntando que vendedor y guardando el idbomba
+	FILE *ptr=fopen("Vendedor.dat","rb");
+   if(ptr!=NULL)
+   {
+	   fread(&ven,sizeof(ven),1,ptr);
+	   cout<<"cual es usted?\n";
+	   cout<<"   VENDEDOR\tTELEFONO\n";
+	   if(feof(ptr)==false )
+	   {
+		   while(feof(ptr)==false)
+		   { if(ven.estado=='S'){
+			   cout<<cont<<". "<<ven.nombre<<"\t"<<ven.telefono<<endl;
+			   cont++;
+		     fread(&ven,sizeof(ven),1,ptr);
+		         }
+		   }
+		   cout<<"\n si no te encuentras en esta lista presiona 0";
+		   cin>>op;
+		   if(op!=0)
+		   {
+				   fseek(ptr,(op-1)*sizeof(ven),SEEK_SET);
+				   if(feof==false)
+				   {
+					   fread(&ven,sizeof(ven),1,ptr);
+					   fclose(ptr);
+					   v.idbomba=buscaridbomba(ven.idvendedor);
+
+				   }
+		   }
+		   else{
+		   band=-1;fclose(ptr);
+		   }
+
+	   }
+	   else{
+	   cout<<"\nno existe vendedor registrado";
+	   getch();
+	   band=-1;
+	   
+	   }
+
+   }
+   else {
+   cout<<"\nerror en el archivo Vendedor.dat";
+   getch();fclose(ptr);
+   }
+   // eligiendo producto 
+   cont=1;int band2=0;//band2 es en caso de que escoja mal el producto
+   ptr=fopen("Producto.dat","rb");
+   if(ptr!=NULL)
+   {
+	   fread(&p,sizeof(p),1,ptr);
+	   do{band2=0;
+		   cout<<"\nelija el producto a vender\n";
+	   cout<<"   PRODUCTO\tPRECIO UNITARIO\n";
+	   if(feof(ptr)==false )
+	   { while(feof(ptr)==false){
+				   if(p.estado=='S')
+				   { 
+					   cout<<cont<<". "<<p.nombre<<"\t"<<p.preciounit<<endl;
+					   fread(&p,sizeof(p),1,ptr);
+				   }
+				   cont++;
+	      }
+	   
+		  cout<<"\n si no es ninguno de los listados presione 0";
+		  cin>>op;
+		  if(op!=0)
+		  { 
+			  fseek(ptr,(op-1)*sizeof(p),SEEK_SET);
+              fread(&p,sizeof(p),1,ptr); 
+				if(feof(ptr)==false)
+				{
+					v.idprod=p.idprod;
+				}
+				else{
+				cout<<"no existe el producto que selecciono";getch();system("cls");band2=-1;
+				}fclose(ptr);
+		  }
+		  else{
+		  band=-1;getch();system("cls");fclose(ptr);
+		  }
+	   }
+	   else{
+	   cout<<"No hay ningun producto registrado";fclose(ptr);
+	   band=-1;getch();system("cls");
+	   }
+   }while(band2==-1);
+   }
+   else {
+   cout<<"Error archivo de producto.dat";fclose(ptr);
+   band=-1;getch();system("cls");
+   }
+   do{cout<<"\nque cantidad del producto vendera?";
+   cin>>v.cantidad;}while(validacion de que ingrese numero y de que  haya esa cantidad en stock);
+   cout<<"\n el precio total es:"<<p.preciounit*v.cantidad;
+   v.preciototal=p.preciounit*v.cantidad;
+}
