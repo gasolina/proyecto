@@ -1,0 +1,21 @@
+void anhadirventa(venta v)
+{
+	int band = 0;
+	do{
+		band = 0;
+		FILE *ptr = fopen("Ventas.dat", "ab");
+
+		if (ptr != NULL)
+		{
+			fwrite(&v, sizeof(v), 1, ptr);
+			fclose(ptr);
+		}
+		else
+		{
+			ptr = fopen("Ventas.dat", "wb");
+			fclose(ptr);
+			band = -1;
+
+		}
+	} while (band == -1);
+}
