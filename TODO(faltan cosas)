@@ -61,14 +61,16 @@ bool validarplaca(char placa[]);
 int buscaridplaca(char placa[]);
 int generarid(int tipo);
 void fecha(char fecha[10] );
-void menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad
+bool menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad
 void anhadirventa(venta v);
 void anhadirautomotor();
-char barrafecha(char fecha[10]);
+void barrafecha(char fecha[10]);
 int buscaridbomba(int idvendedor);//busca y devuelve el id bomba de un vendedor 
+int validarentero();
+
 //desarrollo
 void vender()
-{ 
+{ bool z;
 	venta v;int op2,op;
 	char placa[12];
    do{		 op=3;
@@ -88,11 +90,20 @@ void vender()
 			v.idventa=generarid(7);
 			fecha(v.fecha);
 			barrafecha(v.fecha);
-			menuventas(v);
+			z=menuventas(v);
+			if(z==true){
 			do{cout<<"\n esta seguro que sus datos son correctos?";
 			cout<<"1.si\n2.volver a intentar";
 			cin>>op2;}while(op2!=1&&op2!=2);
-			anhadirventa(v);
+			if(op2==1)
+			{anhadirventa(v);}
+			}
+			else{
+				do{cout<<"\n quiere volver a intentar?";
+			cout<<"2.si\n1.no";
+			cin>>op2;}while(op2!=1&&op2!=2);
+			
+			}
 		}
 		
 		else
@@ -117,7 +128,7 @@ void vender()
    }while(op==1||op==2);
 }
 //desarrollo de funciones
-char barrafecha(char fecha[10])
+void barrafecha(char fecha[10])
 {char aux[10];
   aux[0]=fecha[0];
   aux[1]=fecha[1];
@@ -129,6 +140,7 @@ char barrafecha(char fecha[10])
   aux[7]=fecha[5];
   aux[8]=fecha[6];
   aux[9]=fecha[7];
+  
 }
 void fecha(char fecha[]){
 	int day, month, year,fechatotal,band=1;
@@ -363,8 +375,8 @@ int generarid(int tipo){
 	}
 
 }
-//falta validacion de cantidad si es numero y si alcanza el stock
-void menuventas(venta &v){
+
+bool menuventas(venta &v){
 	producto p;
 
 	vendedor ven;int cont=1,op,band=0;
@@ -412,8 +424,9 @@ void menuventas(venta &v){
    }
    else {
    cout<<"\nerror en el archivo Vendedor.dat";
-   getch();fclose(ptr);
+   getch();fclose(ptr);band=-1;return false;
    }
+   
    // eligiendo producto 
    cont=1;int band2=0;//band2 es en caso de que escoja mal el producto
    ptr=fopen("Producto.dat","rb");
@@ -448,21 +461,82 @@ void menuventas(venta &v){
 				}fclose(ptr);
 		  }
 		  else{
-		  band=-1;getch();system("cls");fclose(ptr);
+		  band=-1;getch();system("cls");fclose(ptr);return false;
 		  }
 	   }
 	   else{
 	   cout<<"No hay ningun producto registrado";fclose(ptr);
-	   band=-1;getch();system("cls");
+	   band=-1;getch();system("cls");return false;
 	   }
    }while(band2==-1);
    }
    else {
    cout<<"Error archivo de producto.dat";fclose(ptr);
-   band=-1;getch();system("cls");
+   band=-1;getch();system("cls");return false;
    }
+   if(band==0){
    do{cout<<"\nque cantidad del producto vendera?";
-   cin>>v.cantidad;}while(validacion de que ingrese numero y de que  haya esa cantidad en stock);
+   v.cantidad=validarentero();
+   }while(v.cantidad>p.stock);
+ 
    cout<<"\n el precio total es:"<<p.preciounit*v.cantidad;
    v.preciototal=p.preciounit*v.cantidad;
+    return true;
+   }
+   else{
+   return false;
+   }
+   
+  
+}
+void anhadirventa(venta v)
+{
+	int band = 0;
+	do{
+		band = 0;
+		FILE *ptr = fopen("Ventas.dat", "ab");
+
+		if (ptr != NULL)
+		{
+			fwrite(&v, sizeof(v), 1, ptr);
+			fclose(ptr);
+		}
+		else
+		{
+			ptr = fopen("Ventas.dat", "wb");
+			fclose(ptr);
+			band = -1;
+
+		}
+	} while (band == -1);
+}
+int validarentero()
+{
+	int r, i; bool k;
+	char num[12];
+	do{
+		do{
+			cout << "\ningrese numero: ";
+			gets_s(num);
+		} while (strlen(num) == 0);
+		i = 0; k = true;
+		if (num[0] == '-')
+		{
+			i++;
+			if (strlen(num) == 1)
+				k = false;
+		}
+		while (i<strlen(num))
+		{
+			if ((num[i] != '0') && (num[i] != '1') && (num[i] != '2') && (num[i] != '3') && (num[i] != '4') && (num[i] != '5') && (num[i] != '6') && (num[i] != '7') && (num[i] != '8') && (num[i] != '9'))
+			{
+				k = false; break;
+			}
+			i++;
+		}
+		if (k == false){ cout << "ERROR FATAL : DATO NO NUMERICO"; }
+	} while (k == false);
+	r = atoi(num);
+
+	return(r);
 }
