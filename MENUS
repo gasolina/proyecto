@@ -1,0 +1,177 @@
+#include <conio.h>
+#include <iostream>
+#include <string.h>
+#include "stdlib.h"
+
+
+using namespace std;
+void reportesmenu()
+{
+	int i, p, q;
+	do{
+		cout << "\t REPORTES:\t";
+		cout << "\n1.GENERALES\n";
+		cout << "\n2.POR TIEMPO\n";
+		cout << "\n0.SALIR";
+		cout << "\nElija una opcion:";
+		cin >> i;
+		system("cls");
+		switch (i)
+		{
+					case 1: do{
+						cout << "\n1.Clientes";
+						cout << "\n2.Vendedores";
+						cout << "\n3.Productos";
+						cout << "\n4.Automotores";
+						cout << "\n5.Bombas";
+						cout << "\n6.Compras";
+						cout << "\n7.Ventas";
+						cout << "\n0.SALIR";
+						cout << "\nEscoja una opcion:\n ";
+						cin >> p;
+						system("cls");
+						switch (p)
+						{
+						case 1: getch();
+							break;
+						case 2: getch();
+							break;
+						case 3: getch();
+							break;
+						case 4: getch();
+							break;
+						case 5: getch();
+							break;
+						case 6: getch();
+							break;
+						case 7: getch();
+							break;
+						case 0: cout << "SALIR";
+								break;
+						default:cout << "ERROR";
+							getch();
+							break;
+						}
+						system("cls");
+					} while (p != 0);
+					
+					break;
+		case 2: do{
+			cout << "\n1.Ranking Bomba";
+			cout << "\n2.Ranking Clientes";
+			cout << "\n3.Compras";
+			cout << "\n4.Ventas";
+			cout << "\n0.SALIR";
+			cout << "\nEscoja una opcion: \n";
+			cin >> q;
+			system("cls");
+			switch (q)
+			{
+			case 1: getch();
+				break;
+			case 2: getch();
+				break;
+			case 3: getch();
+				break;
+			case 4: getch();
+				break;
+			case 0:cout << "SALIR";
+				break;
+			default:cout << "ERROR";
+				getch();
+				break;
+			}
+			system("cls");
+
+		} while (q != 0);
+		break;
+		case 0: cout << "SALIR";
+				break;
+		default:cout << "ERROR";
+			getch();
+			break;
+
+		}
+		system("cls");
+
+	} while (i != 0);
+}
+void ABMreporte()
+{
+	int y;
+	do{
+		cout << "A\244adir/Modificar/Borrar";
+		cout << "\n1.Clientes";
+		cout << "\n2.Vendedores";
+		cout << "\n3.Productos";
+		cout << "\n4.Automotores";
+		cout << "\n5.Bombas";
+		cout << "\n6.Compras";
+		cout << "\n7.Ventas";
+		cout << "\n0.SALIR";
+		cout << "\nEscoja una opcion:\n ";
+		cin >> y;
+		system("cls");
+		switch (y)
+		{
+		case 1: getch();
+			break;
+		case 2: getch();
+			break;
+		case 3: getch();
+			break;
+		case 4: getch();
+			break;
+		case 5: getch();
+			break;
+		case 6: getch();
+			break;
+		case 7: getch();
+			break;
+		case 0: cout << "SALIR";
+			break;
+		default:cout << "ERROR";
+			getch();
+			break;
+		}
+		system("cls");
+	} while (y != 0);
+	
+}
+
+
+void main()
+{
+	int o;
+
+	do{
+		cout << "\tMENU\t";
+		cout << "\n1.Vender\n";
+		cout << "\n2.Comprar\n";
+		cout << "\n3.Reportes\n";
+		cout << "\n4.A\244adir/Borrar/Modificar\n";
+		cout << "\n0.SALIR";
+		cout << "\nEscoja una opcion: \n";
+		cin >> o;
+		system("cls");
+		switch (o)
+		{
+		case 1:getch();
+			break;
+		case 2: getch();
+			break;
+		case 3:reportesmenu();
+			   getch();
+				break;
+		case 4:ABMreporte();
+			getch();
+			break;
+		case 0: cout << "SALIR";
+			break;
+		default: cout << "ERROR";
+			getch();
+			break;
+		}
+		system("cls");
+	} while (o!=0);
+}
