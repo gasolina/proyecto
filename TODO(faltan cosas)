@@ -63,69 +63,72 @@ int generarid(int tipo);
 void fecha(char fecha[10] );
 bool menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad
 void anhadirventa(venta v);
-void anhadirautomotor();
 void barrafecha(char fecha[10]);
-int buscaridbomba(int idvendedor);//busca y devuelve el id bomba de un vendedor 
 int validarentero();
+float validarfloat();
+vendedor buscarvendedor(int id);
+producto buscarproducto(int id);
+bool existenciavendedor();
+bool menucompras(compras &c);
+void anhadircompra(compras c);
+bool existenciaproducto();
 
 //desarrollo
 void vender()
-{ bool z;
-	venta v;int op2,op;
-	char placa[12];
-   do{		 op=3;
-	  do{ op2=1;
-		  do{
-			cout<<endl<<"ingrese placa";
+{venta v;char placa[12];int op;bool z;
+   do{op=1;
+        do{ cout<<"\ningrese placa";
 			fflush(stdin);
-			gets(placa);
-			if(validarplaca(placa)==false)
+			gets(placa);}while(validarplaca(placa)==false);
+			v.idauto=buscaridplaca(placa);
+			if(v.idauto>0)
 			{
-				cout<<"\n placa no valida";
-			}
-		}while(validarplaca(placa)==false);
-		v.idauto=buscaridplaca(placa);
-		if(v.idauto>0)
-		{
-			v.idventa=generarid(7);
-			fecha(v.fecha);
-			barrafecha(v.fecha);
-			z=menuventas(v);
-			if(z==true){
-			do{cout<<"\n esta seguro que sus datos son correctos?";
-			cout<<"1.si\n2.volver a intentar";
-			cin>>op2;}while(op2!=1&&op2!=2);
-			if(op2==1)
-			{anhadirventa(v);}
+				v.idventa=generarid(7);
+				fecha(v.fecha);
+				barrafecha(v.fecha);
+				z=menuventas(v);
+				if(z==true)
+				{ 
+					cout<<"\n esta seguro de sus datos?";
+					do{cout<"\n1.-si\n2.-vovler a intentar";
+					cin>>op;}while(op!=1&&op!=2);
+					if(op==1)
+					{anhadirventa(v);cout<<"\nventa registrada";getch();}
+				}
+				else{
+				do{cout<<"\nquiere volver a intentarlo?";
+				    cout<<"\n1.-NO\n2.-SI";
+					cin>>op;}while(op!=1&&op!=2);
+				}
 			}
 			else{
-				do{cout<<"\n quiere volver a intentar?";
-			cout<<"2.si\n1.no";
-			cin>>op2;}while(op2!=1&&op2!=2);
-			
+			cout<<"\n placa no registrada, vaya a registrarlo";
+			do{cout<<"\n1.-volver a menu\n2.-volver a intentar";
+			cin>>op;}while(op!=1&&op!=2);
 			}
-		}
-		
-		else
-		{
-					cout<<"\n este automotor no se encuentra registrado";
-					do{
-						cout<<"\n1.-registrar auto\n2.-volver a intentar\n3.-volver al menu";
-						cin>>op;
-					}while(op!=1&&op!=2&&op!=3);
-					switch(op){
-					case 1:
-						anhadirautomotor();
-						break;
-					case 2:
-						break;
-					case 3:
-						break;
-					}
-					system("cls");         
+   }while(op==2);
+}
+void comprar()
+	{compras c;bool z;int op;
+do{       op=1; 
+	fecha(c.fecha);
+			barrafecha(c.fecha);
+			c.idcompra=generarid(6);
+			z=menucompras(c);
+			if(z==true)
+			{
+				cout<<"\n esta seguro de sus datos?";
+							do{cout<"\n1.-si\n2.-vovler a intentar";
+							cin>>op;}while(op!=1&&op!=2);
+							if(op==1)
+							{anhadircompra(c);cout<<"\ncompra registrada";getch();}
 			}
-	  }while(op2==2);
-   }while(op==1||op==2);
+			else{   
+						do{cout<<"\nquiere volver a intentarlo?";
+							cout<<"\n1.-volver a menu \n2.-SI";
+							cin>>op;}while(op!=1&&op!=2);
+				}
+}while(op==2);
 }
 //desarrollo de funciones
 void barrafecha(char fecha[10])
@@ -219,20 +222,21 @@ bool validarplaca(char placa[])
 {
 	int i=0;
 	if(strlen(placa)!=7)
-	{return false;
+	{cout<<"error en placa";getch();
+		return false;
     }
 	else {
 				for(i=0;i<4;i++)
 				{
 					if(placa[i]!='0'&&placa[i]!='1'&&placa[i]!='2'&&placa[i]!='3'&&placa[i]!='4'&&placa[i]!='5'&&placa[i]!='6'&&placa[i]!='7'&&placa[i]!='8'&&placa[i]!='9')
-					{
+					{cout<<"error en placa";getch();
 						return false;
 					}     
 				}
 				for(i=i;i<7;i++)
 				{
 					if(placa[i]<'A'||placa[i]>'Z')
-						return false;
+					{cout<<"error en placa";getch();return false;}
 				}
 	     }
 	return true;
@@ -255,7 +259,7 @@ int buscaridplaca(char placa[])
 		return (-1);
 	}
 	else{fclose(ptr);
-	cout<<"no existe el archivo";return 0;
+	cout<<"no existe el archivo";
 	}
 }
 int generarid(int tipo){
@@ -377,117 +381,56 @@ int generarid(int tipo){
 }
 
 bool menuventas(venta &v){
-	producto p;
+	vendedor ven;producto prod;bomba bom;int cont=1;int op;
+	FILE *ptr=fopen("Bomba.dat","rb");
+	do{if(ptr!=NULL&&existenciavendedor()==true)
+	{fread(&bom,sizeof(bom),1,ptr);
+	  cout<<"\nseleccione que vendedor es usted";
+	  cout<<"\n  vendedor";
+	  cout.width(20);
+	  cout<<"producto";
+	  cout.width(20);
+	  cout<<"precio unitario"<<endl;
+	  while(feof(ptr)==false)
+	  {ven=buscarvendedor(bom.idvendedor);
+	  prod=buscarproducto(bom.idprod);
+		  if(ven.estado=='S')
+		 { cout<<cont<<".-"<<ven.nombre;
+		  cout.width(20);
+		  cout<<prod.nombre;
+		  cout.width(20);
+		  cout<<prod.preciounit<<endl;
+		  fread(&bom,sizeof(bom),1,ptr);
+		  }cont++;
+	  }
+	  cout<<"\n0.-salir";
+	  op=validarentero();
+	  if(op!=0)
+	  {fseek(ptr,(cont-1)*sizeof(bom),SEEK_SET);
+	    if(feof(ptr)==false)
+		{ fread(&bom,sizeof(bom),1,ptr);fclose(ptr);
+		v.idbomba=bom.idbomba;
+			prod=buscarproducto(bom.idprod);
+			do{cout<<"ingrese la cantidad a vender";
+			v.cantidad=validarfloat();}while(v.cantidad>prod.stock||v.cantidad<0);
+			v.preciototal=v.cantidad*prod.preciounit;
+			cout<<"\n el precio total sera "<<v.preciototal<<endl;return true;
+		}
+		else{
+		
+			cout<<"no existe el registro seleccionado";
+			op=-5;fclose(ptr);
+		}
 
-	vendedor ven;int cont=1,op,band=0;
-   //preguntando que vendedor y guardando el idbomba
-	FILE *ptr=fopen("Vendedor.dat","rb");
-   if(ptr!=NULL)
-   {
-	   fread(&ven,sizeof(ven),1,ptr);
-	   cout<<"cual es usted?\n";
-	   cout<<"   VENDEDOR\tTELEFONO\n";
-	   if(feof(ptr)==false )
-	   {
-		   while(feof(ptr)==false)
-		   { if(ven.estado=='S'){
-			   cout<<cont<<". "<<ven.nombre<<"\t"<<ven.telefono<<endl;
-			   cont++;
-		     fread(&ven,sizeof(ven),1,ptr);
-		         }
-		   }
-		   cout<<"\n si no te encuentras en esta lista presiona 0";
-		   cin>>op;
-		   if(op!=0)
-		   {
-				   fseek(ptr,(op-1)*sizeof(ven),SEEK_SET);
-				   if(feof==false)
-				   {
-					   fread(&ven,sizeof(ven),1,ptr);
-					   fclose(ptr);
-					   v.idbomba=buscaridbomba(ven.idvendedor);
+	  }
+	}
+	else{
+	cout<"\nno existe ningun vendedor registrado";fclose(ptr);return false;
+	getch();
+	}
+	}
+	while(op==-5);
 
-				   }
-		   }
-		   else{
-		   band=-1;fclose(ptr);
-		   }
-
-	   }
-	   else{
-	   cout<<"\nno existe vendedor registrado";
-	   getch();
-	   band=-1;
-	   
-	   }
-
-   }
-   else {
-   cout<<"\nerror en el archivo Vendedor.dat";
-   getch();fclose(ptr);band=-1;return false;
-   }
-   
-   // eligiendo producto 
-   cont=1;int band2=0;//band2 es en caso de que escoja mal el producto
-   ptr=fopen("Producto.dat","rb");
-   if(ptr!=NULL)
-   {
-	   fread(&p,sizeof(p),1,ptr);
-	   do{band2=0;
-		   cout<<"\nelija el producto a vender\n";
-	   cout<<"   PRODUCTO\tPRECIO UNITARIO\n";
-	   if(feof(ptr)==false )
-	   { while(feof(ptr)==false){
-				   if(p.estado=='S')
-				   { 
-					   cout<<cont<<". "<<p.nombre<<"\t"<<p.preciounit<<endl;
-					   fread(&p,sizeof(p),1,ptr);
-				   }
-				   cont++;
-	      }
-	   
-		  cout<<"\n si no es ninguno de los listados presione 0";
-		  cin>>op;
-		  if(op!=0)
-		  { 
-			  fseek(ptr,(op-1)*sizeof(p),SEEK_SET);
-              fread(&p,sizeof(p),1,ptr); 
-				if(feof(ptr)==false)
-				{
-					v.idprod=p.idprod;
-				}
-				else{
-				cout<<"no existe el producto que selecciono";getch();system("cls");band2=-1;
-				}fclose(ptr);
-		  }
-		  else{
-		  band=-1;getch();system("cls");fclose(ptr);return false;
-		  }
-	   }
-	   else{
-	   cout<<"No hay ningun producto registrado";fclose(ptr);
-	   band=-1;getch();system("cls");return false;
-	   }
-   }while(band2==-1);
-   }
-   else {
-   cout<<"Error archivo de producto.dat";fclose(ptr);
-   band=-1;getch();system("cls");return false;
-   }
-   if(band==0){
-   do{cout<<"\nque cantidad del producto vendera?";
-   v.cantidad=validarentero();
-   }while(v.cantidad>p.stock);
- 
-   cout<<"\n el precio total es:"<<p.preciounit*v.cantidad;
-   v.preciototal=p.preciounit*v.cantidad;
-    return true;
-   }
-   else{
-   return false;
-   }
-   
-  
 }
 void anhadirventa(venta v)
 {
@@ -539,4 +482,144 @@ int validarentero()
 	r = atoi(num);
 
 	return(r);
+}
+float validarfloat()
+{
+	float r;int i; bool k;
+	char num[12];
+	do{
+		do{
+			cout << "\ningrese numero: ";
+			gets_s(num);
+		} while (strlen(num) == 0);
+		i = 0; k = true;
+		if(num[0]=='.')
+		     {k=false;}
+		if (num[0] == '-')
+		{  
+			i++;
+			if (strlen(num) == 1)
+				k = false;
+		}
+		while (i<strlen(num))
+		{
+			if ((num[i]!='.')&&(num[i] != '0') && (num[i] != '1') && (num[i] != '2') && (num[i] != '3') && (num[i] != '4') && (num[i] != '5') && (num[i] != '6') && (num[i] != '7') && (num[i] != '8') && (num[i] != '9'))
+			{
+				k = false; break;
+			}
+			i++;
+		}
+		if (k == false){ cout << "ERROR FATAL : DATO NO NUMERICO"; }
+	} while (k == false);
+	r = atof(num);
+
+	return(r);
+}
+vendedor buscarvendedor(int id)
+{vendedor v;
+
+	FILE *ptr=fopen("Vendedor.dat","rb");
+    fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(v.idvendedor==id)
+		 {fclose(ptr);
+			 return v;
+		 }
+	}
+}
+producto buscarproducto(int id)
+{producto p;
+
+	FILE *ptr=fopen("Producto.dat","rb");
+    fread(&p,sizeof(p),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(p.idprod==id)
+		 {fclose(ptr);
+			 return p;
+		 }
+	}
+}
+bool existenciavendedor()
+{vendedor v;
+	FILE *ptr=fopen("Vendedor.dat","rb");
+	fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(v.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
+}
+bool menucompras(compras &c)
+{producto p;int cont=1,op;
+   FILE *ptr=fopen("Producto.dat","rb");
+	do{ 
+   if(ptr!=NULL&&existenciaproducto()==true)
+	   {
+		   fread(&p,sizeof(p),1,ptr);
+		   cout<<"\n seleccione su producto";
+		   cout<<"\nproducto";
+		   cout.width(20);
+		   cout<<"stock"<<endl;
+		   while(feof(ptr)==false)
+		   {
+			   cout<<cont<<".-";
+			   cout<<p.nombre;
+			   cout.width(20);
+			   cout<<p.stock;
+			   cout<<endl;
+			   cont++;
+			   fread(&p,sizeof(p),1,ptr);
+		   }
+		   cout<<"\n0.-salir";
+		   op=validarentero();
+		   if(op!=0)
+		   {
+			fseek(ptr,(cont-1)*sizeof(p),SEEK_SET);
+			if(feof(ptr)==false)
+			{ fread(&p,sizeof(p),1,ptr);fclose(ptr);
+			c.idprod=p.idprod;
+			do{cout<<"\n que cantidad comprara?";
+			c.cantidad=validarfloat();}while(c.cantidad<0);
+			cout<<"\n cuanto es el precio total de la compra";
+			c.preciototal=validarfloat();return true;
+			}
+			else{
+			cout<<"no existe el registro seleccionado";
+				op=-5;fclose(ptr);
+			}
+		   }
+	   }
+	   else{
+		 cout<<"\n no existe producto registrado,primero registrar";fclose(ptr);return false;
+		 getch();
+	   }
+	}while(op==-5);
+}
+void anhadircompra(compras c)
+{
+	FILE *ptr=fopen("Compras.dat","ab");
+	fwrite(&c,sizeof(c),1,ptr);
+	fclose(ptr);
+}
+bool existenciaproducto()
+{producto p;
+	FILE *ptr=fopen("Producto.dat","rb");
+	fread(&p,sizeof(p),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(p.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
 }
