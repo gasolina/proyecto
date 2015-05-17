@@ -1,0 +1,21 @@
+descripcion:
+ordena una matriz de n filas y 2 columnas de mayor a menor basado en la segunda columna
+uso:
+en la primera columna de la matriz van los id y en la seguna los montos 
+ver uso en ranking clientes
+
+void ordenarmatriz(int mat[fil][2],int n)
+{int aux;
+	for(int i=0;i<(n-1);i++)
+	{
+		for(int j=i;j<n;j++)
+		{
+			if(mat[i][1]<mat[j][1])
+			{
+				aux=mat[i][1];
+				mat[i][1]=mat[j][1];
+				mat[j][i]=aux;
+			}
+		}
+	}
+}
