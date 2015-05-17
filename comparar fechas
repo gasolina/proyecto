@@ -3,13 +3,13 @@
 
 using namespace std;
 
-struct fecha
+struct fechas
 {int dia;
 int mes;
 int anho;
 };
 
-int compararfechas(fecha f1,fecha f2)
+int compararfechas(fechas f1,fechas f2)
 {
 	if(f1.anho<f2.anho)
 	{
