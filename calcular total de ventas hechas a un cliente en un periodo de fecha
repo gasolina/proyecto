@@ -17,7 +17,8 @@ int calcularventasporcliente(int id,fechas f1,fechas f2)
 				 while(feof(ptr)==false)
 				 {
 					 if(a.idauto==v.idauto&&v.estado=='S')
-					 {
+					 {   
+						 quitarbarrasfecha(v.fecha);
 						 convertirfecha(f3,v.fecha);
 						 if(((compararfechas(f1,f3)==0)||(compararfechas(f1,f3)==1))&&((compararfechas(f3,f2)==0)||(compararfechas(f3,f2)==1)))
 						 {s=s+v.preciototal;}
