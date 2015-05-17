@@ -1,0 +1,19 @@
+descripcion :
+verifica si existe almenos un cliente con estado 'S' si es asi retorna true si no retorna false
+
+
+bool existenciacliente()
+{cliente c;
+FILE *ptr=fopen("Cliente","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
+}
