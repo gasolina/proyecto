@@ -1,0 +1,34 @@
+descripcion:
+calcula el total de ventas hechas aun cliente( a cual le pertenece el id del parametro)y retorna la suma de sus precios totales
+revisar si puede ser adapatada para ranking bombas,
+
+int calcularventasporcliente(int id,fechas f1,fechas f2)
+{int s=0;automotor a;venta v;
+	FILE *ptr=fopen("Automotor","rb");
+	fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(a.idcliente==id&&a.estado=='S')
+		{
+             FILE *ptr2=fopen("Ventas.dat","rb");
+			 if(ptr!=NULL)
+			 {
+				 fread(&v,sizeof(v),1,ptr2);
+				 while(feof(ptr)==false)
+				 {
+					 if(a.idauto==v.idauto&&v.estado=='S')
+					 {
+						 s=s+v.preciototal;
+					 }
+					 fread(&v,sizeof(v),1,ptr2);
+				 }
+				 fclose(ptr2);
+			 }
+			 else
+			 { fclose(ptr);fclose(ptr2);
+				 return 0;//retorno cero porque no hay registros de ventas entonces nadie compro nada
+			 }
+		}
+	}fclose(ptr);return s;
+	
+}
