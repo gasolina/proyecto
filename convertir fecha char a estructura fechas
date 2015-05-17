@@ -1,0 +1,19 @@
+descripcion:
+convierte una fecha char(que es la que se obtiene atravez de la funcion fecha) en una estructura de tipo fecha(esta esta por referencia )
+(ver ejemplo de uso en la funcion ranking clientes) 
+
+
+void convertirfecha(fechas &f,char fecha[10])
+{char dia[2],mes[2],anho[4];
+   dia[0]=fecha[0];
+   dia [1]=fecha[1];
+   mes[0]= fecha[2];
+   mes[1]=fecha[3];
+   anho[0]=fecha[4];
+   anho[1]=fecha[5];
+   anho[2]=fecha[6];
+   anho[3]=fecha[7];
+   f.dia=atoi(dia);
+   f.mes=atoi(mes);
+   f.anho=atoi(anho);
+}
