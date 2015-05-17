@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include<string.h>
 using namespace std;
+#define fil 50
 //estructuras
 struct venta{
 	int idventa;
@@ -56,22 +57,34 @@ char descripcion[30];
 int idprod;
 int idvendedor;
 };
+struct fechas{
+int dia;
+int mes;
+int anho;
+}; //contiene cmapos dia mes y anho
 //funciones
-bool validarplaca(char placa[]);
-int buscaridplaca(char placa[]);
-int generarid(int tipo);
-void fecha(char fecha[10] );
-bool menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad
-void anhadirventa(venta v);
-void barrafecha(char fecha[10]);
-int validarentero();
-float validarfloat();
-vendedor buscarvendedor(int id);
-producto buscarproducto(int id);
-bool existenciavendedor();
-bool menucompras(compras &c);
-void anhadircompra(compras c);
-bool existenciaproducto();
+bool validarplaca(char placa[]);//listo
+int buscaridplaca(char placa[]);//listo
+int generarid(int tipo);//listo
+void fecha(char fecha[10] );//listo
+bool menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad//listo
+void anhadirventa(venta v);//listo
+void barrafecha(char fecha[10]);//listo
+int validarentero();//listo
+float validarfloat();//listo(revisar por si hubiera mas de un punto)
+vendedor buscarvendedor(int id);//listo
+producto buscarproducto(int id);//listo
+bool existenciavendedor();//listo
+bool menucompras(compras &c);//listo
+void anhadircompra(compras c);//listo
+bool existenciaproducto();//listo
+void rankingclientes();//listo
+void convertirfecha(fechas &f,char fecha[10]);//listo ,convierte el char fecha a la estructura fechas para poder comparar
+bool existenciacliente();//listo
+int calcularventasporcliente(int id,fechas f1,fechas f2);//listo
+void ordenarmatriz(int mat[fil][2],int n);//listo
+void buscarnombrecliente(int id,char nombre[30]);//listo
+int compararfechas(fechas f1,fechas f2);//listo
 
 //desarrollo
 void vender()
@@ -130,6 +143,7 @@ do{       op=1;
 				}
 }while(op==2);
 }
+
 //desarrollo de funciones
 void barrafecha(char fecha[10])
 {char aux[10];
@@ -622,4 +636,182 @@ bool existenciaproducto()
 	fclose(ptr);
 	return false;
 
+}
+void rankingclientes()
+{char fecha1[10],fecha2[10];cliente c;int mat[fil][2],n=0;char nombre[30];
+  fechas f1,f2;
+	cout<<"\ningrese fecha 1";
+	fecha(fecha1);
+	cout<<"\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1,fecha1);
+	convertirfecha(f2,fecha2);
+	FILE *ptr=fopen("Cliente.dat","rb");
+	if(ptr!=NULL&&existenciacliente()==true)
+	{  fread(&c,sizeof(c),1,ptr);
+       while(feof(ptr)==false)
+	   {  if(c.estado=='S')
+	        {
+				mat[n][0]=c.idcliente;
+           mat[n][1]=calcularventasporcliente(c.idcliente,f1,f2);
+		   n++;
+	        }
+	      fread(&c,sizeof(c),1,ptr);
+	   }
+		   fclose(ptr);
+
+		   ordenarmatriz(mat,n);
+		cout<<endl<<"---------TOP CLIENTES---------"<<endl;
+		cout<<"CLIENTE";
+			cout.width(20);
+			cout<<"COMPRAS TOTALES"<<endl;
+		for( int i =0;i<n;i++)
+		{
+			buscarnombrecliente(mat[i][0],nombre);//busca nombre del cliente y lo guarda en char nombre
+			cout<<nombre;
+			cout.width(20);
+			cout<<mat[i][1]<<endl;
+	       getch();
+		}
+	}
+	else
+	{
+		cout<<"\n no existe clientes registrados";
+		getch();fclose(ptr);
+	}
+	
+}
+int compararfechas(fechas f1,fechas f2)
+{
+	if(f1.anho<f2.anho)
+	{
+		return 1;
+	}
+	else
+	{
+		if(f1.anho>f2.anho)
+		{
+			return -1;
+		}
+		else
+		{
+			if(f1.anho==f2.anho)
+			{
+				if(f1.mes<f2.mes)
+				{
+					return 1;
+				}
+				else
+				{
+					if(f1.mes>f2.mes)
+						return -1;
+					else
+					{
+						if(f1.mes==f2.mes)
+						{
+							if(f1.dia<f2.dia)
+							{
+								return 1;
+							}
+							else
+							{
+								if(f1.dia>f2.dia)
+									return -1;
+								else
+									return 0;
+							}
+						}	
+					}
+				}
+			}	
+		}
+	}
+}
+void convertirfecha(fechas &f,char fecha[10])
+{char dia[2],mes[2],anho[4];
+   dia[0]=fecha[0];
+   dia [1]=fecha[1];
+   mes[0]= fecha[2];
+   mes[1]=fecha[3];
+   anho[0]=fecha[4];
+   anho[1]=fecha[5];
+   anho[2]=fecha[6];
+   anho[3]=fecha[7];
+   f.dia=atoi(dia);
+   f.mes=atoi(mes);
+   f.anho=atoi(anho);
+}
+bool existenciacliente()
+{cliente c;
+FILE *ptr=fopen("Cliente","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
+}
+int calcularventasporcliente(int id,fechas f1,fechas f2)
+{int s=0;automotor a;venta v;
+	FILE *ptr=fopen("Automotor","rb");
+	fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(a.idcliente==id&&a.estado=='S')
+		{
+             FILE *ptr2=fopen("Ventas.dat","rb");
+			 if(ptr!=NULL)
+			 {
+				 fread(&v,sizeof(v),1,ptr2);
+				 while(feof(ptr)==false)
+				 {
+					 if(a.idauto==v.idauto&&v.estado=='S')
+					 {
+						 s=s+v.preciototal;
+					 }
+					 fread(&v,sizeof(v),1,ptr2);
+				 }
+				 fclose(ptr2);
+			 }
+			 else
+			 { fclose(ptr);fclose(ptr2);
+				 return 0;//retorno cero porque no hay registros de ventas entonces nadie compro nada
+			 }
+		}
+	}fclose(ptr);return s;
+	
+}
+void ordenarmatriz(int mat[fil][2],int n)
+{int aux;
+	for(int i=0;i<(n-1);i++)
+	{
+		for(int j=i;j<n;j++)
+		{
+			if(mat[i][1]<mat[j][1])
+			{
+				aux=mat[i][1];
+				mat[i][1]=mat[j][1];
+				mat[j][i]=aux;
+			}
+		}
+	}
+}
+void buscarnombrecliente(int id,char nombre[30])
+{cliente c;
+	FILE *ptr=fopen("Cliente.dat","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.idcliente==id)
+		{
+			strcpy(nombre,c.nombre);
+		}
+
+	}
+	fclose(ptr);
 }
