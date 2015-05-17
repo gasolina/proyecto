@@ -1,0 +1,120 @@
+vendedor buscarvendedor(int id)
+{vendedor v;
+
+	FILE *ptr=fopen("Vendedor.dat","rb");
+    fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(v.idvendedor==id)
+		 {fclose(ptr);
+			 return v;
+		 }
+	}
+}
+vendedor obtenervendedorporidbomba(int idbomba)
+{
+	FILE *ptr;
+	bomba a;
+	vendedor ven;
+
+	ptr=fopen("Bomba.dat","rb");
+	if(ptr!=NULL)
+		{fread(&a,sizeof(a),1,ptr);
+		while((feof(ptr)==false)&&(a.idbomba!=idbomba))
+			{
+				fread(&a,sizeof(a),1,ptr);
+			}
+			
+			ven=buscarvendedor(a.idvendedor);
+			fclose(ptr);
+			return ven;
+		}
+}
+
+producto obtenerproducto(int id)
+{producto p;
+
+	FILE *ptr=fopen("Producto.dat","rb");
+    fread(&p,sizeof(p),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(p.idprod==id)
+		 {fclose(ptr);
+			 return p;
+		 }
+	}
+}
+cliente obtenercliente(int id)
+{cliente c;
+
+	FILE *ptr=fopen("Cliente.dat","rb");
+    fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(c.idcliente==id)
+		 {fclose(ptr);
+			 return c;
+		 }
+	}
+}
+
+cliente obtenerclienteporidauto(int id)
+{automotor a;
+cliente c;
+
+	FILE *ptr=fopen("Automotor.dat","rb");
+    fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(a.idauto==id)
+		 {c=obtenercliente(a.idcliente);
+		 }
+	}
+	fclose(ptr);
+	return c;
+}
+
+void reporteventa()
+{FILE *ptr;
+venta v;
+cliente c;
+vendedor ven;
+producto prod;
+
+int cont=1;
+
+ptr=fopen("Ventas.dat","rb");
+if(ptr!=NULL)
+{fread(&v,sizeof(v),1,ptr);
+cout<<"NRO DE VENTA"<<cout.width(20)<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"PRECIO TOTAL"<<cout.width(20)<<"CLIENTE"<<cout.width(20)<<"VENDEDOR"<<cout.width(20)<<endl;
+ while(feof(ptr)==false)
+ {
+	 prod=obtenerproducto(v.idprod);
+	 c=obtenercliente(v.idauto);
+	 ven=obtenervendedorporidbomba(v.idbomba);
+	 cout<<cont;
+	 cout.width(20);
+	 cout<<v.fecha;
+	 cout.width(20);
+	 cout<<prod.nombre;
+	 cout.width(20);
+	 cout<<v.cantidad;
+	 cout.width(20);
+	 cout<<prod.preciounit;
+	 cout.width(20);
+	 cout<<prod.preciounit*v.cantidad;
+	 cout.width(20);
+	 cout<<c.nombre;
+	 cout.width(20);
+	 cout<<ven.nombre;
+
+	 fread(&v,sizeof(v),1,ptr);
+	 cont++;
+ }
+ 
+}
+else
+{cout<<"NO SE HA REGISTRADO NINGUNA VENTA";
+}
+fclose(ptr);
+}
