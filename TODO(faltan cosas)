@@ -913,7 +913,7 @@ void quitarbarrasfecha(char fecha[30])
 }
 bool existenciaventas()
 {venta v;
-	FILE *ptr=fopen("Vendedor.dat","rb");
+	FILE *ptr=fopen("Ventas.dat","rb");
 	fread(&v,sizeof(v),1,ptr);
 	while(feof(ptr)==false)
 	{
