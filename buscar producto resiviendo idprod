@@ -1,0 +1,17 @@
+descripcion:
+recive un id de un producto y retorna en una variable(estructura) tipo producto que contiene la informacion de ese producto sacada del archivo producto
+
+
+producto buscarproducto(int id)
+{producto p;
+
+	FILE *ptr=fopen("Producto.dat","rb");
+    fread(&p,sizeof(p),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(p.idprod==id)
+		 {fclose(ptr);
+			 return p;
+		 }
+	}
+}
