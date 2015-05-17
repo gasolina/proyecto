@@ -1,0 +1,47 @@
+descripsion :
+muestra un ranking de quienes compraron mas hasta los que compraron menos , basandose en los precios totales de las ventas 
+
+void rankingclientes()
+{char fecha1[10],fecha2[10];cliente c;int mat[fil][2],n=0;char nombre[30];
+  fechas f1,f2;
+	cout<<"\ningrese fecha 1";
+	fecha(fecha1);
+	cout<<"\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1,fecha1);
+	convertirfecha(f2,fecha2);
+	FILE *ptr=fopen("Cliente.dat","rb");
+	if(ptr!=NULL&&existenciacliente()==true)
+	{  fread(&c,sizeof(c),1,ptr);
+       while(feof(ptr)==false)
+	   {  if(c.estado=='S')
+	        {
+				mat[n][0]=c.idcliente;
+           mat[n][1]=calcularventasporcliente(c.idcliente,f1,f2);
+		   n++;
+	        }
+	      fread(&c,sizeof(c),1,ptr);
+	   }
+		   fclose(ptr);
+
+		   ordenarmatriz(mat,n);
+		cout<<endl<<"---------TOP CLIENTES---------"<<endl;
+		cout<<"CLIENTE";
+			cout.width(20);
+			cout<<"COMPRAS TOTALES"<<endl;
+		for( int i =0;i<n;i++)
+		{
+			buscarnombrecliente(mat[i][0],nombre);//busca nombre del cliente y lo guarda en char nombre
+			cout<<nombre;
+			cout.width(20);
+			cout<<mat[i][1]<<endl;
+	       getch();
+		}
+	}
+	else
+	{
+		cout<<"\n no existe clientes registrados";
+		getch();fclose(ptr);
+	}
+	
+}
