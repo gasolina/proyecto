@@ -1,0 +1,17 @@
+descripcion 
+quita las barras a la fecha 
+usar copiando la fecha a un char auxiliar y recien usar esta funcion
+cuidado con quitarle las barras ala fecha en la base de datos
+
+void quitarbarrasfecha(char fecha[30])
+{char aux[30];
+  aux[0]=fecha[0];
+  aux[1]=fecha[1];
+  aux[2]=fecha[3];
+  aux[3]=fecha[4];
+  aux[4]=fecha[6];
+  aux[5]=fecha[7];
+  aux[6]=fecha[8];
+  aux[7]=fecha[9];
+  strcpy(fecha,aux);
+}
