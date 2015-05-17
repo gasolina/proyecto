@@ -1,0 +1,46 @@
+bool menucompras(compras &c)
+{producto p;int cont=1,op;
+   FILE *ptr=fopen("Producto.dat","rb");
+	do{ 
+   if(ptr!=NULL&&existenciaproducto()==true)
+	   {
+		   fread(&p,sizeof(p),1,ptr);
+		   cout<<"\n seleccione su producto";
+		   cout<<"\nproducto";
+		   cout.width(20);
+		   cout<<"stock"<<endl;
+		   while(feof(ptr)==false)
+		   {
+			   cout<<cont<<".-";
+			   cout<<p.nombre;
+			   cout.width(20);
+			   cout<<p.stock;
+			   cout<<endl;
+			   cont++;
+			   fread(&p,sizeof(p),1,ptr);
+		   }
+		   cout<<"\n0.-salir";
+		   op=validarentero();
+		   if(op!=0)
+		   {
+			fseek(ptr,(cont-1)*sizeof(p),SEEK_SET);
+			if(feof(ptr)==false)
+			{ fread(&p,sizeof(p),1,ptr);fclose(ptr);
+			c.idprod=p.idprod;
+			do{cout<<"\n que cantidad comprara?";
+			c.cantidad=validarfloat();}while(c.cantidad<0);
+			cout<<"\n cuanto es el precio total de la compra";
+			c.preciototal=validarfloat();return true;
+			}
+			else{
+			cout<<"no existe el registro seleccionado";
+				op=-5;fclose(ptr);
+			}
+		   }
+	   }
+	   else{
+		 cout<<"\n no existe producto registrado,primero registrar";fclose(ptr);return false;
+		 getch();
+	   }
+	}while(op==-5);
+}
