@@ -1,0 +1,72 @@
+void reporteporfechaventas()
+{char fecha1[10],fecha2[10];venta v;char fechaaux[10],nombrecliente[30];vendedor ven;automotor a;producto p;
+	fechas f1,f2,f3;
+	cout<<"\ningrese fecha 1";
+	fecha(fecha1);
+	cout<<"\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1,fecha1);
+	convertirfecha(f2,fecha2);
+	FILE *ptr1=fopen("Ventas.dat","rb");
+	if(ptr1!=NULL&&existenciaventas()==true)
+	{
+		fread(&v,sizeof(v),1,ptr1);
+		cout<<"--------REPORTE VENTAS---------";
+		cout<<endl;
+		cout<<"nro";
+		cout.width(20);
+		cout<<"fecha";
+		cout.width(20);
+		cout<<"producto";
+		cout.width(20);
+		cout<<"cantidad";
+		cout.width(20);
+		cout<<"precio total";
+		cout.width(20);
+		cout<<"vendedor";
+		cout.width(20);
+		cout<<"cliente";
+			cout.width(20);
+		cout<<"placa";
+		cout<<endl;
+         while(feof(ptr1)==false)
+		 {
+			 if(v.estado=='S')
+			 {
+				 strcpy(fechaaux,v.fecha);
+				 quitarbarrasfecha(fechaaux);
+				 convertirfecha(f3,fechaaux);
+				if(((compararfechas(f1,f3)==0)||(compararfechas(f1,f3)==1))&&((compararfechas(f3,f2)==0)||(compararfechas(f3,f2)==1)))
+				{
+					ven=buscarvendedorporidbomba(v.idbomba);
+					a=buscarautomotorporidauto(v.idauto);
+					p=buscarproducto(v.idprod);
+					buscarnombrecliente(a.idcliente,nombrecliente);
+					cout<<v.idventa;
+						cout.width(20);
+						cout<<v.fecha;
+						cout.width(20);
+						cout<<p.nombre;
+						cout.width(20);
+						cout<<v.cantidad;
+						cout.width(20);
+						cout<<v.preciototal;
+						cout.width(20);
+						cout<<ven.nombre;
+						cout.width(20);
+						cout<<nombrecliente;
+							cout.width(20);
+							cout<<a.placa;
+						cout<<endl;
+				}
+			 }
+		 }
+		 fclose(ptr1);
+
+	}
+	else
+	{fclose(ptr1);
+		cout<<"no existen ventas registradas";getch();
+
+	}
+}
