@@ -1,0 +1,14 @@
+bool existenciaventas()
+{venta v;
+	FILE *ptr=fopen("Ventas.dat","rb");
+	fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(v.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+}
