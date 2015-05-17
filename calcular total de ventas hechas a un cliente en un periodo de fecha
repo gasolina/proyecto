@@ -3,7 +3,7 @@ calcula el total de ventas hechas aun cliente( a cual le pertenece el id del par
 revisar si puede ser adapatada para ranking bombas,
 
 int calcularventasporcliente(int id,fechas f1,fechas f2)
-{int s=0;automotor a;venta v;
+{int s=0;automotor a;venta v;fechas f3;
 	FILE *ptr=fopen("Automotor","rb");
 	fread(&a,sizeof(a),1,ptr);
 	while(feof(ptr)==false)
@@ -18,7 +18,9 @@ int calcularventasporcliente(int id,fechas f1,fechas f2)
 				 {
 					 if(a.idauto==v.idauto&&v.estado=='S')
 					 {
-						 s=s+v.preciototal;
+						 convertirfecha(f3,v.fecha);
+						 if(((compararfechas(f1,f3)==0)||(compararfechas(f1,f3)==1))&&((compararfechas(f3,f2)==0)||(compararfechas(f3,f2)==1)))
+						 {s=s+v.preciototal;}
 					 }
 					 fread(&v,sizeof(v),1,ptr2);
 				 }
