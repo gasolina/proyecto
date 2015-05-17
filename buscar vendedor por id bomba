@@ -1,0 +1,18 @@
+descripcion:
+encuentra el vendedor usando el idbomba y retorna todo el registro en una estructura tipo venvedor
+
+vendedor buscarvendedorporidbomba(int id)
+{
+	vendedor v;bomba b;
+	FILE *ptr=fopen("Bomba.dat","rb");
+    fread(&b,sizeof(b),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(b.idbomba==id)
+		 {fclose(ptr);
+		 v=buscarvendedorporidvendedor(b.idvendedor);return v;
+		 }
+	       fread(&b,sizeof(b),1,ptr);
+	}
+	
+}
