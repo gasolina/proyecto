@@ -1,0 +1,20 @@
+descripcion:
+verifica si existe almenos 1 producto con estado'S'
+si es asi retorna true y si no false
+
+
+bool existenciaproducto()
+{producto p;
+	FILE *ptr=fopen("Producto.dat","rb");
+	fread(&p,sizeof(p),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(p.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
+}
