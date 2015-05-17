@@ -1,0 +1,18 @@
+descripcion:
+recive el id de un cliente busca el nombre del cliente y lo llena en una cadena;
+ver so en ranking clientes(;
+
+void buscarnombrecliente(int id,char nombre[30])
+{cliente c;
+	FILE *ptr=fopen("Cliente.dat","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.idcliente==id)
+		{
+			strcpy(nombre,c.nombre);
+		}
+
+	}
+	fclose(ptr);
+}
