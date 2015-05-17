@@ -1,0 +1,38 @@
+float validarfloat()
+{int cont=0;
+	float r;int i; bool k;
+	char num[12];
+	do{
+		do{
+			cout << "\ningrese numero: ";
+			gets_s(num);
+		} while (strlen(num) == 0);
+		i = 0; k = true;
+		if(num[0]=='.')
+		     {k=false;}
+		if (num[0] == '-')
+		{  
+			i++;
+			if (strlen(num) == 1)
+				k = false;
+		}
+		while (i<strlen(num))
+		{ 	if(num[i]=='.')
+		     {cont++}
+		       
+			if ((num[i]!='.')&&(num[i] != '0') && (num[i] != '1') && (num[i] != '2') && (num[i] != '3') && (num[i] != '4') && (num[i] != '5') && (num[i] != '6') && (num[i] != '7') && (num[i] != '8') && (num[i] != '9'))
+			{
+				k = false; break;
+			}
+			i++;
+		}
+		if(cont>1)
+		{
+		k=false;
+		}
+		if (k == false){ cout << "ERROR FATAL : DATO NO NUMERICO"; }
+	} while (k == false);
+	r = atof(num);
+
+	return(r);
+}
