@@ -1,0 +1,24 @@
+descripcion:
+devuelve una estructura tipo automotor correspondiente al idauto enviadocommo parametro
+
+automotor buscarautomotorporidauto(int id)
+{
+	automotor A;
+	FILE *ptr=fopen("Automotor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&A,sizeof(A),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(A.idauto==id&& A.estado=='S')
+			{fclose(ptr);
+				return A;
+			}
+			fread(&A,sizeof(A),1,ptr);
+		}fclose(ptr);
+		
+	}
+	else{fclose(ptr);
+	cout<<"no existe registro de auto";
+	}
+}
