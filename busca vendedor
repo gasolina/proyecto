@@ -1,0 +1,15 @@
+descripcion : recive el id de un vendedor y retorna toda una variable(estructura) de tipo vendedor 
+
+vendedor buscarvendedor(int id)
+{vendedor v;
+
+	FILE *ptr=fopen("Vendedor.dat","rb");
+    fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	 {
+		 if(v.idvendedor==id)
+		 {fclose(ptr);
+			 return v;
+		 }
+	}
+}
