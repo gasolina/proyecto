@@ -1,0 +1,29 @@
+void añadirvendedor()
+{FILE *ptr;
+vendedor ven;
+int band=1;
+do{ band=1;
+    ptr=fopen("Vendedor.dat","ab");
+		 if(ptr!=NULL)
+		 {fread(&ven,sizeof(ven),1,ptr);
+			  if(feof(ptr)==false)
+				  {ven.idvendedor=generarid(2);
+				  cout<<"Introduzca nombre: ";
+				  cin>>ven.nombre;
+				  cout<<"Introduzca email";
+				  cin>>ven.email;
+				  cout<<"Introduzca telefono: ";
+				  cin>>ven.telefono;
+				  fwrite(&ven,sizeof(ven),1,ptr);
+				  fclose(ptr);
+				  }
+		 }
+		 else
+		 {
+		 ptr=fopen("Vendedor.dat","wb");
+		 fclose(ptr);
+		 band=-1;
+		 }
+}while(band==-1);
+
+}
