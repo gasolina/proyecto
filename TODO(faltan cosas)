@@ -50,12 +50,14 @@ char fecha[10];
 int idprod;
 float cantidad;
 float preciototal;
+char estado;
 };
 struct bomba{
 int idbomba;
 char descripcion[30];
 int idprod;
 int idvendedor;
+char estado;
 };
 struct fechas{
 int dia;
@@ -89,6 +91,13 @@ bool existenciaventas();//listo
  void quitarbarrasfecha(char fecha[10]);//listo
 vendedor buscarvendedorporidbomba(int id);//listo
 automotor buscarautomotorporidauto(int id);//listo
+bomba obtidbomba(int x);//listo
+cliente obtidcliente(int x);//listo
+vendedor obtidvendedor(int x);//listo
+bool existenciaautomotor();//listo
+bool existenciabomba();//listo
+bool existenciacompra();//listo
+cliente buscarclienteporidauto(int idauto);//listo
 
 //desarrollo
 void vender()
@@ -147,6 +156,7 @@ do{       op=1;
 				}
 }while(op==2);
 }
+//reportes por tiempo
 void rankingclientes()
 {char fecha1[10],fecha2[10];cliente c;int mat[fil][2],n=0;char nombre[30];
   fechas f1,f2,aux;
@@ -269,6 +279,192 @@ void reporteporfechaventas()
 
 	}
 }
+//reportes generales
+void reportevendedorgenerales()
+
+{FILE *ptr;
+vendedor ven;
+bomba b;
+ptr=fopen("Vendedor.dat","rb");
+if(ptr!=NULL&&existenciavendedor()==true)
+		{fread(&ven,sizeof(ven),1,ptr);
+		cout<<"VENDEDOR"<<cout.width(20)<<"EMAIL"<<cout.width(20)<<"TELEFONO"<<cout.width(20)<<"BOMBA"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(ven.estado=='S')
+		    {	b=obtidbomba(ven.idvendedor);
+				cout<<ven.nombre<<cout.width(20)<<ven.email<<cout.width(20)<<ven.telefono<<cout.width(20)<<b.idbomba<<endl;
+		     }
+		  fread(&ven,sizeof(ven),1,ptr);
+		 }
+	
+		fclose(ptr);}
+		else
+		{cout<<"No existen vendedores registrados";
+		fclose(ptr);}
+
+}
+void reporteclientesgenerales()
+
+{FILE *ptr;
+cliente c;
+
+ptr=fopen("Cliente.dat","rb");
+if(ptr!=NULL&&existenciacliente()==true)
+		{fread(&c,sizeof(c),1,ptr);
+		cout<<"CLIENTE"<<cout.width(20)<<"EMAIL"<<cout.width(20)<<"TELEFONO"<<cout.width(20)<<"NIT"<<cout.width(20)<<endl;
+		 while(feof(ptr)==false)
+		 {  if(c.estado=='S')
+		    {
+				cout<<c.nombre<<cout.width(20)<<c.email<<cout.width(20)<<c.telefono<<cout.width(20)<<c.nit<<cout.width(20)<<endl;
+		     }
+		  fread(&c,sizeof(c),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen clientes registrados";
+		}
+		fclose(ptr);
+}
+void reporteproductosgenerales()
+{FILE *ptr;
+producto p;
+ptr=fopen("Producto.dat","rb");
+if(ptr!=NULL&&existenciaproducto()==true)
+		{fread(&p,sizeof(p),1,ptr);
+		cout<<"NOMBRE DEL PRODUCTO"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"STOCK"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(p.estado=='S')
+		    {
+				cout<<p.nombre<<cout.width(20)<<p.preciounit<<cout.width(20)<<p.stock<<endl;
+		     }
+		  fread(&p,sizeof(p),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen productos registrados";
+		}fclose(ptr);
+
+}
+void reporteautomotorgenerales()
+	{FILE *ptr;
+automotor a;
+cliente c;
+ptr=fopen("Automotor.dat","rb");
+		if(ptr!=NULL&&existenciaautomotor()==true)
+		{fread(&a,sizeof(a),1,ptr);
+		cout<<"PLACA"<<cout.width(20)<<"CLIENTE DUENHO"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(a.estado=='S')
+		    {
+				c=obtidcliente(a.idcliente);
+				cout<<a.placa<<cout.width(20)<<c.nombre<<endl;
+		     }
+		  fread(&a,sizeof(a),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen automotores registrados";
+		}
+		fclose(ptr);
+}
+void reportebombagenerales()
+	{FILE *ptr;
+bomba b;
+vendedor ven;
+ptr=fopen("Bomba.dat","rb");
+		if(ptr!=NULL&&existenciabomba()==true)
+		{fread(&b,sizeof(b),1,ptr);
+		cout<<"NOMBRE DEL PRODUCTO"<<cout.width(20)<<"NOMBRE DEL VENDEDOR"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(b.estado=='S')
+		    {
+				ven=obtidvendedor(b.idvendedor);
+				cout<<b.descripcion<<cout.width(20)<<ven.nombre<<endl;
+		     }
+		  fread(&b,sizeof(b),1,ptr);
+		 }
+	          
+		}
+		else
+		{cout<<"No existen bombas registrados";
+		}
+			fclose(ptr);
+
+}
+void reportecompragenerales()
+{FILE *ptr;
+compras c;
+producto p;
+int cont=1;
+ptr=fopen("Compras.dat","rb");
+		if(ptr!=NULL&&existenciacompra()==true)
+		{fread(&c,sizeof(c),1,ptr);
+		cout<<" "<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(c.estado=='S')
+		    {
+				p=buscarproducto(c.idprod);
+				cout<<cont<<". "<<c.fecha<<cout.width(20)<<p.nombre<<cout.width(20)<<c.cantidad<<cout.width(20)<<c.preciototal<<endl;
+		 
+		 }cont++;   
+		  fread(&c,sizeof(c),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen compras registrados";
+		}
+			fclose(ptr);
+
+}
+void reporteventa()
+{FILE *ptr;
+venta v;
+cliente c;
+vendedor ven;
+producto prod;
+
+int cont=1;
+
+ptr=fopen("Ventas.dat","rb");
+if(ptr!=NULL)
+{fread(&v,sizeof(v),1,ptr);
+cout<<"NRO DE VENTA"<<cout.width(20)<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<cout.width(20)<<"CLIENTE"<<cout.width(20)<<"VENDEDOR"<<endl;
+ while(feof(ptr)==false)
+	 {if(v.estado=='S')
+	 {
+		 prod=buscarproducto(v.idprod);
+		 c=buscarclienteporidauto(v.idauto);
+		 ven=buscarvendedorporidbomba(v.idbomba);
+		 cout<<cont;
+		 cout.width(20);
+		 cout<<v.fecha;
+		 cout.width(20);
+		 cout<<prod.nombre;
+		 cout.width(20);
+		 cout<<v.cantidad;
+		 cout.width(20);
+		 cout<<v.preciototal;
+		 cout.width(20);
+		 cout<<c.nombre;
+		 cout.width(20);
+		 cout<<ven.nombre;
+		 cont++;
+	 }
+	 fread(&v,sizeof(v),1,ptr);
+	 cont++;
+ }
+ 
+}
+else
+{cout<<"NO SE HA REGISTRADO NINGUNA VENTA";
+}
+fclose(ptr);
+}
+
 //desarrollo de funciones
 void barrafecha(char fecha[10])
 {char aux[10];
@@ -666,14 +862,14 @@ vendedor buscarvendedorporidvendedor(int id)
 		 }
 	}
 }
-producto buscarproducto(int id)
+producto buscarproducto(int idprod)
 {producto p;
 
 	FILE *ptr=fopen("Producto.dat","rb");
     fread(&p,sizeof(p),1,ptr);
 	while(feof(ptr)==false)
 	 {
-		 if(p.idprod==id)
+		 if(p.idprod==idprod)
 		 {fclose(ptr);
 			 return p;
 		 }
@@ -823,7 +1019,7 @@ void convertirfecha(fechas &f,char fecha[10])
 }
 bool existenciacliente()
 {cliente c;
-FILE *ptr=fopen("Cliente","rb");
+FILE *ptr=fopen("Cliente.dat","rb");
 	fread(&c,sizeof(c),1,ptr);
 	while(feof(ptr)==false)
 	{
@@ -960,4 +1156,115 @@ automotor buscarautomotorporidauto(int id)
 	else{fclose(ptr);
 	cout<<"no existe registro de auto";
 	}
+}
+bomba obtidbomba(int x)
+{FILE *ptr;
+bomba b;
+ptr=fopen("Bomba.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&b,sizeof(b),1,ptr);
+			while(feof(ptr)==false && b.idvendedor!=x)
+			{
+				fread(&b,sizeof(b),1,ptr);
+			}
+			fclose(ptr);
+			if(b.estado=='S')
+			{
+			return b;
+			}
+		}
+}
+cliente obtidcliente(int x)
+{FILE *ptr;
+cliente c;
+ptr=fopen("Cliente.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&c,sizeof(c),1,ptr);
+			while(feof(ptr)==false && c.idcliente!=x)
+			{
+				fread(&c,sizeof(c),1,ptr);
+			}
+			fclose(ptr);
+			if( c.estado=='S')
+			return c;
+		}
+}
+vendedor obtidvendedor(int x)
+{FILE *ptr;
+vendedor ven;
+ptr=fopen("Vendedor.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&ven,sizeof(ven),1,ptr);
+			while(feof(ptr)==false && ven.idvendedor!=x)
+			{
+				fread(&ven,sizeof(ven),1,ptr);
+			}
+			fclose(ptr);
+			if(ven.estado=='S')
+			return ven;
+		}
+}
+cliente buscarclienteporidauto(int idauto)
+{
+	automotor a;
+cliente c;
+
+	FILE *ptr=fopen("Automotor.dat","rb");
+    fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	 {if(a.estado=='S'){
+		 if(a.idauto==idauto)
+		 {c=obtidcliente(a.idcliente);
+		 }
+	}}
+	fclose(ptr);
+	return c;
+}
+bool existenciaautomotor()
+{
+	automotor a;
+FILE *ptr=fopen("Automotor.dat","rb");
+	fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(a.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+
+}
+bool existenciabomba()
+{
+	bomba c;
+FILE *ptr=fopen("Bomba.dat","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
+}
+bool existenciacompra(){
+	compras c;
+FILE *ptr=fopen("Compras.dat","rb");
+	fread(&c,sizeof(c),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(c.estado=='S')
+		{fclose(ptr);
+			return true;}
+
+	}
+	fclose(ptr);
+	return false;
 }
