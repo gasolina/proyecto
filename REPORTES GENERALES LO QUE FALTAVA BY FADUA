@@ -1,0 +1,190 @@
+void reporteclientesgenerales()
+
+{FILE *ptr;
+cliente c;
+
+ptr=fopen("Cliente.dat","rb");
+		if(ptr!=NULL)
+		{fread(&c,sizeof(c),1,ptr);
+		cout<<"CLIENTE"<<cout.width(20)<<"EMAIL"<<cout.width(20)<<"TELEFONO"<<cout.width(20)<<"NIT"<<cout.width(20)<<endl;
+		 while(feof(ptr)==false)
+		 {  if(c.estado=='S')
+		    {
+				cout<<c.nombre<<cout.width(20)<<c.email<<cout.width(20)<<c.telefono<<cout.width(20)<<c.nit<<cout.width(20)<<endl;
+		     }
+		  fread(&c,sizeof(c),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen clientes registrados";
+		}
+		fclose(ptr);
+}
+
+bomba obtidbomba(int x)
+{FILE *ptr;
+bomba b;
+ptr=fopen("Bomba.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&b,sizeof(b),1,ptr);
+			while(feof(ptr)==false && b.idbomba!=x && b.estado=='S')
+			{
+				fread(&b,sizeof(b),1,ptr);
+			}
+			fclose(ptr);
+			return b;
+		}
+}
+
+void reportevendedorgenerales()
+
+{FILE *ptr;
+vendedor ven;
+bomba b;
+ptr=fopen("Vendedor.dat","rb");
+		if(ptr!=NULL)
+		{fread(&ven,sizeof(ven),1,ptr);
+		cout<<"VENDEDOR"<<cout.width(20)<<"EMAIL"<<cout.width(20)<<"TELEFONO"<<cout.width(20)<<"BOMBA"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(ven.estado=='S')
+		    {	b=obtidbomba(ven.idvendedor);
+				cout<<ven.nombre<<cout.width(20)<<ven.email<<cout.width(20)<<ven.telefono<<cout.width(20)<<b.idbomba<<endl;
+		     }
+		  fread(&ven,sizeof(ven),1,ptr);
+		 }
+	
+		fclose(ptr);}
+		else
+		{cout<<"No existen vendedores registrados";
+		fclose(ptr);}
+
+}
+
+void reporteproductosgenerales()
+{FILE *ptr;
+producto p;
+ptr=fopen("Producto.dat","rb");
+		if(ptr!=NULL)
+		{fread(&p,sizeof(p),1,ptr);
+		cout<<"NOMBRE DEL PRODUCTO"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"STOCK"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(p.estado=='S')
+		    {
+				cout<<p.nombre<<cout.width(20)<<p.preciounit<<cout.width(20)<<p.stock<<endl;
+		     }
+		  fread(&p,sizeof(p),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen productos registrados";
+		}fclose(ptr);
+
+}
+
+cliente obtidcliente(int x)
+{FILE *ptr;
+cliente c;
+ptr=fopen("Cliente.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&c,sizeof(c),1,ptr);
+			while(feof(ptr)==false && c.idcliente!=x && c.estado=='S')
+			{
+				fread(&c,sizeof(c),1,ptr);
+			}
+			fclose(ptr);
+			return c;
+		}
+}
+void reporteautomotorgenerales()
+	{FILE *ptr;
+automotor a;
+cliente c;
+ptr=fopen("Automotor.dat","rb");
+		if(ptr!=NULL)
+		{fread(&a,sizeof(a),1,ptr);
+		cout<<"NOMBRE DE LA PLACA"<<cout.width(20)<<"NOMBRE DEL CLIENTE"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(a.estado=='S')
+		    {
+				c=obtidcliente(a.idcliente);
+				cout<<a.placa<<cout.width(20)<<c.nombre<<endl;
+		     }
+		  fread(&a,sizeof(a),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen automotores registrados";
+		}
+		fclose(ptr);
+}
+
+vendedor obtidvendedor(int x)
+{FILE *ptr;
+vendedor ven;
+ptr=fopen("Vendedor.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&ven,sizeof(ven),1,ptr);
+			while(feof(ptr)==false && ven.idvendedor!=x && ven.estado=='S')
+			{
+				fread(&ven,sizeof(ven),1,ptr);
+			}
+			fclose(ptr);
+			return ven;
+		}
+}
+void reportebombagenerales()
+	{FILE *ptr;
+bomba b;
+vendedor ven;
+ptr=fopen("Bomba.dat","rb");
+		if(ptr!=NULL)
+		{fread(&b,sizeof(b),1,ptr);
+		cout<<"NOMBRE DEL PRODUCTO"<<cout.width(20)<<"NOMBRE DEL VENDEDOR"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(b.estado=='S')
+		    {
+				ven=obtidvendedor(b.idvendedor);
+				cout<<b.descripcion<<cout.width(20)<<ven.nombre<<endl;
+		     }
+		  fread(&b,sizeof(b),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen bombas registrados";
+		}
+			fclose(ptr);
+
+}
+void reportecompragenerales()
+{FILE *ptr;
+compras c;
+producto p;
+int cont=1;
+ptr=fopen("Compras.dat","rb");
+		if(ptr!=NULL)
+		{fread(&c,sizeof(c),1,ptr);
+		cout<<" "<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
+		 while(feof(ptr)==false)
+		 {  if(c.estado=='S')
+		    {
+				p=obtenerproducto(c.idprod);
+				cout<<cont<<". "<<c.fecha<<cout.width(20)<<p.nombre<<cout.width(20)<<c.cantidad<<cout.width(20)<<p.preciounit<<cout.width(20)<<p.preciounit*c.cantidad<<endl;
+		 
+		 }cont++;   
+		  fread(&c,sizeof(c),1,ptr);
+		 }
+	
+		}
+		else
+		{cout<<"No existen compras registrados";
+		}
+			fclose(ptr);
+
+}
