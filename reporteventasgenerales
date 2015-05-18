@@ -1,85 +1,3 @@
-vendedor buscarvendedor(int id)
-{vendedor v;
-
-	FILE *ptr=fopen("Vendedor.dat","rb");
-    fread(&v,sizeof(v),1,ptr);
-	while(feof(ptr)==false)
-	 {if(v.estado=='S')
-		{ if(v.idvendedor==id)
-			 {fclose(ptr);
-				 return v;
-			 }
-	    }
-	 else
-	 {cout<<"No hay registro de la venta porque fue eliminada";
-	 }
-	}
-}
-vendedor obtenervendedorporidbomba(int idbomba)
-{
-	FILE *ptr;
-	bomba a;
-	vendedor ven;
-
-	ptr=fopen("Bomba.dat","rb");
-	if(ptr!=NULL)
-		{fread(&a,sizeof(a),1,ptr);
-		while((feof(ptr)==false)&&(a.idbomba!=idbomba)&&(a.estado=='S'))
-			{
-				fread(&a,sizeof(a),1,ptr);
-			}
-			
-			ven=buscarvendedor(a.idvendedor);
-			fclose(ptr);
-			return ven;
-		}
-}
-
-producto obtenerproducto(int id)
-{producto p;
-
-	FILE *ptr=fopen("Producto.dat","rb");
-    fread(&p,sizeof(p),1,ptr);
-	while(feof(ptr)==false)
-	 {if(p.estado=='S')
-		 {if(p.idprod==id)
-			 {fclose(ptr);
-				 return p;
-			}
-		}
-	}
-}
-cliente obtenercliente(int id)
-{cliente c;
-
-	FILE *ptr=fopen("Cliente.dat","rb");
-    fread(&c,sizeof(c),1,ptr);
-	while(feof(ptr)==false)
-	 {if(c.estado=='S'){
-		 if(c.idcliente==id)
-		 {fclose(ptr);
-			 return c;
-		 }
-	}
-	}
-}
-
-cliente obtenerclienteporidauto(int id)
-{automotor a;
-cliente c;
-
-	FILE *ptr=fopen("Automotor.dat","rb");
-    fread(&a,sizeof(a),1,ptr);
-	while(feof(ptr)==false)
-	 {if(a.estado=='S'){
-		 if(a.idauto==id)
-		 {c=obtenercliente(a.idcliente);
-		 }
-	}}
-	fclose(ptr);
-	return c;
-}
-
 void reporteventa()
 {FILE *ptr;
 venta v;
@@ -92,13 +10,13 @@ int cont=1;
 ptr=fopen("Ventas.dat","rb");
 if(ptr!=NULL)
 {fread(&v,sizeof(v),1,ptr);
-cout<<"NRO DE VENTA"<<cout.width(20)<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"PRECIO TOTAL"<<cout.width(20)<<"CLIENTE"<<cout.width(20)<<"VENDEDOR"<<cout.width(20)<<endl;
+cout<<"NRO DE VENTA"<<cout.width(20)<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<cout.width(20)<<"CLIENTE"<<cout.width(20)<<"VENDEDOR"<<endl;
  while(feof(ptr)==false)
 	 {if(v.estado=='S')
 	 {
-		 prod=obtenerproducto(v.idprod);
-		 c=obtenercliente(v.idauto);
-		 ven=obtenervendedorporidbomba(v.idbomba);
+		 prod=buscarproducto(v.idprod);
+		 c=buscarclienteporidauto(v.idauto);
+		 ven=buscarvendedorporidbomba(v.idbomba);
 		 cout<<cont;
 		 cout.width(20);
 		 cout<<v.fecha;
@@ -107,9 +25,7 @@ cout<<"NRO DE VENTA"<<cout.width(20)<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.
 		 cout.width(20);
 		 cout<<v.cantidad;
 		 cout.width(20);
-		 cout<<prod.preciounit;
-		 cout.width(20);
-		 cout<<prod.preciounit*v.cantidad;
+		 cout<<v.preciototal;
 		 cout.width(20);
 		 cout<<c.nombre;
 		 cout.width(20);
