@@ -179,7 +179,7 @@ ptr=fopen("Compras.dat","rb");
 		 while(feof(ptr)==false)
 		 {  if(c.estado=='S')
 		    {
-				p=obtenerproducto(c.idprod);
+				p=buscarproducto(c.idprod);
 				cout<<cont<<". "<<c.fecha<<cout.width(20)<<p.nombre<<cout.width(20)<<c.cantidad<<<<cout.width(20)<<c.preciototal<<endl;
 		 
 		 }cont++;   
