@@ -1,3 +1,21 @@
+cliente buscarclienteporidauto(int idauto)
+{
+	automotor a;
+cliente c;
+
+	FILE *ptr=fopen("Automotor.dat","rb");
+    fread(&a,sizeof(a),1,ptr);
+	while(feof(ptr)==false)
+	 {if(a.estado=='S'){
+		 if(a.idauto==idauto)
+		 {c=obtidcliente(a.idcliente);
+		 }
+	}}
+	fclose(ptr);
+	return c;
+}
+
+
 void reporteventa()
 {FILE *ptr;
 venta v;
