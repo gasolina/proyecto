@@ -2,7 +2,9 @@ bool validaremail(char e[])// PENDIENTE REVISAR!!!!!
 {
 	int n,i,cont=0;
 	n = strlen(e);
-		if (e[n - 1] != 'm'&&e[n - 2] != 'o'&&e[n - 3]!= 'c'&&e[n - 4]!= '.')
+	if(n<7)
+	return false;
+		if (e[n - 1] != 'm'||e[n - 2] != 'o'||e[n - 3]!= 'c'||e[n - 4]!= '.')
 			return false;
 
 
