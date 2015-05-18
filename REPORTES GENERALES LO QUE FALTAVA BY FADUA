@@ -21,7 +21,7 @@ ptr=fopen("Cliente.dat","rb");
 		}
 		fclose(ptr);
 }
-
+//cambiado en la condicion quite si el estado es s y si es mientras b.idvendedor!=x
 bomba obtidbomba(int x)
 {FILE *ptr;
 bomba b;
@@ -29,12 +29,15 @@ ptr=fopen("Bomba.dat","rb");
 		if(ptr!=NULL)
 		{
 			fread(&b,sizeof(b),1,ptr);
-			while(feof(ptr)==false && b.idbomba!=x && b.estado=='S')
+			while(feof(ptr)==false && b.idvendedor!=x)
 			{
 				fread(&b,sizeof(b),1,ptr);
 			}
 			fclose(ptr);
+			if(b.estado=='S')
+			{
 			return b;
+			}
 		}
 }
 
@@ -91,11 +94,12 @@ ptr=fopen("Cliente.dat","rb");
 		if(ptr!=NULL)
 		{
 			fread(&c,sizeof(c),1,ptr);
-			while(feof(ptr)==false && c.idcliente!=x && c.estado=='S')
+			while(feof(ptr)==false && c.idcliente!=x)
 			{
 				fread(&c,sizeof(c),1,ptr);
 			}
 			fclose(ptr);
+			if( c.estado=='S')
 			return c;
 		}
 }
@@ -106,7 +110,7 @@ cliente c;
 ptr=fopen("Automotor.dat","rb");
 		if(ptr!=NULL)
 		{fread(&a,sizeof(a),1,ptr);
-		cout<<"NOMBRE DE LA PLACA"<<cout.width(20)<<"NOMBRE DEL CLIENTE"<<endl;
+		cout<<"PLACA"<<cout.width(20)<<"CLIENTE DUENHO"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(a.estado=='S')
 		    {
@@ -130,11 +134,12 @@ ptr=fopen("Vendedor.dat","rb");
 		if(ptr!=NULL)
 		{
 			fread(&ven,sizeof(ven),1,ptr);
-			while(feof(ptr)==false && ven.idvendedor!=x && ven.estado=='S')
+			while(feof(ptr)==false && ven.idvendedor!=x)
 			{
 				fread(&ven,sizeof(ven),1,ptr);
 			}
 			fclose(ptr);
+			if(ven.estado=='S')
 			return ven;
 		}
 }
@@ -154,7 +159,7 @@ ptr=fopen("Bomba.dat","rb");
 		     }
 		  fread(&b,sizeof(b),1,ptr);
 		 }
-	
+	          
 		}
 		else
 		{cout<<"No existen bombas registrados";
@@ -170,12 +175,12 @@ int cont=1;
 ptr=fopen("Compras.dat","rb");
 		if(ptr!=NULL)
 		{fread(&c,sizeof(c),1,ptr);
-		cout<<" "<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
+		cout<<" "<<"FECHA"<<cout.width(20)<<"PRODUCTO"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(c.estado=='S')
 		    {
 				p=obtenerproducto(c.idprod);
-				cout<<cont<<". "<<c.fecha<<cout.width(20)<<p.nombre<<cout.width(20)<<c.cantidad<<cout.width(20)<<p.preciounit<<cout.width(20)<<p.preciounit*c.cantidad<<endl;
+				cout<<cont<<". "<<c.fecha<<cout.width(20)<<p.nombre<<cout.width(20)<<c.cantidad<<<<cout.width(20)<<c.preciototal<<endl;
 		 
 		 }cont++;   
 		  fread(&c,sizeof(c),1,ptr);
