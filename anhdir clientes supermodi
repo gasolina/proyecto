@@ -1,0 +1,60 @@
+void anhadirclientes()
+{
+	int telfaux,band,nitaux,op;
+	cliente c;
+	c.estado = 'S';
+	do{
+		band = 1;
+		FILE*ptr = fopen("Cliente.dat", "ab");
+		c.idcliente = generarid(1);
+		if (ptr != NULL){
+			
+			do
+			{
+				cout << "nombre del cliente: ";
+				gets(c.nombre);
+			} while (validarnombre(c.nombre) != true);
+
+			
+			do
+			{
+				cout << "email cliente: ";
+				gets(c.email);
+			} while (validaremail(c.email) != true);
+			
+			do{
+				cout << "telefono: ";
+				telfaux = validarentero();
+				itoa(telfaux, c.telefono, 10);
+			} while (validartelefono(c.telefono) != true);
+			
+			do
+			{
+				cout << "NIT: ";
+				nitaux = validarentero();
+				itoa(nitaux,c.nit,10);
+			} while (validarnit(c.nit)!=true);
+			do{
+				cout << "Esta seguro de haber colocado bien sus datos?: ";
+				cout << "1.si\n 2.volver a intentar\n";
+				op = validarentero();
+			}while (op != 1 && op != 2);
+				if (op == 2)
+				{
+					band = -1;
+				}
+				else{
+					fwrite(&c, sizeof(c), 1, ptr);
+					fclose(ptr);
+				}
+			
+		}
+		else
+		{
+			ptr = fopen("Cliente.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+	
+}
