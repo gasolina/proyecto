@@ -1,0 +1,47 @@
+void añadirbomba()
+{FILE *ptr;
+bomba b;
+producto p;
+int band=1,band2;
+do{ band=1;
+    ptr=fopen("Bomba.dat","ab");
+		 if(ptr!=NULL)
+		 {do{
+				  b.idbomba=generarid(5);
+				  do{
+					  cout<<"Introduzca descripcion: ";
+					  gets(b.descripcion);
+				  }while(validarnombre(b.descripcion)==false);
+				  b.idprod=menuproducto();
+				  b.idvend=menuvendedor();
+				  if(b.idprod==-1)
+				  {cout<<"El producto no esta registrado..agreguelo!!!";
+				  getch();band=3;
+				  }
+				 if(b.idvend==-1)
+				  {cout<<"El vendedor no esta registrado..agreguelo!!!";
+				  getch();band=3;
+				  }
+				 if(band!=3){
+				  do{
+
+				  cout<<"Esta seguro de sus datos?";
+				  cout<<"1.SI    2.NO.VOLVER A INTENTAR";
+				  band2=validarentero();
+				  }while(band2!=0&&band!=1);
+				  if(band2==1)
+				  {fwrite(&p,sizeof(p),1,ptr);
+				  fclose(ptr);
+				  }
+				 }
+		 }while(band2==2);
+				  
+		 }
+		 else
+		 {
+		 ptr=fopen("Bomba.dat","wb");
+		 fclose(ptr);
+		 band=-1;
+		 }
+}while(band==-1);
+}
