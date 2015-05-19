@@ -1,0 +1,38 @@
+void añadirproducto()
+{FILE *ptr;
+producto p;
+int band=1,band2;
+do{ band=1;
+    ptr=fopen("Producto.dat","ab");
+		 if(ptr!=NULL)
+		 { do{
+				  p.idprod=generarid(3);
+				  do{
+					  cout<<"Introduzca nombre: ";
+					  gets(p.nombre);
+				  }while(validarnombre(p.nombre)==false);
+				  do{
+					  cout<<"Introduzca precio unitario: ";
+					  cin>>p.preciounit;	
+				  }while(validarfloat(p.preciounit)==false);
+				  cout<<"Esta seguro de haber colocado sus datos correctamente?";
+				  cout<<"1.SI     2.NO,VOLVER A INTENTAR.";
+				  band2=validarentero();
+		   }while(band2!=1&&band2!=2);
+				 if(band2==1){
+						  fwrite(&p,sizeof(p),1,ptr);
+						  fclose(ptr);
+				 }
+				 else{
+				 band=-1;}
+				  
+		 }
+		 else
+		 {
+		 ptr=fopen("Producto.dat","wb");
+		 fclose(ptr);
+		 band=-1;
+		 }
+}while(band==-1);
+
+}
