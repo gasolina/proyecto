@@ -7,18 +7,18 @@ do{ band=1;
 		 if(ptr!=NULL)
 		 { do{
 				  p.idprod=generarid(3);
-				  do{
-					  cout<<"Introduzca nombre: ";
+				 
+					  cout<<"\nIntroduzca nombre: ";
 					  gets(p.nombre);
 				  }while(validarnombre(p.nombre)==false);
 				  do{
-					  cout<<"Introduzca precio unitario: ";
+					  cout<<"\nIntroduzca precio unitario: ";
 					  cin>>p.preciounit;	
 				  }while(validarfloat(p.preciounit)==false);
-				  cout<<"Esta seguro de haber colocado sus datos correctamente?";
-				  cout<<"1.SI     2.NO,VOLVER A INTENTAR.";
+				   cout<<"\n Esta seguro de haber colocado sus datos correctamente?";
+				 do{ cout<<"\n1.SI     2.NO,VOLVER A INTENTAR.";
 				  band2=validarentero();
-		   }while(band2!=1&&band2!=2);
+		              }while(band2!=1&&band2!=2);
 				 if(band2==1){
 						  fwrite(&p,sizeof(p),1,ptr);
 						  fclose(ptr);
