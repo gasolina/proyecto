@@ -1,0 +1,53 @@
+bool validarnit(char ni[10])
+{
+	int n;
+	n = strlen(ni);
+	if (n >= 7 && n <= 10)
+	{
+		return true;
+	}
+	return false;
+}
+void anhadirclientes()
+{
+	int telfaux,band,nitaux;
+	cliente c;
+	do{
+		band = 1;
+		FILE*ptr = fopen("Cliente.dat", "ab");
+		c.idcliente = generarid(1);
+		if (ptr != NULL){
+			cout << "nombre del cliente: ";
+			do
+			{
+				gets(c.nombre);
+			} while (validarnombre(c.nombre) != true);
+
+			cout << "email cliente: ";
+			do
+			{
+				gets(c.email);
+			} while (validaremail(c.email) != true);
+			cout << "telefono: ";
+			do{
+				telfaux = validarentero();
+				itoa(telfaux, c.telefono, 10);
+			} while (validartelefono(c.telefono) != true);
+			cout << "NIT: ";
+			do
+			{
+				nitaux = validarentero();
+				itoa(nitaux,c.nit,10);
+			} while (validarnit(c.nit)!=true);
+			fwrite(&c, sizeof(c), 1, ptr);
+			fclose(ptr);
+		}
+		else
+		{
+			ptr = fopen("Cliente.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+	
+}
