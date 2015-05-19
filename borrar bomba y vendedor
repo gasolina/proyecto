@@ -1,0 +1,102 @@
+void eliminarbombaporvendedor(int x)
+{
+	FILE *ptr = fopen("Bomba.dat", "r+b");
+	bomba b;
+	if (ptr != NULL)
+	{
+		fread(&b,sizeof(b),1,ptr);
+		while (feof(ptr) == false)
+		{
+			if (b.idvendedor == x)
+			{
+				b.estado = 'N';
+			}
+			fread(&b, sizeof(b), 1, ptr);
+		}
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "el archivo bomba no existe.... ";
+	}
+
+}
+
+void borrarvendedor()
+{
+	FILE *ptr;
+	vendedor ven;
+	int h, band,y;
+	ptr = fopen("Vendedor.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menuvendedor();
+		if (h>0)
+		{
+			fseek(ptr, (h - 1)*sizeof(ven), SEEK_SET);
+			do{
+				cout << "\nEsta seguro que quiere eliminar a:\n" << ven.nombre << "  " << ven.email << "   " << ven.telefono << endl;
+				cout << "\n1.SI  2.NO\n";
+				cout << "\nEscoja una opcion: \n";
+				cin >> y;
+
+			} while (y != 1 && y != 0);
+			if (y == 1){
+				ven.estado = 'N';
+				eliminarbombaporvendedor(h);
+
+			}
+			
+		}
+		else
+		{
+			cout << "El vendedor a eliminar no existe";
+			getch();
+		}
+
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "No existe el archivo";
+	}
+}
+
+void borrarbomba()
+{
+	FILE *ptr;
+	bomba b;
+	int h, band, y;
+	ptr = fopen("Bomba.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menubomba();
+		if (h>0)
+		{
+			fseek(ptr, (h - 1)*sizeof(b), SEEK_SET);
+			do{
+				cout << "\nEsta seguro que quiere eliminar a:\n" << b.descripcion << endl;
+				cout << "\n1.SI  2.NO\n";
+				cout << "\nEscoja una opcion: \n";
+				cin >> y;
+
+			} while (y != 1 && y != 0);
+			if (y == 1){
+				b.estado = 'N';
+
+			}
+	
+		}
+		else
+		{
+			cout << "La bomba a eliminar no existe";
+			getch();
+		}
+
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "No existe el archivo";
+	}
+}
