@@ -1,0 +1,41 @@
+int menubomba()
+{FILE *ptr;
+bomba b;
+int y=1,z,band;
+do{band=1;
+ptr=fopen("Bomba.dat","rb")
+	if (ptr!=NULL)
+	{fread(&b,sizeof(b),1,ptr);
+	cout<<"n"<<" . "<<"DESCRIPCION"<<endl;
+     while(feof(ptr)==false)
+	 {if(b.estado=='S')
+	  {cout<<y<<" . "<<b.descripcion<<endl;
+	  fread(&b,sizeof(b),1,ptr);
+	 }y++;
+	 }
+	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 z=validarentero();
+	 if(z==0)
+	 {
+		fclose(ptr);
+		 return -1;
+	 }
+	 else{
+	 fseek(ptr,(z-1)*sizeof(b),SEEK_SET);
+	 if(feof(ptr)==true)
+	 band=-1;
+	 fclose(ptr);
+	 if(band!=-1)
+	 {
+	 return b.idbomba;
+	 }
+	 }
+}
+	else
+	{fclose(ptr);
+      return -1;
+
+	}
+
+}while(band==-1);
+}
