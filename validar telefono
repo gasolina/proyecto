@@ -1,0 +1,24 @@
+bool validartelefono(char t[12])
+{
+	int n;
+	n = strlen(t);
+	if (t[0] == 3)
+	{
+		if (n == 7)
+		{
+			
+			return true;
+		}
+	}
+	else{
+		if (t[0] == 7)
+		{
+			if (n == 8)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
