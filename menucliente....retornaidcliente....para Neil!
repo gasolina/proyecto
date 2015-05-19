@@ -1,0 +1,37 @@
+int menuclientes()
+{FILE *ptr;
+cliente c;
+int y=1,z,band;
+do{band=1;
+ptr=fopen("Cliente.dat","rb")
+	if (ptr!=NULL)
+	{fread(&c,sizeof(c),1,ptr);
+
+     while(feof(ptr)==false)
+	 {cout<<y<<" . "<<c.nombre<<cout.width[20]<<c.email<<cout.width[20]<<c.telefono<<endl;
+	  fread(&c,sizeof(c),1,ptr);
+	 }
+	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 z=validarentero();
+	 if(z==0){
+	 return -1;
+	 }
+	 else{
+	 fseek(ptr,(z-1)*sizeof(c),SEEK_SET);
+	 if(feof(ptr)==true)
+	 band=-1;
+	 fclose(ptr);
+	 if(band!=-1)
+	 {
+	 return c.idcliente;
+	 }
+	 }
+}
+	else
+	{fclose(ptr);
+      return -1;
+
+	}
+
+}while(band==-1);
+}
