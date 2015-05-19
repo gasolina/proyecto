@@ -1,0 +1,39 @@
+int menuvendedor()
+{FILE *ptr;
+vendedor ven;
+int y=1,z,band;
+do{band=1;
+ptr=fopen("Vendedor.dat","rb")
+	if (ptr!=NULL)
+	{fread(&ven,sizeof(ven),1,ptr);
+	cout<<"n"<<" . "<<"NOMBRE"<<cout.width[20]<<"EMAIL"<<cout.width[20]<<"TELEFONO"<<endl;
+     while(feof(ptr)==false)
+	 {cout<<y<<" . "<<ven.nombre<<cout.width[20]<<ven.email<<cout.width[20]<<ven.telefono<<endl;
+	  fread(&ven,sizeof(ven),1,ptr);
+	 }
+	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 z=validarentero();
+	 if(z==0)
+	 {
+		fclose(ptr);
+		 return -1;
+	 }
+	 else{
+	 fseek(ptr,(z-1)*sizeof(ven),SEEK_SET);
+	 if(feof(ptr)==true)
+	 band=-1;
+	 fclose(ptr);
+	 if(band!=-1)
+	 {
+	 return ven.idvendedor;
+	 }
+	 }
+}
+	else
+	{fclose(ptr);
+      return -1;
+
+	}
+
+}while(band==-1);
+}
