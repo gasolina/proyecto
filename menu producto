@@ -1,0 +1,38 @@
+int menuproducto()
+{FILE *ptr;
+producto p;
+int y=1,z,band;
+do{band=1;
+ptr=fopen("Producto.dat","rb")
+	if (ptr!=NULL)
+	{fread(&p,sizeof(p),1,ptr);
+	cout<<"n"<<" . "<<"NOMBRE"<<cout.width[20]<<"PRECIO UNITARIO"<<cout.width[20]<<"STOCK"<<endl;
+     while(feof(ptr)==false)
+	 {cout<<y<<" . "<<p.nombre<<cout.width[20]<<p.preciounit<<cout.width[20]<<p.stock<<endl;
+	  fread(&p,sizeof(p),1,ptr);
+	 }
+	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 z=validarentero();
+	 if(z==0){
+	fclose(ptr);
+	 return -1;
+	 }
+	 else{
+	 fseek(ptr,(z-1)*sizeof(p),SEEK_SET);
+	 if(feof(ptr)==true)
+	 band=-1;
+	 fclose(ptr);
+	 if(band!=-1)
+	 {
+	 return p.idprod;
+	 }
+	 }
+}
+	else
+	{fclose(ptr);
+      return -1;
+
+	}
+
+}while(band==-1);
+}
