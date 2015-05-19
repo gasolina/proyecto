@@ -10,6 +10,7 @@ ptr=fopen("Cliente.dat","rb")
      while(feof(ptr)==false)
 	 {cout<<y<<" . "<<c.nombre<<cout.width[20]<<c.email<<cout.width[20]<<c.telefono<<endl;
 	  fread(&c,sizeof(c),1,ptr);
+	  y++;
 	 }
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
