@@ -7,12 +7,18 @@ do{ band=1;
 		 if(ptr!=NULL)
 		 {
 				  ven.idvendedor=generarid(2);
+				  do{
 				  cout<<"Introduzca nombre: ";
-				  cin>>ven.nombre;
+				  gets(ven.nombre);
+				  }while(validarnombre(ven.nombre)==false);
+				  do{
 				  cout<<"Introduzca email";
-				  cin>>ven.email;
+				  gets(ven.email);
+				  }while(validaremail(ven.email)==false);
+				  do{
 				  cout<<"Introduzca telefono: ";
-				  cin>>ven.telefono;
+				  gets(ven.telefono);
+				  }while(validartelefono(ven.telefono)==false);
 				  fwrite(&ven,sizeof(ven),1,ptr);
 				  fclose(ptr);
 				  
