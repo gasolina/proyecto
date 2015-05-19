@@ -14,18 +14,22 @@ do{ band=1;
 				  a.idcliente=menucliente();
 				  if(a.idcliente==-1)
 				  {cout<<"El usuario no esta registrado..agreguelo!!!";
-				  getch();
+				  getch();band=3;
 				  }
-				  else{
-				  fwrite(&p,sizeof(p),1,ptr);
-				  fclose(ptr);
-				  } 
+				  if(band!=3)
+				  {
 				  do{
 				  cout<<"Esta seguro de sus datos?";
 				  cout<<"1.SI    2.NO.VOLVER A INTENTAR";
 				  band2=validarentero();
 				  }while(band2!=0&&band!=1);
-		 }while(band2==0);
+					  if(band==1)
+					  {
+					  fwrite(&a,sizeof(a),1,ptr);
+					  fclose(ptr);
+					  } 
+				  }
+		 }while(band2==2);
 				  
 		 }
 		 else
@@ -36,3 +40,4 @@ do{ band=1;
 		 }
 }while(band==-1);
 }
+
