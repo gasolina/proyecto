@@ -1,0 +1,38 @@
+void añadirautomotor()
+{FILE *ptr;
+automotor a;
+int band=1,band2;
+do{ band=1;
+    ptr=fopen("Automotor.dat","ab");
+		 if(ptr!=NULL)
+		 {do{
+				  a.idauto=generarid(4);
+				  do{
+				  cout<<"Introduzca placa: ";
+				  gets(a.placa);
+				  }while(validarplaca(a.placa)==false);
+				  a.idcliente=menucliente();
+				  if(a.idcliente==-1)
+				  {cout<<"El usuario no esta registrado..agreguelo!!!";
+				  getch();
+				  }
+				  else{
+				  fwrite(&p,sizeof(p),1,ptr);
+				  fclose(ptr);
+				  } 
+				  do{
+				  cout<<"Esta seguro de sus datos?";
+				  cout<<"1.SI    2.NO.VOLVER A INTENTAR";
+				  band2=validarentero();
+				  }while(band2!=0&&band!=1);
+		 }while(band2==0);
+				  
+		 }
+		 else
+		 {
+		 ptr=fopen("Producto.dat","wb");
+		 fclose(ptr);
+		 band=-1;
+		 }
+}while(band==-1);
+}
