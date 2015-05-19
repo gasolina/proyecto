@@ -16,6 +16,7 @@ void eliminarproducto()
 			  }while(y!=1&&y!=0);
               if(y==1){ 
 			   p.estado='N';
+			   eliminarbombaporprod(p.idprod);
 			  }
 			  }
 		  else
@@ -27,6 +28,27 @@ void eliminarproducto()
 		}
  else
  {cout<<"No existe el archivo";
- fclose(ptr);
  }
+ fclose(ptr);
+}
+void eliminarbombaporprod(int x)
+{FILE *ptr;
+bomba b;
+ptr=fopen("Bomba.dat","r+b")
+	if(ptr!=NULL)
+	{
+     fread(&b,sizeof(b),1,ptr);
+	 while(feof(ptr)==false)
+	 {    
+		 if(b.idprod==x)
+		 {b.estado='N';
+		 }
+		 fread(&b,sizeof(b),1,ptr);
+	 }
+	}
+	else
+	{cout<<"No existe el archivo";
+	}
+fclose(ptr);
+	
 }
