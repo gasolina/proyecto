@@ -1,0 +1,75 @@
+void modificarproducto() //revisar porfavorsito
+{
+	producto p;
+	int idproducto,band2;
+	idproducto = menuproducto();
+	do{
+		if (idproducto != 1)
+		{
+			p = buscarproducto(idproducto);
+			do{
+				cout << "\nIntroduzca nombre: ";
+				gets(p.nombre);
+			} while (validarnombre(p.nombre) == false);
+			do{
+				cout << "\nIntroduzca precio unitario: ";
+				cin >> p.preciounit;
+			} while (validarfloat(p.preciounit) == false);
+			
+			do{
+				cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+				cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+				band2 = validarentero();
+			} while (band2 != 1 && band2 != 2);
+			if (band2 == 1)
+			{
+				FILE *ptr = fopen("Producto.dat", "r+b");
+				fseek(ptr, (p.idprod - 1)*sizeof(p), SEEK_SET);
+				fwrite(&p, sizeof(p), 1, ptr);
+				fclose(ptr);
+			}
+		}
+	} while (band2 == 2);
+}
+
+void modificarautomotor()
+{
+	automotor A;
+	int idautomotor, idcliente, op;
+	idautomotor = menuautomotor();
+	do{
+		if (idautomotor != 1)
+		{
+			A = buscarautomotorporidauto(idautomotor);
+			do{
+				cout << "Introduzca placa: ";
+				gets(A.placa);
+			} while (validarplaca(A.placa) == false);
+			cout << "\n escoja el cliente";
+			idcliente = menuclientes();
+			if (idcliente == -1)
+			{
+				cout << "El usuario no esta registrado..agreguelo!!!";
+				getch(); op = 3;
+			}
+			else{
+				A.idcliente = idcliente;
+			}
+			if (op != 3)
+			{
+				do{
+					cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+					cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+					op = validarentero();
+				} while (op != 1 && op != 2);
+			}
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Automotor.dat", "r+b");
+				fseek(ptr, (A.idauto - 1)*sizeof(A), SEEK_SET);
+				fwrite(&A, sizeof(A), 1, ptr);
+				fclose(ptr);
+			}
+		}
+	} while (op==2);
+}
