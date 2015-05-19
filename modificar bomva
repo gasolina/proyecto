@@ -1,0 +1,51 @@
+void modificarbomba()
+{
+	bomba b;
+	int op,idbomba,idproducto,idvendedor;
+	idbomba = menubomba();
+	do{
+		if (idbomba != -1)
+		{
+			b = obtidbomba(idbomba);
+			do{
+				cout << "introducir descripcion de la bomba: ";
+				gets(b.descripcion);
+			} while (validarnombre(b.descripcion) == false);
+			idproducto = menuproducto();
+			if (idproducto == -1)
+			{
+				cout << "El producto no esta registrado..agreguelo!!!";
+				getch(); op = 3;
+			}
+			else
+			{
+				b.idprod = idproducto;
+			}
+			idvendedor = menuvendedor();
+			if (idvendedor == -1)
+			{
+				cout << "El vendedor no esta registrado..agreguelo!!!";
+				getch(); op = 3;
+			}
+			else
+			{
+				b.idvendedor = idvendedor;
+			}
+			if (op != 3)
+			{
+				do{
+					cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+					cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+					op = validarentero();
+				} while (op != 1 && op != 2);
+			}
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Bomba.dat", "r+b");
+				fseek(ptr, (b.idbomba - 1)*sizeof(b), SEEK_SET);
+				fwrite(&b, sizeof(b), 1, ptr);
+				fclose(ptr);
+			}
+		}
+	} while (op==2);
+}
