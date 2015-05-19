@@ -1,0 +1,60 @@
+void eliminarautomotoresporcliente(int x)
+{FILE *ptr;
+int y;
+ automotor a;
+ ptr=fopen("Automotor.dat","r+b");
+ if(ptr!=NULL)
+ {fread(&a,sizeof(a),1,ptr);
+ while(feof(ptr)==false)
+ {if(a.idcliente==x)
+  {a.estado='N';
+   
+  }
+ fread(&a,sizeof(a),1,ptr);
+ }
+ }
+ else
+ {cout<<"El archivo automotor no existe";
+ }
+ fclose(ptr);
+}
+
+
+
+void borrarcliente()
+{FILE *ptr;
+ cliente c;
+ int h,band;
+ ptr=fopen("Cliente.dat","r+b");
+ if(ptr!=NULL)
+		 { h=menuclientes();
+		  if(h>0)
+			  {  fseek(ptr,(h-1)*sizeof(c),SEEK_SET);
+			  do{
+					cout<<"\nEsta seguro que quiere eliminar a:\n"<<c.nombre<<"  "<<c.telefono<<"   "<<c.email<<endl;
+					cout<<"\n1.SI  2.NO\n";
+					cout<<"\nEscoja una opcion: \n";
+					cin>>y;
+
+			  }while(y!=1&&y!=0);
+              if(y==1){ 
+			   c.estado='N';
+			   eliminarautomotoresporcliente(h);
+			   eliminarventasporcliente(h);
+			  }
+			  else
+			  {band=3;
+			  }
+			  }
+		  else
+				  {cout<<"El cliente a eliminar no existe";
+		          getch();
+				  }
+
+  fclose(ptr);
+		}
+ else
+ {cout<<"No existe el archivo";
+ fclose(ptr);
+ }
+}
