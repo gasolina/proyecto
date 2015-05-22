@@ -110,12 +110,14 @@ int menuvendedor();//listo
 int menuproducto();//listo
 int calcularventasporbomba(int idbomba,fechas f1,fechas f2);//listo
 void eliminarautomotoresporcliente(int x);//listo
+void disminuirstock(int x,int id);//listo
+bool verificarplacaunica(char placa[]);
 
 
 
 //desarrollo
 void vender()//falta verificar que las fechas ingresadas sean mayores alas anteriores lo mismo falta para compra
-{venta v,vaux;char placa[12];int op;bool z;fechas f1,f2;
+{venta v,vaux;char placa[12];int op;bool z;fechas f1,f2;producto p,p2;
    do{op=1;
         do{ cout<<"\ningrese placa";
 			fflush(stdin);
@@ -143,12 +145,12 @@ void vender()//falta verificar que las fechas ingresadas sean mayores alas anter
 						{barrafecha(v.fecha);
 						z=menuventas(v);
 						if(z==true)
-						{ 
-							cout<<"\n esta seguro de sus datos?";
-							do{cout<"\n1.-si\n2.-vovler a intentar";
-							cin>>op;}while(op!=1&&op!=2);
+						{ cout<<"\n esta seguro de sus datos?";
+							do{cout<<"\n1.-si\n2.-vovler a intentar";
+							op=validarentero();}while(op!=1&&op!=2);
 							if(op==1)
-							{anhadirventa(v);cout<<"\nventa registrada";getch();}
+							{disminuirstock(v.cantidad,v.idprod);v.estado='S';
+								anhadirventa(v);cout<<"\nventa registrada";getch();}
 						}
 						else{
 							do{cout<<"\nquiere volver a intentarlo?";
@@ -175,8 +177,10 @@ void vender()//falta verificar que las fechas ingresadas sean mayores alas anter
 void comprar()
 {compras c,caux;bool z;int op;fechas f1,f2;producto p,p1;
 do{       op=1; 
-	fecha(c.fecha);
+fflush(stdin);
+	fecha(c.fecha);	
 	convertirfecha(f1,c.fecha);
+
 	
 				FILE*ptr=fopen("Compras.dat","a+b");
 				if(ptr!=NULL){
@@ -189,7 +193,7 @@ do{       op=1;
 				{fclose(ptr);
 					f2.anho=0;
 				}
-
+				
 if(compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)
 	{
 			barrafecha(c.fecha);
@@ -225,7 +229,7 @@ if(compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)
 				}
 	}
 else{
-	cout<<"\n la fecha esta mal";getch();
+	cout<<"\n la fecha esta mal";
 op=2;
 }
 }while(op==2);
@@ -567,7 +571,7 @@ ptr=fopen("Automotor.dat","rb");
 		else
 		{cout<<"No existen automotores registrados";
 		}
-		fclose(ptr);
+		
 }
 void reportebombagenerales()
 	{FILE *ptr;
@@ -576,6 +580,7 @@ vendedor ven;
 ptr=fopen("Bomba.dat","rb");
 		if(ptr!=NULL&&existenciabomba()==true)
 		{fread(&b,sizeof(b),1,ptr);
+		   
 		cout<<setw(20)<<"NOMBRE DEL PRODUCTO"<<setw(20)<<"NOMBRE DEL VENDEDOR"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(b.estado=='S')
@@ -585,12 +590,13 @@ ptr=fopen("Bomba.dat","rb");
 		     }
 		  fread(&b,sizeof(b),1,ptr);
 		 }
+		 fclose(ptr);
 	          
 		}
 		else
 		{cout<<"No existen bombas registrados";
 		}
-			fclose(ptr);
+			
 
 }
 void reportecompragenerales()
@@ -602,7 +608,7 @@ int cont=1;
 ptr=fopen("Compras.dat","rb");
 		if(ptr!=NULL&&existenciacompra()==true)
 		{fread(&c,sizeof(c),1,ptr);
-		cout<<"N"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(15)<<"CANTIDAD"<<setw(15)<<"PRECIO TOTAL"<<endl;
+		cout<<"N"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(25)<<"CANTIDAD"<<setw(15)<<"PRECIO TOTAL"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(c.estado=='S')
 		    {
@@ -617,7 +623,7 @@ ptr=fopen("Compras.dat","rb");
 		else
 		{cout<<"No existen compras registrados";
 		}
-			fclose(ptr);
+			
 
 }
 void reporteventa()
@@ -632,7 +638,7 @@ int cont=1;
 ptr=fopen("Ventas.dat","rb");
 if(ptr!=NULL)
 {fread(&v,sizeof(v),1,ptr);
-cout<<"NRO DE VENTA"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(20)<<"CANTIDAD"<<setw(20)<<"PRECIO TOTAL"<<setw(20)<<"CLIENTE"<<setw(20)<<"VENDEDOR"<<endl;
+cout<<"N"<<setw(8)<<"FECHA"<<setw(15)<<"PRODUCTO"<<setw(10)<<"CANTIDAD"<<setw(8)<<"PRECIO TOTAL"<<setw(10)<<"CLIENTE"<<setw(20)<<"VENDEDOR"<<endl;
  while(feof(ptr)==false)
 	 {if(v.estado=='S')
 	 {
@@ -640,15 +646,15 @@ cout<<"NRO DE VENTA"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(20)<<"CANTID
 		 c=buscarclienteporidauto(v.idauto);
 		 ven=buscarvendedorporidbomba(v.idbomba);
 		 cout<<cont;
-		 setw(20);
+		 setw(8);
 		 cout<<v.fecha;
-		 setw(20);
+		 setw(15);
 		 cout<<prod.nombre;
-		 setw(20);
+		 setw(10);
 		 cout<<v.cantidad;
-		setw(20);
+		setw(8);
 		 cout<<v.preciototal;
-		 setw(20);
+		 setw(10);
 		 cout<<c.nombre;
 		 setw(20);
 		 cout<<ven.nombre;
@@ -663,7 +669,7 @@ cout<<"NRO DE VENTA"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(20)<<"CANTID
 else
 {cout<<"NO SE HA REGISTRADO NINGUNA VENTA";
 }
-fclose(ptr);
+
 }
 //amb
 //anhadir
@@ -678,6 +684,7 @@ do{ band=0;
 				  ven.idvendedor=generarid(2);
 				  do{
 				  cout<<"Introduzca nombre: ";
+				  fflush(stdin);
 				  gets(ven.nombre);
 				  }while(validarnombre(ven.nombre)==false);
 				  do{
@@ -721,7 +728,9 @@ void anhadirclientes()
 			c.idcliente = generarid(1);
 			do
 			{
+
 				cout << "nombre del cliente: ";
+				fflush(stdin);
 				gets(c.nombre);
 			} while (validarnombre(c.nombre) != true);
 
@@ -780,6 +789,7 @@ do{ band=1;
 				  p.idprod=generarid(3);
 				 p.stock=0;
 					  cout<<"\nIntroduzca nombre: ";
+					  fflush(stdin);
 					  gets(p.nombre);
 				  }while(validarnombre(p.nombre)==false);
 				 
@@ -818,8 +828,14 @@ do{ band=1;
 				  a.idauto=generarid(4);
 				  do{
 				  cout<<"Introduzca placa: ";
+				  fflush(stdin);
 				  gets(a.placa);
-				  }while(validarplaca(a.placa)==false);
+				  if(verificarplacaunica(a.placa)==false)
+				  {
+					  cout<<"\nesta  placa ya esta registrada\n";
+
+				  }
+				  }while(validarplaca(a.placa)==false||verificarplacaunica(a.placa)==false);
 				  a.idcliente=menuclientes();
 				  if(a.idcliente==-1)
 				  {cout<<"El usuario no esta registrado..agreguelo!!!";
@@ -861,17 +877,22 @@ do{ band=1;
 				  b.idbomba=generarid(5);
 				  do{
 					  cout<<"Introduzca descripcion: ";
+					  fflush(stdin);
 					  gets(b.descripcion);
 				  }while(validarnombre(b.descripcion)==false);
 				  b.idprod=menuproducto();
-				  b.idvendedor=menuvendedor();
+				
 				  if(b.idprod==-1)
-				  {cout<<"El producto no esta registrado..agreguelo!!!";
-				  getch();band=3;
+				  {cout<<"\npuede agregar poducto desde el menu";
+				  band=3;
 				  }
+				  if(b.idprod!=-1)
+				  {
+				    b.idvendedor=menuvendedor();
 				 if(b.idvendedor==-1)
 				  {cout<<"El vendedor no esta registrado..agreguelo!!!";
 				  getch();band=3;
+				  }
 				  }
 				 if(band!=3){
 				  do{
@@ -881,10 +902,15 @@ do{ band=1;
 				  band2=validarentero();
 				  }while(band2!=0&&band!=1);
 				  if(band2==1)
-				  {fwrite(&p,sizeof(p),1,ptr);
+				  {fwrite(&b,sizeof(b),1,ptr);
 				  fclose(ptr);
 				  }
+				  else
+				  {
+					  fclose(ptr);
+				  }
 				 }
+
 		 }while(band2==2);
 				  
 		 }
@@ -1336,7 +1362,7 @@ void main()
 		cout << "\n4.A\244adir/Borrar/Modificar\n";
 		cout << "\n0.SALIR";
 		cout << "\nEscoja una opcion: \n";
-		cin >> o;
+		o=validarentero();
 		system("cls");
 		switch (o)
 		{
@@ -1350,10 +1376,10 @@ void main()
 			getch();
 			break;
 		case 3:reportesmenu();
-			   getch();
+			  
 				break;
 		case 4:ABMreporte();
-			getch();
+			
 			break;
 		case 0: cout << "SALIR";
 			break;
@@ -1374,10 +1400,10 @@ do{band=1;
 ptr=fopen("Cliente.dat","rb");
 if (ptr!=NULL&&existenciacliente()==true)
 	{fread(&c,sizeof(c),1,ptr);
-
-     while(feof(ptr)==false)
+      cout<<"N"<<setw(20)<<"NOMBRE"<<setw(20)<<"EMAIL"<<setw(28)<<"TELEFONO"<<endl;
+     while(feof(ptr)==0)
 	 {if(c.estado=='S')
-	 {cout<<y<<" . "<<c.nombre<<cout.width(20)<<c.email<<cout.width(20)<<c.telefono<<endl;
+	 {cout<<y<<" . "<<setw(15)<<c.nombre<<setw(30)<<c.email<<setw(20)<<c.telefono<<endl;
 	 }
 	  fread(&c,sizeof(c),1,ptr);
 	  y++;
@@ -1390,12 +1416,18 @@ if (ptr!=NULL&&existenciacliente()==true)
 	 }
 	 else{
 	 fseek(ptr,(z-1)*sizeof(c),SEEK_SET);
-	 if(feof(ptr)==true)
-	 band=-1;
+
+	 fread(&c,sizeof(c),1,ptr);
+	 if(feof(ptr)==0&&z!=1)
+	 {band=-1;}
 	 fclose(ptr);
 	 if(band!=-1)
-	 {fclose(ptr);
+	 {
 	 return c.idcliente;
+	 }
+	 else{
+		 
+	 return -1;
 	 }
 	 }
 }
@@ -1415,10 +1447,10 @@ do{band=1;
 ptr=fopen("Producto.dat","rb");
 if (ptr!=NULL&&existenciaproducto()==true)
 	{fread(&p,sizeof(p),1,ptr);
-	cout<<"n"<<" . "<<"NOMBRE"<<cout.width(20)<<"PRECIO UNITARIO"<<cout.width(20)<<"STOCK"<<endl;
+	cout<<"n"<<"."<<setw(20)<<"NOMBRE"<<setw(20)<<"PRECIO UNITARIO"<<setw(20)<<"STOCK"<<endl;
      while(feof(ptr)==false)
 	 {if(p.estado=='S')
-	 {cout<<y<<" . "<<p.nombre<<cout.width(20)<<p.preciounit<<cout.width(20)<<p.stock<<endl;}
+	 {cout<<y<<"."<<setw(20)<<p.nombre<<setw(20)<<p.preciounit<<setw(20)<<p.stock<<endl;}
 	  fread(&p,sizeof(p),1,ptr);y++;
 	 }
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
@@ -1454,10 +1486,10 @@ do{band=1;
 ptr=fopen("Vendedor.dat","a+b");
 if (ptr!=NULL&&existenciavendedor()==true)
 	{fread(&ven,sizeof(ven),1,ptr);
-	cout<<"n"<<" . "<<"NOMBRE"<<cout.width(20)<<"EMAIL"<<cout.width(20)<<"TELEFONO"<<endl;
+	cout<<"n"<<"."<<"NOMBRE"<<setw(30)<<"EMAIL"<<setw(30)<<"TELEFONO"<<endl;
      while(feof(ptr)==false)
 	 {if(ven.estado=='S')
-	 {cout<<y<<" . "<<ven.nombre<<cout.width(20)<<ven.email<<cout.width(20)<<ven.telefono<<endl;}
+	 {cout<<y<<"."<<ven.nombre<<setw(30)<<ven.email<<setw(30)<<ven.telefono<<endl;}
 	  fread(&ven,sizeof(ven),1,ptr);y++;
 	 }
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
@@ -1519,8 +1551,15 @@ bool menuventas(venta &v){
 		{ fread(&bom,sizeof(bom),1,ptr);fclose(ptr);
 		v.idbomba=bom.idbomba;
 			prod=buscarproducto(bom.idprod);
+			v.idprod=prod.idprod;
+			
 			do{cout<<"ingrese la cantidad a vender";
-			v.cantidad=validarfloat();}while(v.cantidad>prod.stock||v.cantidad<0);
+			v.cantidad=validarfloat();
+			if(v.cantidad>prod.stock||v.cantidad<0)
+			{
+				cout<<"\n la cantidad sobrepasa el stock";getch();
+			}
+			}while(v.cantidad>prod.stock||v.cantidad<0);
 			v.preciototal=v.cantidad*prod.preciounit;
 			cout<<"\n el precio total sera "<<v.preciototal<<endl;return true;
 		}
@@ -1552,7 +1591,7 @@ bool menucompras(compras &c,producto &p)
 		   cout.width(20);
 		   cout<<"stock"<<endl;
 		   c.estado='S';
-		   while(feof(ptr)==false)
+		   while(feof(ptr)==0)
 		   {
 			   cout<<cont<<".-";
 			   cout<<p.nombre;
@@ -1566,9 +1605,10 @@ bool menucompras(compras &c,producto &p)
 		   op=validarentero();
 		   if(op!=0)
 		   {
-			fseek(ptr,(cont-1)*sizeof(p),SEEK_SET);
-			if(feof(ptr)==false)
-			{ fread(&p,sizeof(p),1,ptr);fclose(ptr);
+			fseek(ptr,(op-1)*sizeof(p),SEEK_SET);
+			fread(&p,sizeof(p),1,ptr);
+			if(feof(ptr)==0||op==1)
+			{ 
 			c.idprod=p.idprod;
 			do{cout<<"\n que cantidad comprara?";
 			c.cantidad=validarfloat();
@@ -1750,6 +1790,7 @@ ptr=fopen("Ventas.dat","rb");
 
 }while(band==-1);
 }
+
 //validar
 bool validarplaca(char placa[])
 {
@@ -2112,7 +2153,7 @@ FILE *ptr=fopen("Bomba.dat","rb");
 		if(c.estado=='S')
 		{fclose(ptr);
 			return true;}
-
+		fread(&c,sizeof(c),1,ptr);
 	}
 	fclose(ptr);
 	return false;
@@ -2257,9 +2298,10 @@ void fecha(char fecha[]){
 	char fechaaux[10];
 
 do{band=1;
-	cout << "Ingrese el d\241a: "; cin >> day; //Día 
-	cout << "\nIngrese el mes: "; cin >> month; //Mes 
-	cout << "\nIngrese el a\244o: "; cin >> year; //Año 
+    do{cout<< "Ingrese el d\241a: ";  day=validarentero();
+	}while(day<0);
+	do{cout << "\nIngrese el mes: "; month=validarentero();}while(month<0); //Mes 
+	do{cout << "\nIngrese el a\244o: ";year=validarentero();}while(year<0); //Año 
 
 	if ((month == 2) && !((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 28) || (day <= 0)))
 	{cout << "\n\nFecha incorrecta: Este mes solo tiene 28 d\241as"; band=2;}
@@ -2344,9 +2386,9 @@ int generarid(int tipo){
 	switch(tipo){
 	case 1:
 		cliente c;
-		ptr=fopen("CLiente.dat","rb");
+		ptr=fopen("Cliente.dat","rb");
 		fread(&c,sizeof(c),1,ptr);
-		if(feof(ptr)==true)
+		if(feof(ptr) != 0)
 		{    fclose(ptr);
 		c.idcliente=1;return c.idcliente ;
 			
@@ -2377,14 +2419,13 @@ int generarid(int tipo){
 	case 3:
 		producto p;
 		ptr=fopen("Producto.dat","rb");
-		fread(&p,sizeof(p),1,ptr);
-		if(feof(ptr)==true)
-		{    fclose(ptr);
+		if(ptr==NULL)
+		{   
 		p.idprod=1;return p.idprod ;
 			
 		}
 		else{
-			fseek(ptr,-sizeof(p),SEEK_END);
+			fseek(ptr,(-1)*sizeof(p),SEEK_END);
 			fread(&p,sizeof(p),1,ptr);
 			fclose(ptr);
 			p.idprod++;return p.idprod;
@@ -2458,7 +2499,7 @@ int generarid(int tipo){
 
 }
 void anhadirventa(venta v)
-{
+{producto p;
 	int band = 0;
 	do{
 		band = 0;
@@ -2588,4 +2629,35 @@ int y;
  {cout<<"El archivo automotor no existe";
  }
  fclose(ptr);
+}
+void disminuirstock(int x, int id)
+{
+	producto p;
+	bool w = true;
+	FILE *ptr = fopen("Producto.dat","r+b");
+	while(fread(&p, sizeof(p), 1, ptr), feof(ptr) == false)
+	{
+		if(p.idprod==id)
+		{
+			p.stock -= x;
+			fseek(ptr, -1 * sizeof(p), SEEK_CUR);
+
+			fwrite(&p, sizeof(p), 1, ptr);
+			fflush(ptr);
+		}
+	}
+	fclose(ptr);
+}
+bool verificarplacaunica(char placa[])
+{automotor a;
+	FILE *ptr = fopen("Automotor.dat","rb");
+	while(fread(&a,sizeof(a),1,ptr),feof(ptr)==0)
+	{
+		if(strcmp(placa,a.placa)==0)
+		{fclose(ptr);
+			return false;
+		}
+	}
+	fclose(ptr);
+	return true;
 }
