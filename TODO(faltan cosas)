@@ -1073,7 +1073,7 @@ void modificarvendedor()
 vendedor ven;
 int band,y=0,b,telefono;
 do{
-		ptr=fopen("Vendedor.dat","rb");
+		ptr=fopen("Vendedor.dat","r+b");
 		if(ptr!=NULL&& existenciavendedor()==true)
 				{
 		         b=menuvendedor();
@@ -1110,7 +1110,6 @@ do{
 		}
 		else
 		{cout<<"\nNo existe registro de vendedores";
-		fclose(ptr);
 		}
 }while(band==1);
 }
@@ -1215,7 +1214,8 @@ void eliminarproducto()
  if(ptr!=NULL)
 		 { h=menuproducto();
 		  if(h>0)
-			  {  fseek(ptr,(h-1)*sizeof(p),SEEK_SET);
+		  {  p=buscarproducto(h);
+				  fseek(ptr,(h-1)*sizeof(p),SEEK_SET);
 			  do{
 					cout<<"\nEsta seguro que quiere eliminar a:\n"<<p.nombre<<"  "<<p.preciounit<<"   "<<p.stock<<endl;
 					cout<<"\n1.SI  2.NO\n";
@@ -1225,11 +1225,12 @@ void eliminarproducto()
 			  }while(y!=1&&y!=0);
               if(y==1){ 
 			   p.estado='N';
+			   fwrite(&p,sizeof(p),1,ptr);
 			   eliminarbombaporprod(p.idprod);
 			  }
 			  }
 		  else
-				  {cout<<"El cliente a eliminar no existe";
+				  {cout<<"El producto a eliminar no existe";
 		          getch();
 				  }
 
@@ -1294,8 +1295,9 @@ void borrarvendedor()
 	{
 		h = menuvendedor();
 		if (h>0)
-		{
+		{    ven=obtidvendedor(h);
 			fseek(ptr, (h - 1)*sizeof(ven), SEEK_SET);
+
 			do{
 				cout << "\nEsta seguro que quiere eliminar a:\n" << ven.nombre << "  " << ven.email << "   " << ven.telefono << endl;
 				cout << "\n1.SI  2.NO\n";
@@ -1306,6 +1308,7 @@ void borrarvendedor()
 			if (y == 1){
 				ven.estado = 'N';
 				eliminarbombaporvendedor(h);
+				fwrite(&ven,sizeof(ven),1,ptr);
 
 			}
 			
@@ -2189,6 +2192,19 @@ bool validartelefono(char t[12])
 	
 	return false;
 }
+bool verificarplacaunica(char placa[])
+{automotor a;
+	FILE *ptr = fopen("Automotor.dat","rb");
+	while(fread(&a,sizeof(a),1,ptr),feof(ptr)==0)
+	{
+		if(strcmp(placa,a.placa)==0)
+		{fclose(ptr);
+			return false;
+		}
+	}
+	fclose(ptr);
+	return true;
+}
 //buscar
 int buscaridplaca(char placa[])
 {
@@ -2379,7 +2395,7 @@ FILE *ptr=fopen("Automotor.dat","rb");
 		if(a.estado=='S')
 		{fclose(ptr);
 			return true;}
-
+		fread(&a,sizeof(a),1,ptr);
 	}
 	fclose(ptr);
 	return false;
@@ -2438,6 +2454,7 @@ bool existenciavendedor()
 		if(v.estado=='S')
 		{fclose(ptr);
 			return true;}
+		fread(&v,sizeof(v),1,ptr);
 
 	}
 	fclose(ptr);
@@ -2871,19 +2888,7 @@ void disminuirstock(int x, int id)
 	}
 	fclose(ptr);
 }
-bool verificarplacaunica(char placa[])
-{automotor a;
-	FILE *ptr = fopen("Automotor.dat","rb");
-	while(fread(&a,sizeof(a),1,ptr),feof(ptr)==0)
-	{
-		if(strcmp(placa,a.placa)==0)
-		{fclose(ptr);
-			return false;
-		}
-	}
-	fclose(ptr);
-	return true;
-}
+
 
 //amb
 void ambclientes()
@@ -2918,7 +2923,7 @@ do{
 		do{  
 		cout<<"\n1.-anhadir vendedor\n2.-modificar vendedor\n3.-borrar vendedor\n4.-salir";
 		op=validarentero();
-		}while(op!=2&&op!=2&&op!=3&&op!=4);
+		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
 		case 1:
 			añadirvendedor();
@@ -2942,7 +2947,7 @@ do{
 		do{  
 		cout<<"\n1.-anhadir automotor\n2.-modificar automotor\n3.-borrar automotor\n4.-salir";
 		op=validarentero();
-		}while(op!=2&&op!=2&&op!=3&&op!=4);
+		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
 		case 1:
 			añadirautomotor();
@@ -2966,7 +2971,7 @@ do{
 		do{  
 		cout<<"\n1.-anhadir producto\n2.-modificar producto\n3.-borrar producto\n4.-salir";
 		op=validarentero();
-		}while(op!=2&&op!=2&&op!=3&&op!=4);
+		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
 		case 1:
 			añadirproducto();
@@ -2990,7 +2995,7 @@ do{
 		do{  
 		cout<<"\n1.-anhadir bomba\n2.-modificar bomba\n3.-borrar bomba\n4.-salir";
 		op=validarentero();
-		}while(op!=2&&op!=2&&op!=3&&op!=4);
+		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
 		case 1:
 			añadirbomba();
