@@ -1520,8 +1520,8 @@ if (ptr!=NULL&&existenciavendedor()==true)
 }
 bool menuventas(venta &v){
 	vendedor ven;producto prod;bomba bom;int cont=1;int op;
-	FILE *ptr=fopen("Bomba.dat","rb");
-	do{if(ptr!=NULL&&existenciavendedor()==true)
+	do{FILE *ptr=fopen("Bomba.dat","rb");
+	if(ptr!=NULL&&existenciavendedor()==true)
 	{fread(&bom,sizeof(bom),1,ptr);
 	  cout<<"\nseleccione que vendedor es usted";
 	  cout<<"\n  vendedor";
@@ -1529,7 +1529,8 @@ bool menuventas(venta &v){
 	  cout<<"producto";
 	  cout.width(20);
 	  cout<<"precio unitario"<<endl;
-	  while(feof(ptr)==false)
+	  cont=1;
+	  while(feof(ptr)==0)
 	  {
 		  ven=buscarvendedorporidvendedor(bom.idvendedor);
 	  prod=buscarproducto(bom.idprod);
@@ -1546,10 +1547,11 @@ bool menuventas(venta &v){
 	  cout<<"\n0.-salir";
 	  op=validarentero();
 	  if(op!=0)
-	  {fseek(ptr,(cont-1)*sizeof(bom),SEEK_SET);
-	    if(feof(ptr)==false)
-		{ fread(&bom,sizeof(bom),1,ptr);fclose(ptr);
-		v.idbomba=bom.idbomba;
+	  {fseek(ptr,(op-1)*sizeof(bom),SEEK_SET);
+	     fread(&bom,sizeof(bom),1,ptr);
+	    if(feof(ptr)==0||op==1)
+		{ 
+		    v.idbomba=bom.idbomba;
 			prod=buscarproducto(bom.idprod);
 			v.idprod=prod.idprod;
 			
@@ -1581,8 +1583,8 @@ bool menuventas(venta &v){
 }
 bool menucompras(compras &c,producto &p)
 {int cont=1,op;
-   FILE *ptr=fopen("Producto.dat","rb");
-	do{ 
+do{   FILE *ptr=fopen("Producto.dat","rb");
+	 
    if(ptr!=NULL&&existenciaproducto()==true)
 	   {
 		   fread(&p,sizeof(p),1,ptr);
@@ -1591,6 +1593,7 @@ bool menucompras(compras &c,producto &p)
 		   cout.width(20);
 		   cout<<"stock"<<endl;
 		   c.estado='S';
+		   cont=1;
 		   while(feof(ptr)==0)
 		   {
 			   cout<<cont<<".-";
@@ -1599,6 +1602,7 @@ bool menucompras(compras &c,producto &p)
 			   cout<<p.stock;
 			   cout<<endl;
 			   cont++;
+			   fflush(ptr);
 			   fread(&p,sizeof(p),1,ptr);
 		   }
 		   cout<<"\n0.-salir";
