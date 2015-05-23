@@ -126,7 +126,7 @@ void ambbomba();
 
 //desarrollo
 void vender()//falta verificar que las fechas ingresadas sean mayores alas anteriores lo mismo falta para compra
-{venta v,vaux;char placa[12];int op;bool z;fechas f1,f2;producto p,p2;
+{venta v,vaux;char placa[12];int op;bool z;fechas f1,f2,f3;producto p,p2;compras c;
    do{op=1;
         do{ cout<<"\ningrese placa";
 			fflush(stdin);
@@ -137,8 +137,9 @@ void vender()//falta verificar que las fechas ingresadas sean mayores alas anter
 				v.idventa=generarid(7);
 				fecha(v.fecha);
 				convertirfecha(f1,v.fecha);
+				barrafecha(v.fecha);
 				getch();
-				FILE*ptr=fopen("Ventas.dat","a+b");
+				FILE*ptr=fopen("Ventas.dat","rb");
 				if(ptr!=NULL){
 				fseek(ptr,-sizeof(v),SEEK_END);
 				fread(&vaux,sizeof(v),1,ptr);
@@ -149,9 +150,20 @@ void vender()//falta verificar que las fechas ingresadas sean mayores alas anter
 				{fclose(ptr);
 					f2.anho=0;
 				}
+				ptr=fopen("Compras.dat","rb");
+				if(ptr!=NULL){
+				fseek(ptr,-sizeof(c),SEEK_END);
+				fread(&c,sizeof(c),1,ptr);
+				convertirfecha(f3,c.fecha);
+				fclose(ptr);
+				}
+				else
+				{fclose(ptr);
+					f3.anho=0;
+				}
 
-				if(compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)
-						{barrafecha(v.fecha);
+				if((compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)&&(compararfechas(f3,f1)==1||compararfechas(f3,f1)==0))
+						{
 						z=menuventas(v);
 						if(z==true)
 						{ cout<<"\n esta seguro de sus datos?";
@@ -189,7 +201,7 @@ do{       op=1;
 fflush(stdin);
 	fecha(c.fecha);	
 	convertirfecha(f1,c.fecha);
-
+	barrafecha(c.fecha);
 	
 				FILE*ptr=fopen("Compras.dat","a+b");
 				if(ptr!=NULL){
@@ -205,7 +217,7 @@ fflush(stdin);
 				
 if(compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)
 	{
-			barrafecha(c.fecha);
+			
 			c.idcompra=generarid(6);
 			z=menucompras(c,p);
 			FILE *ptr=fopen("Producto.dat","r+b");
@@ -647,27 +659,14 @@ int cont=1;
 ptr=fopen("Ventas.dat","rb");
 if(ptr!=NULL)
 {fread(&v,sizeof(v),1,ptr);
-cout<<"N"<<setw(8)<<"FECHA"<<setw(15)<<"PRODUCTO"<<setw(10)<<"CANTIDAD"<<setw(8)<<"PRECIO TOTAL"<<setw(10)<<"CLIENTE"<<setw(20)<<"VENDEDOR"<<endl;
+cout<<"N"<<setw(12)<<"FECHA"<<setw(15)<<"PRODUCTO"<<setw(10)<<"CANTIDAD"<<setw(10)<<"PRECIO TOTAL"<<setw(10)<<"CLIENTE"<<setw(15)<<"VENDEDOR"<<endl;
  while(feof(ptr)==0)
 	 {if(v.estado=='S')
 	 {
 		 prod=buscarproducto(v.idprod);
 		 c=buscarclienteporidauto(v.idauto);
 		 ven=buscarvendedorporidbomba(v.idbomba);
-		 cout<<cont;
-		 setw(8);
-		 cout<<v.fecha;
-		 setw(15);
-		 cout<<prod.nombre;
-		 setw(10);
-		 cout<<v.cantidad;
-		setw(8);
-		 cout<<v.preciototal;
-		 setw(10);
-		 cout<<c.nombre;
-		 setw(20);
-		 cout<<ven.nombre;
-		 cout<<endl;
+		 cout<<cont<<setw(12)<<v.fecha<<setw(15)<<prod.nombre<<setw(10)<<v.cantidad<<setw(10)<<v.preciototal<<setw(15)<<c.nombre<<setw(15)<<ven.nombre<<endl;
 		
 	 }
 	 fread(&v,sizeof(v),1,ptr);
@@ -1786,11 +1785,11 @@ bool menuventas(venta &v){
 	  cout<<"precio unitario"<<endl;
 	  cont=1;
 	  while(feof(ptr)==0)
-	  {
+	  { if(bom.estado=='S')
+		 {
 		  ven=buscarvendedorporidvendedor(bom.idvendedor);
 	  prod=buscarproducto(bom.idprod);
-		  if(ven.estado=='S')
-		 { cout<<cont<<".-"<<ven.nombre;
+		  cout<<cont<<".-"<<ven.nombre;
 		  cout.width(20);
 		  cout<<prod.nombre;
 		  cout.width(20);
@@ -1850,14 +1849,15 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 		   c.estado='S';
 		   cont=1;
 		   while(feof(ptr)==0)
+		   {if(p.estado=='S')
 		   {
 			   cout<<cont<<".-";
 			   cout<<p.nombre;
 			   cout.width(20);
 			   cout<<p.stock;
 			   cout<<endl;
+		   }
 			   cont++;
-			   fflush(ptr);
 			   fread(&p,sizeof(p),1,ptr);
 		   }
 		   cout<<"\n0.-salir";
@@ -2367,13 +2367,14 @@ ptr=fopen("Cliente.dat","rb");
 		if(ptr!=NULL)
 		{
 			fread(&c,sizeof(c),1,ptr);
-			while(feof(ptr)==false && c.idcliente!=x)
-			{
+			while(feof(ptr)==0)
+			{ if(x==c.idcliente)
+				{fclose(ptr);
+				if( c.estado=='S')
+					return c;}
 				fread(&c,sizeof(c),1,ptr);
 			}
-			fclose(ptr);
-			if( c.estado=='S')
-			return c;
+			
 		}
 }
 vendedor obtidvendedor(int x)
@@ -2400,13 +2401,17 @@ cliente c;
 	FILE *ptr=fopen("Automotor.dat","rb");
     fread(&a,sizeof(a),1,ptr);
 	while(feof(ptr)==false)
-	 {if(a.estado=='S'){
+	 {if(a.estado=='S')
+	{
 		 if(a.idauto==idauto)
 		 {c=obtidcliente(a.idcliente);
+            	fclose(ptr);
+	        return c;
 		 }
-	}}
-	fclose(ptr);
-	return c;
+	}
+	  fread(&a,sizeof(a),1,ptr);
+	}
+
 }
 //existencia
 bool existenciaventas()
@@ -2567,12 +2572,15 @@ void convertirfecha(fechas &f,char fecha[10])
 {char dia[2],mes[2],anho[4];
    dia[0]=fecha[0];
    dia [1]=fecha[1];
+   dia[2]='\0';
    mes[0]= fecha[2];
    mes[1]=fecha[3];
+   mes[2]='\0';
    anho[0]=fecha[4];
    anho[1]=fecha[5];
    anho[2]=fecha[6];
    anho[3]=fecha[7];
+ 
    f.dia=atoi(dia);
    f.mes=atoi(mes);
    f.anho=atoi(anho);
@@ -2589,6 +2597,8 @@ void barrafecha(char fecha[10])
   aux[7]=fecha[5];
   aux[8]=fecha[6];
   aux[9]=fecha[7];
+  aux[10]='\0';
+  strcpy(fecha,aux);
   
 }
 void fecha(char fecha[]){
