@@ -860,11 +860,13 @@ do{ band=1;
 				  cout<<"1.SI    2.NO.VOLVER A INTENTAR";
 				  band2=validarentero();
 				  }while(band2!=0&&band!=1);
-					  if(band==1)
+				  
+					  if(band2==1)
 					  {a.estado='S';
 					  fwrite(&a,sizeof(a),1,ptr);
 					  fclose(ptr);
 					  } 
+
 				  }
 		 }while(band2==2);
 				  
@@ -1124,6 +1126,7 @@ void modificarbomba()
 			b = obtidbomba(idbomba);
 			do{
 				cout << "introducir descripcion de la bomba: ";
+				fflush(stdin);
 				gets(b.descripcion);
 			} while (validarnombre(b.descripcion) == false);
 			idproducto = menuproducto();
@@ -1136,10 +1139,11 @@ void modificarbomba()
 			{
 				b.idprod = idproducto;
 			}
+			if(op!=3){
 			idvendedor = menuvendedor();
 			if (idvendedor == -1)
 			{
-				cout << "El vendedor no esta registrado..agreguelo!!!";
+				cout << "El vendedor no esta registrado..agreguelo!!!\n";
 				getch(); op = 3;
 			}
 			else
@@ -1149,7 +1153,7 @@ void modificarbomba()
 			if (op != 3)
 			{
 				do{
-					cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+					cout << "\n Esta seguro de haber colocado sus datos correctamente?\n";
 					cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
 					op = validarentero();
 				} while (op != 1 && op != 2);
@@ -1159,7 +1163,9 @@ void modificarbomba()
 				FILE *ptr = fopen("Bomba.dat", "r+b");
 				fseek(ptr, (b.idbomba - 1)*sizeof(b), SEEK_SET);
 				fwrite(&b, sizeof(b), 1, ptr);
+				fflush(ptr);
 				fclose(ptr);
+			}
 			}
 		}
 	} while (op==2);
@@ -1336,7 +1342,7 @@ void borrarbomba()
 	{
 		h = menubomba();
 		if (h>0)
-		{
+		{   b=obtidbomba(h);
 			fseek(ptr, (h - 1)*sizeof(b), SEEK_SET);
 			do{
 				cout << "\nEsta seguro que quiere eliminar a:\n" << b.descripcion << endl;
@@ -1344,12 +1350,13 @@ void borrarbomba()
 				cout << "\nEscoja una opcion: \n";
 				cin >> y;
 
-			} while (y != 1 && y != 0);
+			} while (y != 1 && y != 2);
 			if (y == 1){
 				b.estado = 'N';
-
+				fwrite(&b,sizeof(b),1,ptr);
 			}
-	
+			
+	    
 		}
 		else
 		{
@@ -1388,8 +1395,13 @@ int y;
  
 }
 void eliminarautomor()
-{int idautomotor;
+{int op, idautomotor;
 	idautomotor=menuautomotor();
+	do{cout<<"\n esta seguro de que quiere eliminar?";
+	cout<<"\n1.-si\n2.-no";
+	op=validarentero();}while(op!=1&&op!=2);
+	if(op==1)
+	{
 				if(idautomotor!=-1)
 				{
 						FILE *ptr;
@@ -1402,20 +1414,23 @@ void eliminarautomor()
 						{   if(idautomotor==a.idauto)
 							  {a.estado='N';fseek(ptr,(-1)*sizeof(a),SEEK_CUR);
 								fwrite(&a,sizeof(a),1,ptr);
+								fflush(ptr);
 							  }
 							 fread(&a,sizeof(a),1,ptr);
 						 }
 						 
 					 }
 					 else
-					 {cout<<"El archivo automotor no existe";getch();
+					 {cout<<"\nerror";getch();
 					 }
 					 fclose(ptr);
 			}
+	
 	else
 	{
 	cout<<"no existe ese automotor";
 		getch();
+	}
 	}
 
 }
@@ -1649,7 +1664,7 @@ if (ptr!=NULL&&existenciacliente()==true)
 	 fseek(ptr,(z-1)*sizeof(c),SEEK_SET);
 
 	 fread(&c,sizeof(c),1,ptr);
-	 if(feof(ptr)!=0&&z!=1)
+	 if((feof(ptr)!=0&&z!=1)|| c.estado=='N')
 	 {band=-1;}
 	 fclose(ptr);
 	 if(band!=-1)
@@ -1693,7 +1708,7 @@ if (ptr!=NULL&&existenciaproducto()==true)
 	 else{
 	 fseek(ptr,(z-1)*sizeof(p),SEEK_SET);
 	 fread(&p,sizeof(p),1,ptr);
-	 if(feof(ptr)!=0)
+	 if((feof(ptr)!=0&&z!=1)|| p.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
@@ -1737,7 +1752,7 @@ if (ptr!=NULL&&existenciavendedor()==true)
 	 else{
 	 fseek(ptr,(z-1)*sizeof(ven),SEEK_SET);
 	 fread(&ven,sizeof(ven),1,ptr);
-	 if(feof(ptr)!=0)
+	 if((feof(ptr)!=0&&z!=1)|| ven.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
@@ -1789,7 +1804,7 @@ bool menuventas(venta &v){
 	  if(op!=0)
 	  {fseek(ptr,(op-1)*sizeof(bom),SEEK_SET);
 	     fread(&bom,sizeof(bom),1,ptr);
-	    if(feof(ptr)==0||op==1)
+	    if((feof(ptr)==0||op==1)&&bom.estado=='S')
 		{ 
 		    v.idbomba=bom.idbomba;
 			prod=buscarproducto(bom.idprod);
@@ -1814,7 +1829,7 @@ bool menuventas(venta &v){
 	  }
 	}
 	else{
-	cout<"\nno existe ningun vendedor registrado";fclose(ptr);return false;
+	cout<"\nno existe ningun vendedor registrado";return false;
 	getch();
 	}
 	}
@@ -1851,7 +1866,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 		   {
 			fseek(ptr,(op-1)*sizeof(p),SEEK_SET);
 			fread(&p,sizeof(p),1,ptr);
-			if(feof(ptr)==0||op==1)
+			if((feof(ptr)==0||op==1)&&p.estado=='S')
 			{ 
 			c.idprod=p.idprod;
 			do{cout<<"\n que cantidad comprara?";
@@ -1859,13 +1874,13 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			p.stock=p.stock+c.cantidad;
 			}while(c.cantidad<0);
 			cout<<"\n cuanto es el precio total de la compra";
-			c.preciototal=validarfloat();return true;
+			c.preciototal=validarfloat();fclose(ptr);return true;
 			}
 			else{
 			cout<<"no existe el registro seleccionado";
-				op=-5;fclose(ptr);
+				op=-5;
 			}
-		   }
+		   }fclose(ptr);
 	   }
 	   else{
 		 cout<<"\n no existe producto registrado,primero registrar";fclose(ptr);return false;
@@ -1878,17 +1893,16 @@ int menuautomotor()
 automotor a;
 cliente c;
 int y=1,z,band;
-do{band=1;
+do{band=1;y=1;
 ptr=fopen("Automotor.dat","rb");
 	if (ptr!=NULL&&existenciaautomotor()==true)
 	{fread(&a,sizeof(a),1,ptr);
-	cout<<"n"<<" . "<<"Placa"<<cout.width(20)<<"Cliente"<<endl;
+	cout<<"n"<<" . "<<setw(20)<<"Placa"<<setw(20)<<"Cliente"<<endl;
      while(feof(ptr)==false)
-	 {if(a.estado='S')
+	 {if(a.estado=='S')
 	  {c=obtidcliente(a.idcliente);
-	  cout<<y<<" . "<<a.placa<<cout.width(20)<<c.nombre<<endl;
-	  fread(&a,sizeof(a),1,ptr);
-	 }
+	  cout<<y<<" . "<<setw(20)<<a.placa<<setw(20)<<c.nombre<<endl;
+	  }fread(&a,sizeof(a),1,ptr);
 	 y++;
 	 }
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
@@ -1900,17 +1914,22 @@ ptr=fopen("Automotor.dat","rb");
 	 }
 	 else{
 	 fseek(ptr,(z-1)*sizeof(a),SEEK_SET);
-	 if(feof(ptr)==true)
+	 fread(&a,sizeof(a),1,ptr);
+	 if((feof(ptr)!=0&&z!=1)||a.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
 	 {
 	 return a.idauto;
 	 }
+	 else
+	 {
+		 cout<<"\n el registro seleccionado no esta";getch();
+	 }
 	 }
 }
 	else
-	{fclose(ptr);
+	{
       return -1;
 
 	}
@@ -1921,7 +1940,7 @@ int menubomba()
 {FILE *ptr;
 bomba b;
 int y=1,z,band;
-do{band=1;
+do{band=1,y=1;
 ptr=fopen("Bomba.dat","rb");
 	if (ptr!=NULL&&existenciabomba()==true)
 	{fread(&b,sizeof(b),1,ptr);
@@ -1929,8 +1948,9 @@ ptr=fopen("Bomba.dat","rb");
      while(feof(ptr)==false)
 	 {if(b.estado=='S')
 	  {cout<<y<<" . "<<b.descripcion<<endl;
-	  fread(&b,sizeof(b),1,ptr);
+	  
 	 }y++;
+	 fread(&b,sizeof(b),1,ptr);
 	 }
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
@@ -1941,17 +1961,22 @@ ptr=fopen("Bomba.dat","rb");
 	 }
 	 else{
 	 fseek(ptr,(z-1)*sizeof(b),SEEK_SET);
-	 if(feof(ptr)==true)
+	 fread(&b,sizeof(b),1,ptr);
+	 if((feof(ptr)!=0&&z!=1)||b.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
 	 {
 	 return b.idbomba;
 	 }
+	 else
+	{
+      cout<<"\n el registro no se encuentra\n";getch();
+	}
 	 }
 }
 	else
-	{fclose(ptr);
+	{
       return -1;
 
 	}
@@ -1979,17 +2004,22 @@ if (ptr!=NULL&&existenciacompra()==true)
 	 }
 	 else{
 	 fseek(ptr,(z-1)*sizeof(c),SEEK_SET);
-	 if(feof(ptr)==true)
+	 fread(&c,sizeof(c),1,ptr);
+	 if((feof(ptr)!=0&&z!=1)||c.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
 	 {
 	 return c.idcompra;
 	 }
+	 else
+	{
+      cout<<"\n el registro no se encuentra";getch();
+	}
 	 }
 }
 	else
-	{fclose(ptr);
+	{
       return -1;
 
 	}
@@ -2017,17 +2047,22 @@ ptr=fopen("Ventas.dat","rb");
 	 }
 	 else{
 	 fseek(ptr,(z-1)*sizeof(v),SEEK_SET);
-	 if(feof(ptr)==true)
+	 fread(&v,sizeof(v),1,ptr);
+	  if((feof(ptr)!=0&&z!=1)||v.estado=='N')
 	 band=-1;
 	 fclose(ptr);
 	 if(band!=-1)
 	 {
 	 return v.idventa;
 	 }
+	 else
+	{
+      cout<<"\n el registro no se encuentra";getch();
+	}
 	 }
 }
 	else
-	{fclose(ptr);
+	{
       return -1;
 
 	}
@@ -2195,12 +2230,15 @@ bool validartelefono(char t[12])
 bool verificarplacaunica(char placa[])
 {automotor a;
 	FILE *ptr = fopen("Automotor.dat","rb");
-	while(fread(&a,sizeof(a),1,ptr),feof(ptr)==0)
-	{
-		if(strcmp(placa,a.placa)==0)
-		{fclose(ptr);
-			return false;
+	while(feof(ptr)==0)
+	{  if(a.estado=='S')
+		{
+			if(strcmp(placa,a.placa)==0)
+			{fclose(ptr);
+				return false;
+			}
 		}
+	fread(&a,sizeof(a),1,ptr);
 	}
 	fclose(ptr);
 	return true;
@@ -2389,6 +2427,7 @@ bool existenciaautomotor()
 {
 	automotor a;
 FILE *ptr=fopen("Automotor.dat","rb");
+fflush(ptr);
 	fread(&a,sizeof(a),1,ptr);
 	while(feof(ptr)==false)
 	{
