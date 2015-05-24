@@ -292,11 +292,10 @@ void rankingclientes()
 			cout<<"COMPRAS TOTALES"<<endl;
 		for( int i =0;i<n;i++)
 		{
-			buscarnombrecliente(mat[i][0],nombre);//busca nombre del cliente y lo guarda en char nombre
-			cout<<nombre;
+			c=obtidcliente(mat[i][0]);
+			cout<<c.nombre;
 			cout.width(20);
 			cout<<mat[i][1]<<endl;
-	       getch();
 		}
 	}
 	else
@@ -347,7 +346,7 @@ void rankingbomba()
 			cout<<ven.nombre;
 			cout.width(20);
 			cout<<mat[i][1]<<endl;
-	       getch();
+	      
 		}
 	}
 	else
@@ -358,7 +357,7 @@ void rankingbomba()
 
 }
 void reporteporfechaventas()
-{char fecha1[10],fecha2[10];venta v;char fechaaux[10],nombrecliente[30];vendedor ven;automotor a;producto p;
+{char fecha1[10],fecha2[10];venta v;char fechaaux[10],nombrecliente[30];vendedor ven;automotor a;producto p;cliente c;
 	fechas f1,f2,f3;
 	cout<<"\ningrese fecha 1";
 	fecha(fecha1);
@@ -372,24 +371,8 @@ void reporteporfechaventas()
 		fread(&v,sizeof(v),1,ptr1);
 		cout<<"--------REPORTE VENTAS---------";
 		cout<<endl;
-		cout<<"nro";
-		cout.width(20);
-		cout<<"fecha";
-		cout.width(20);
-		cout<<"producto";
-		cout.width(20);
-		cout<<"cantidad";
-		cout.width(20);
-		cout<<"precio total";
-		cout.width(20);
-		cout<<"vendedor";
-		cout.width(20);
-		cout<<"cliente";
-			cout.width(20);
-		cout<<"placa";
-		cout<<endl;
-		fread(&v,sizeof(v),1,ptr1);
-         while(feof(ptr1)==false)
+		cout<<"nro"<<setw(10)<<"fecha"<<setw(13)<<"producto"<<setw(10)<<"cantidad"<<setw(11)<<"precio total"<<setw(15)<<"vendedor"<<setw(15)<<"cliente"<<endl;
+		while(feof(ptr1)==false)
 		 {
 			 if(v.estado=='S')
 			 {
@@ -401,23 +384,9 @@ void reporteporfechaventas()
 					ven=buscarvendedorporidbomba(v.idbomba);
 					a=buscarautomotorporidauto(v.idauto);
 					p=buscarproducto(v.idprod);
-					buscarnombrecliente(a.idcliente,nombrecliente);
-					cout<<v.idventa;
-						cout.width(20);
-						cout<<v.fecha;
-						cout.width(20);
-						cout<<p.nombre;
-						cout.width(20);
-						cout<<v.cantidad;
-						cout.width(20);
-						cout<<v.preciototal;
-						cout.width(20);
-						cout<<ven.nombre;
-						cout.width(20);
-						cout<<nombrecliente;
-							cout.width(20);
-							cout<<a.placa;
-						cout<<endl;
+					c=obtidcliente(a.idcliente);
+					cout<<v.idventa<<setw(13)<<v.fecha<<setw(13)<<p.nombre<<setw(10)<<v.cantidad<<setw(11)<<v.preciototal<<setw(15)<<ven.nombre<<setw(15)<<c.nombre<<endl;
+
 				}
 				
 			 }
@@ -456,17 +425,7 @@ void reporteporfechacompras()
 		fread(&c,sizeof(c),1,ptr1);
 		cout<<"--------REPORTE COMPRAS---------";
 		cout<<endl;
-		cout<<"nro";
-		cout.width(20);
-		cout<<"fecha";
-		cout.width(20);
-		cout<<"producto";
-		cout.width(20);
-		cout<<"cantidad";
-		cout.width(20);
-		cout<<"precio total";
-		cout<<endl;
-		fread(&c,sizeof(c),1,ptr1);
+		cout<<"nro"<<setw(15)<<"fecha"<<setw(20)<<"producto"<<setw(15)<<"cantidad"<<setw(10)<<"precio total"<<endl;
          while(feof(ptr1)==false)
 		 {
 			 if(c.estado=='S')
@@ -480,16 +439,7 @@ void reporteporfechacompras()
 					
 					p=buscarproducto(c.idprod);
 					
-					 cout<<c.idcompra;
-						cout.width(20);
-						cout<<c.fecha;
-						cout.width(20);
-						cout<<p.nombre;
-						cout.width(20);
-						cout<<c.cantidad;
-						cout.width(20);
-						cout<<c.preciototal;
-						cout<<endl;
+					 cout<<c.idcompra<<setw(15)<<c.fecha<<setw(20)<<p.nombre<<setw(15)<<c.cantidad<<setw(10)<<c.preciototal<<endl;
 				}
 			 }
 			 fread(&c,sizeof(c),1,ptr1);
@@ -629,12 +579,12 @@ int cont=1;
 ptr=fopen("Compras.dat","rb");
 		if(ptr!=NULL&&existenciacompra()==true)
 		{fread(&c,sizeof(c),1,ptr);
-		cout<<"N"<<setw(20)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(25)<<"CANTIDAD"<<setw(15)<<"PRECIO TOTAL"<<endl;
+		cout<<"N"<<setw(15)<<"FECHA"<<setw(20)<<"PRODUCTO"<<setw(15)<<"CANTIDAD"<<setw(15)<<"PRECIO TOTAL"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(c.estado=='S')
 		    {
 				p=buscarproducto(c.idprod);
-				cout<<cont<<"."<<setw(20)<<c.fecha<<setw(20)<<p.nombre<<setw(20)<<c.cantidad<<setw(15)<<c.preciototal<<endl;
+				cout<<cont<<"."<<setw(15)<<c.fecha<<setw(20)<<p.nombre<<setw(15)<<c.cantidad<<setw(15)<<c.preciototal<<endl;
 		 
 		     }cont++;   
 		  fread(&c,sizeof(c),1,ptr);
@@ -1597,8 +1547,7 @@ void ABMreporte()
 
 
 void main()
-{
-	int o;
+{	int o;
 	do{
 		cout << "\tMENU\t";
 		cout << "\n1.Vender\n";
@@ -1613,12 +1562,9 @@ void main()
 		{
 		case 1:
 			vender();
-			getch();
-			
 			break;
 		case 2: 
 			comprar();
-			getch();
 			break;
 		case 3:reportesmenu();
 			  
@@ -2269,7 +2215,7 @@ vendedor buscarvendedorporidvendedor(int id)
 
 	FILE *ptr=fopen("Vendedor.dat","rb");
     fread(&v,sizeof(v),1,ptr);
-	while(feof(ptr)==false)
+	while(feof(ptr)==0)
 	 {
 		 if(v.idvendedor==id)
 		 {fclose(ptr);
@@ -2644,6 +2590,7 @@ do{band=1;
 								{
 							fechatotal=year+month*pow(10,4)+day*pow(10,6);
 							fecha[0]='0';
+							fecha[1]='\0';
 							itoa(fechatotal,fechaaux,10);
 							strcat(fecha,fechaaux);
 							     
@@ -2654,6 +2601,7 @@ do{band=1;
 									{
 								        fechatotal=year+month*pow(10,4)+day*pow(10,6);
 							fecha[0]='0';
+							fecha[1]='\0';
 							itoa(fechatotal,fechaaux,10);
 							strcat(fecha,fechaaux);
 								    }
@@ -2685,6 +2633,7 @@ void quitarbarrasfecha(char fecha[30])
   aux[5]=fecha[7];
   aux[6]=fecha[8];
   aux[7]=fecha[9];
+  aux[8]='\0';
   strcpy(fecha,aux);
 }
 
@@ -2837,19 +2786,14 @@ void anhadircompra(compras c)
 }
 int calcularventasporcliente(int id,fechas f1,fechas f2)
 {int s=0;automotor a;venta v;fechas f3;char fechaaux[10];
-	FILE *ptr=fopen("Automotor","rb");
-	fread(&a,sizeof(a),1,ptr);
-	while(feof(ptr)==false)
-	{
-		if(a.idcliente==id&&a.estado=='S')
-		{
+	
              FILE *ptr2=fopen("Ventas.dat","rb");
-			 if(ptr!=NULL)
+			 if(ptr2!=NULL)
 			 {
 				 fread(&v,sizeof(v),1,ptr2);
-				 while(feof(ptr)==false)
+				 while(feof(ptr2)==false)
 				 {
-					 if(a.idauto==v.idauto&&v.estado=='S')
+					 if(id==v.idauto&&v.estado=='S')
 					 {   
 						 strcpy(fechaaux,v.fecha);
 						 quitarbarrasfecha(fechaaux);
@@ -2857,17 +2801,13 @@ int calcularventasporcliente(int id,fechas f1,fechas f2)
 						 if(((compararfechas(f1,f3)==0)||(compararfechas(f1,f3)==1))&&((compararfechas(f3,f2)==0)||(compararfechas(f3,f2)==1)))
 						 {s=s+v.preciototal;}
 					 }
+
 					 fread(&v,sizeof(v),1,ptr2);
 				 }
 				 fclose(ptr2);
-			 }
-			 else
-			 { fclose(ptr);fclose(ptr2);
-				 return 0;//retorno cero porque no hay registros de ventas entonces nadie compro nada
-			 }
-		}
-	}fclose(ptr);return s;
+		return s;
 	
+            }
 }
 void ordenarmatriz(int mat[fil][2],int n)
 {int aux;
@@ -2879,45 +2819,40 @@ void ordenarmatriz(int mat[fil][2],int n)
 			{
 				aux=mat[i][1];
 				mat[i][1]=mat[j][1];
-				mat[j][i]=aux;
+				mat[j][1]=aux;
+				aux=mat[i][0];
+				mat[i][0]=mat[j][0];
+				mat[j][0]=aux;
+
 			}
 		}
 	}
 }
 int calcularventasporbomba(int idbomba,fechas f1,fechas f2)
 {
-	bomba b;venta v;char fechaaux[10];fechas f3;int s=0;
-	FILE *ptr=fopen("Bomba.dat","rb");
-	fread(&b,sizeof(b),1,ptr);
-	while(feof(ptr)==false)
-	{
-		if(b.idbomba==idbomba&&b.estado=='S')
-		{
+	venta v;char fechaaux[10];fechas f3;int s=0;
+
              FILE *ptr2=fopen("Ventas.dat","rb");
-			 if(ptr!=NULL)
+			 if(ptr2!=NULL)
 			 {
 				 fread(&v,sizeof(v),1,ptr2);
-				 while(feof(ptr)==false)
+				 while(feof(ptr2)==0)
 				 {
-					 if(b.idbomba==v.idbomba&&v.estado=='S')
+					 if(idbomba==v.idbomba&&v.estado=='S')
 					 {   
 						 strcpy(fechaaux,v.fecha);
 						 quitarbarrasfecha(fechaaux);
 						convertirfecha(f3,fechaaux);
 						 if(((compararfechas(f1,f3)==0)||(compararfechas(f1,f3)==1))&&((compararfechas(f3,f2)==0)||(compararfechas(f3,f2)==1)))
 						 {s=s+v.preciototal;}
+						 
 					 }
+					 
 					 fread(&v,sizeof(v),1,ptr2);
 				 }
 				 fclose(ptr2);
-				 
-			 }
-			 else
-			 { fclose(ptr);fclose(ptr2);
-				 return 0;//retorno cero porque no hay registros de ventas entonces nadie compro nada
-			 }
-		}
-	}fclose(ptr);return s;
+				 return s;
+            }
 }
 void disminuirstock(int x, int id)
 {
