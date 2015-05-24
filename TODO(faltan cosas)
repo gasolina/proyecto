@@ -1393,7 +1393,7 @@ void reportesmenu()
 		cout << "\n2.POR TIEMPO\n";
 		cout << "\n0.SALIR";
 		cout << "\nElija una opcion:";
-		cin >> i;
+		i=validarentero();
 		system("cls");
 		switch (i)
 		{
@@ -1407,7 +1407,7 @@ void reportesmenu()
 						cout << "\n7.Ventas";
 						cout << "\n0.SALIR";
 						cout << "\nEscoja una opcion:\n ";
-						cin >> p;
+						p=validarentero();
 						system("cls");
 						switch (p)
 						{
@@ -1457,7 +1457,7 @@ void reportesmenu()
 			cout << "\n4.Ventas";
 			cout << "\n0.SALIR";
 			cout << "\nEscoja una opcion: \n";
-			cin >> q;
+			q=validarentero();
 			system("cls");
 			switch (q)
 			{
@@ -1510,7 +1510,7 @@ void ABMreporte()
 		cout << "\n5.Bombas";
 		cout << "\n0.SALIR";
 		cout << "\nEscoja una opcion:\n ";
-		cin >> y;
+		y=validarentero();
 		system("cls");
 		switch (y)
 		{
