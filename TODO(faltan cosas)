@@ -120,12 +120,19 @@ void ambclientes();//listo
 void ambvendedor();//listo
 void ambproducto();//listo
 void ambautomotor();//listo
-void ambbomba();
+void ambbomba();//listo
+void ambventas();//listo
+void ambcompras();//listo
+venta buscarventaporidventa(int idventa);//listo
+void aumentarstock(int x,int id);//listo
+compras buscarcompraporid(int idcompra);//listo
+int menucomprasid();//listo
+int menuventasid();//listo
 
 
 
 //desarrollo
-void vender()//falta verificar que las fechas ingresadas sean mayores alas anteriores lo mismo falta para compra
+void vender()
 {venta v,vaux;char placa[12];int op;bool z;fechas f1,f2,f3;producto p,p2;compras c;
    do{op=1;
         do{ cout<<"\ningrese placa";
@@ -220,28 +227,19 @@ if(compararfechas(f2,f1)==1||compararfechas(f2,f1)==0)
 			
 			c.idcompra=generarid(6);
 			z=menucompras(c,p);
-			FILE *ptr=fopen("Producto.dat","r+b");
-			fread(&p1,sizeof(p1),1,ptr);
-			while(feof(ptr)==false)
-			{
-				if(p1.idprod==p.idprod)
-				{
-					p1.stock=p.stock;
-					fseek(ptr,-sizeof(p),SEEK_CUR);
-					fwrite(&p1,sizeof(p1),1,ptr);
-					
-					break;
-				}
-					fread(&p1,sizeof(p1),1,ptr);
-			}
-			fclose(ptr);
+		
 			if(z==true)
 			{
 				cout<<"\n esta seguro de sus datos?";
 							do{cout<<"\n1.-si\n2.-vovler a intentar";
 							cin>>op;}while(op!=1&&op!=2);
 							if(op==1)
-							{anhadircompra(c);cout<<"\ncompra registrada";getch();}
+							{anhadircompra(c);
+							aumentarstock(c.cantidad,c.idprod);
+							cout<<"\ncompra registrada";getch();}
+							else{
+							op=2;
+							}
 			}
 			else{   
 						do{cout<<"\nquiere volver a intentarlo?";
@@ -1119,6 +1117,195 @@ void modificarbomba()
 		}
 	} while (op==2);
 }
+void modificarcompra()
+{
+	int idcompra,op,cantidadaux;compras c;producto p,p2;bool z=true;
+	idcompra=menucomprasid();
+	if(idcompra!=-1)
+	{    c=buscarcompraporid(idcompra);
+	cantidadaux=c.cantidad;
+	p2=buscarproducto(c.idprod);
+		cout<<"\nelegir el nuevo producto"<<endl;
+		c.idprod=menuproducto();
+		if(c.idprod!=-1)
+		{
+			p=buscarproducto(c.idprod);
+			fecha(c.fecha);	
+			barrafecha(c.fecha);
+		  do{z=true;
+			  cout<<"\n cual sera la nueva cantidad?"<<endl;
+				c.cantidad=validarfloat();
+				if(p.idprod==p2.idprod){
+					if((p.stock-cantidadaux+c.cantidad)<0)
+					{
+						cout<<"\n no es posible cambiar a esa cantidad ,generaria errores"<<endl;
+						getch();z=false;
+					}
+				}
+				else
+				{
+					if((p2.stock-cantidadaux)<0)
+					{
+						cout<<"\n no es posible cambiar esa cantidad a otro producto,generaria errores"<<endl;
+						getch();z=false;
+					}
+					
+				}
+
+		  }while(z==false);
+		 do{ cout<<"\ncuanto costo la compra en total?"<<endl;
+		 c.preciototal=validarentero();}while(c.preciototal<0);
+		 do{
+			 cout<<"\nesta seguro de los datos ingresados?\n1.-SI\n2.-NO"<<endl;
+		 op=validarentero();
+		 }while(op!=1&&op!=2);
+		 if(op==1)
+		 {
+			 FILE *ptr=fopen("Compras.dat","r+b");
+			 fseek(ptr,(c.idcompra-1)*sizeof(c),SEEK_SET);
+			 fwrite(&c,sizeof(c),1,ptr);
+			 fflush(ptr);
+			 fclose(ptr);
+			 if(p.idprod==p2.idprod)
+			 {int x=c.cantidad-cantidadaux;
+			     if(x>=0)
+				 {
+				 aumentarstock((x),p.idprod);
+				 }
+				 else{
+					 x=x*(-1);
+					 disminuirstock(x,p.idprod);
+				 }
+			 }
+			 else{
+				 
+				 disminuirstock((cantidadaux),p2.idprod);
+				 aumentarstock((c.cantidad),p.idprod);
+			 }
+		 }
+
+
+		}
+		else{
+		cout<"\nno existe el producto seleccionado";
+		getch();
+		}
+		
+	}
+	else
+	{
+		cout<<"\nla compra seleccionada no existe";
+		getch();
+	}
+}
+void modificarventa()
+{
+	int idventa,x;venta v,v1;char placa[12];vendedor ven;producto p1,p2;bool z=true;int op;bomba b;
+	idventa=menuventasid();
+	if(idventa!=-1)
+	{
+		v=buscarventaporidventa(idventa);
+		p1=buscarproducto(v.idprod);
+		v1=v;
+		fecha(v.fecha);
+		barrafecha(v.fecha);
+		do{ cout<<"\ningrese placa";
+			fflush(stdin);
+			gets(placa);
+		}while(validarplaca(placa)==false);
+			v.idauto=buscaridplaca(placa);
+			if(v.idauto!=-1)
+			{    
+				v.idbomba=menubomba();
+				b=obtidbomba(v.idbomba);
+				if(v.idbomba!=-1)
+				{   p1=buscarproducto(v.idprod);
+					v.idprod=b.idprod;
+				
+					p2=buscarproducto(b.idprod);
+					if(v.idprod!=-1)
+					{
+						do{z=true;
+						cout<<"\n ingrese la nueva cantidad";
+						v.cantidad=validarfloat();
+						if(v.cantidad<0)
+							z=false;
+						 x=v.cantidad-v1.cantidad;
+							if(x>0)
+							{
+								if(p1.idprod==v.idprod)
+								{
+									if((p1.stock-x)<0)
+									{
+										z=false;
+									}
+								}
+								else{
+							     
+									if((p2.stock-v.cantidad)<0)
+										z=false;
+								}
+							}
+							if(z==false)
+							{
+						cout<<"\n la cantidad ingresada generara errores";
+						getch();
+							}
+						}while(z==false);
+						v.preciototal=v.cantidad*p2.preciounit;
+							do{
+								 cout<<"\nesta seguro de los datos ingresados?\n1.-SI\n2.-NO";
+							 op=validarentero();
+							 }while(op!=1&&op!=2);
+							 if(op==1)
+							 {
+								  FILE *ptr=fopen("Ventas.dat","r+b");
+								 fseek(ptr,(v.idventa-1)*sizeof(v),SEEK_SET);
+								 fwrite(&v,sizeof(v),1,ptr);
+								 fflush(ptr);
+								 fclose(ptr);
+								 
+										 if(p1.idprod==v.idprod)
+										{ 
+								            if(x>0)
+								            {
+									          disminuirstock(x,p1.idprod);
+											}
+											else{
+													 x=x*(-1);
+													 aumentarstock(x,p1.idprod);
+												}
+										}
+										else
+										{ 
+											aumentarstock(v1.cantidad,p1.idprod);
+											disminuirstock(v.cantidad,v.idprod);
+										}
+							 }
+							 
+					}
+					else{
+					cout<<"\nel producto seleccionado no existe";
+				getch();
+					}
+				}
+				else{
+				cout<<"\nla bomba seleccionada no existe";
+				getch();
+				}
+			}
+			else{
+			cout<<"\n no esta registrada esta placa";
+			getch();
+			}
+		
+	}
+	else
+	{
+		cout<<"\nno existe la venta seleccionada";
+		getch();
+	}
+}
 //borrar
 void borrarcliente()
 {FILE *ptr;
@@ -1383,6 +1570,67 @@ void eliminarautomor()
 	}
 
 }
+void eliminarventa()
+{int idventa,op;venta v;
+    idventa=menuventasid();
+	if(idventa!=-1)
+	{
+	v=buscarventaporidventa(idventa);
+
+	do{cout<<"\nesta seguro que quiere eliminar la venta?";
+	cout<<"\n1.-SI\n2.-NO)";
+	op=validarentero();}while(op!=1&&op!=2);
+		if(op==1)
+		{
+			FILE *ptr=fopen("Ventas.dat","r+b");
+			fseek(ptr,(idventa-1)*sizeof(v),SEEK_SET);
+			v.estado='N';
+			fwrite(&v,sizeof(v),1,ptr);
+			fflush(ptr);
+			fclose(ptr);
+			aumentarstock(v.cantidad,v.idprod);
+		}
+	}
+	
+}
+void eliminarcompra()
+{
+	int idcompra,op;compras c;producto p;
+	idcompra=menucomprasid();
+	c=buscarcompraporid(idcompra);
+	p=buscarproducto(c.idprod);
+	if(idcompra!=-1)
+	{
+	if(c.cantidad>p.stock)
+	{
+		cout<<"\n no se puede eliminar esta compra es necesaria para ventas realisadas";
+		getch();
+	}
+	else{
+	do{cout<<"\nesta seguro que quiere eliminar la venta?";
+	cout<<"\n1.-SI\n2.-NO)";
+	op=validarentero();}while(op!=1&&op!=2);
+		if(op==1)
+		{
+			FILE *ptr=fopen("Compras.dat","r+b");
+			fseek(ptr,(idcompra-1)*sizeof(c),SEEK_SET);
+			c.estado='N';
+			fwrite(&c,sizeof(c),1,ptr);
+			fflush(ptr);
+			fclose(ptr);
+			disminuirstock(c.cantidad,c.idprod);
+		}
+
+	}
+			
+	}
+	else{
+		        cout<<"\ncompra seleccionada inexistente";
+				getch();
+			}
+	
+	
+}
 //menu
 void reportesmenu()
 {
@@ -1508,6 +1756,8 @@ void ABMreporte()
 		cout << "\n3.Productos";
 		cout << "\n4.Automotores";
 		cout << "\n5.Bombas";
+		cout<<"\n6.compras";
+		cout<<"\n7.ventas";
 		cout << "\n0.SALIR";
 		cout << "\nEscoja una opcion:\n ";
 		y=validarentero();
@@ -1533,7 +1783,12 @@ void ABMreporte()
 			ambbomba();
 			
 			break;
-		
+		case 6:
+			ambcompras();
+				break;
+       case 7:
+		   ambventas();
+		   break;
 		case 0: cout << "SALIR";
 			break;
 		default:cout << "ERROR";
@@ -1936,12 +2191,7 @@ int y=1,z,band;
 do{band=1;
 ptr=fopen("Compras.dat","rb");
 if (ptr!=NULL&&existenciacompra()==true)
-	{fread(&c,sizeof(c),1,ptr);
-	cout<<"n"<<" . "<<"FECHA"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
-     while(feof(ptr)==false)
-	 {cout<<y<<" . "<<c.fecha<<cout.width(20)<<c.cantidad<<cout.width(20)<<c.preciototal<<endl;
-	  fread(&c,sizeof(c),1,ptr);
-	 }
+{reportecompragenerales();
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0){
@@ -1960,7 +2210,7 @@ if (ptr!=NULL&&existenciacompra()==true)
 	 }
 	 else
 	{
-      cout<<"\n el registro no se encuentra";getch();
+      cout<<"\n el registro no se encuentra";getch();cout<<endl;
 	}
 	 }
 }
@@ -1979,12 +2229,7 @@ int y=1,z,band;
 do{band=1;
 ptr=fopen("Ventas.dat","rb");
 	if (ptr!=NULL&&existenciaventas()==true)
-	{fread(&v,sizeof(v),1,ptr);
-	cout<<"n"<<" . "<<"FECHA"<<cout.width(20)<<"CANTIDAD"<<cout.width(20)<<"PRECIO TOTAL"<<endl;
-     while(feof(ptr)==false)
-	 {cout<<y<<" . "<<v.fecha<<cout.width(20)<<v.cantidad<<cout.width(20)<<v.preciototal<<endl;
-	  fread(&v,sizeof(v),1,ptr);
-	 }
+	{reporteventa();
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0){
@@ -2003,7 +2248,7 @@ ptr=fopen("Ventas.dat","rb");
 	 }
 	 else
 	{
-      cout<<"\n el registro no se encuentra";getch();
+      cout<<"\n el registro no se encuentra\n";getch();cout<<endl;
 	}
 	 }
 }
@@ -2357,6 +2602,41 @@ cliente c;
 	}
 	  fread(&a,sizeof(a),1,ptr);
 	}
+
+}
+venta buscarventaporidventa(int idventa)
+{
+	FILE *ptr;
+venta ven;
+ptr=fopen("Ventas.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&ven,sizeof(ven),1,ptr);
+			while(feof(ptr)==false && ven.idventa!=idventa)
+			{
+				fread(&ven,sizeof(ven),1,ptr);
+			}
+			fclose(ptr);
+			if(ven.estado=='S')
+			return ven;
+		}
+}
+compras buscarcompraporid(int idcompra)
+{FILE *ptr;
+compras c;
+ptr=fopen("Compras.dat","rb");
+		if(ptr!=NULL)
+		{
+			fread(&c,sizeof(c),1,ptr);
+			while(feof(ptr)==false && c.idcompra!=idcompra)
+			{
+				fread(&c,sizeof(c),1,ptr);
+			}
+			fclose(ptr);
+			if(c.estado=='S')
+			return c;
+		}
+
 
 }
 //existencia
@@ -2872,7 +3152,23 @@ void disminuirstock(int x, int id)
 	}
 	fclose(ptr);
 }
+void aumentarstock(int x, int id)
+{
+	producto p;
+	FILE *ptr = fopen("Producto.dat","r+b");
+	while(fread(&p, sizeof(p), 1, ptr), feof(ptr) == false)
+	{
+		if(p.idprod==id)
+		{
+			p.stock += x;
+			fseek(ptr, -1 * sizeof(p), SEEK_CUR);
 
+			fwrite(&p, sizeof(p), 1, ptr);
+			fflush(ptr);
+		}
+	}
+	fclose(ptr);
+}
 
 //amb
 void ambclientes()
@@ -2994,4 +3290,46 @@ do{
 			break;
 		}
 }while(op!=4);
+}
+void ambventas()
+{
+int op;
+		
+do{
+		do{  
+		cout<<"1.-modificar venta\n2.-borrar venta\n0.-salir";
+		op=validarentero();
+		}while(op!=1&&op!=2&&op!=0);
+		switch(op){
+		case 1:
+			modificarventa();
+			break;
+		case 2:
+			eliminarventa();
+			break;
+		case 0:
+			break;
+		}
+}while(op!=0);
+}
+void ambcompras()
+{
+int op;
+		
+do{
+		do{  
+		cout<<"1.-modificar compra\n2.-borrar compra\n0.-salir";
+		op=validarentero();
+		}while(op!=1&&op!=2&&op!=0);
+		switch(op){
+		case 1:
+			modificarcompra();
+			break;
+		case 2:
+			eliminarcompra();
+			break;
+		case 0:
+			break;
+		}
+}while(op!=0);
 }
