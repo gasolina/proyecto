@@ -72,11 +72,12 @@ struct rankingcliente
 	float s;
 
 };
-struct rankingbomba
+struct rkbomba
 {
 	bomba b;
 	float s;
 };
+
 //funciones
 bool validarplaca(char placa[]);//listo
 int buscaridplaca(char placa[]);//listo
@@ -96,7 +97,7 @@ bool existenciaproducto();//listo
 void rankingclientes();//listo
 void convertirfecha(fechas &f,char fecha[10]);//listo ,convierte el char fecha a la estructura fechas para poder comparar
 bool existenciacliente();//listo
-int calcularventasporcliente(int id,fechas f1,fechas f2);//listo
+float calcularventasporcliente(int id,fechas f1,fechas f2);//listo
 void ordenarmatriz(int mat[fil][2],int n);//listo
 void buscarnombrecliente(int id,char nombre[30]);//listo
 int compararfechas(fechas f1,fechas f2);//listo
@@ -120,7 +121,7 @@ int menuautomotor();//listo
 int menubomba();//listo
 int menuvendedor();//listo
 int menuproducto();//listo
-int calcularventasporbomba(int idbomba,fechas f1,fechas f2);//listo
+float calcularventasporbomba(int idbomba,fechas f1,fechas f2);//listo
 void eliminarautomotoresporcliente(int x);//listo
 void disminuirstock(int x,int id);//listo
 bool verificarplacaunica(char placa[]);//listo
@@ -141,7 +142,7 @@ compras buscarcompraporid(int idcompra);//listo
 int menucomprasid();//listo
 int menuventasid();//listo
 bool verificarbombasolounvendedor(int idvendedor);//listo
- void ordenarmatrizbomba(rankingbomba mat[fil],int n);//listo
+ void ordenarmatrizbomba( rkbomba mat[fil],int n);//listo
  void ordenarmatrizcliente(rankingcliente mat[fil],int n);//listo
 
 
@@ -321,7 +322,7 @@ void rankingclientes()
 }
 void rankingbomba()
 {
-	char fecha1[10],fecha2[10];rankingbomba mat[fil];int n=0;vendedor ven;
+	char fecha1[10],fecha2[10];rkbomba mat[fil];int n=0;vendedor ven;
   fechas f1,f2,aux;bomba b;
 	cout<<"\ningrese fecha 1";
 	fecha(fecha1);
@@ -3218,9 +3219,9 @@ void aumentarstock(int x, int id)
 	}
 	fclose(ptr);
 }
-void  ordenarmatrizbomba(rankingbomba mat[fil],int n)
+void  ordenarmatrizbomba(rkbomba mat[fil],int n)
 {
-	rankingbomba aux;
+	rkbomba aux;
 	for(int i=0;i<(n-1);i++)
 	{
 		for(int j=i;j<n;j++)
