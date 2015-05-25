@@ -2012,11 +2012,11 @@ bool menuventas(venta &v){
 			
 			do{cout<<"ingrese la cantidad a vender";
 			v.cantidad=validarfloat();
-			if(v.cantidad>prod.stock||v.cantidad<0)
+			if(v.cantidad>prod.stock||v.cantidad<=0)
 			{
 				cout<<"\n la cantidad sobrepasa el stock";getch();
 			}
-			}while(v.cantidad>prod.stock||v.cantidad<0);
+			}while(v.cantidad>prod.stock||v.cantidad<=0);
 			v.preciototal=v.cantidad*prod.preciounit;
 			cout<<"\n el precio total sera "<<v.preciototal<<endl;return true;
 		}
@@ -2073,7 +2073,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			do{cout<<"\n que cantidad comprara?";
 			c.cantidad=validarfloat();
 			p.stock=p.stock+c.cantidad;
-			}while(c.cantidad<0);
+			}while(c.cantidad<=0);
 			cout<<"\n cuanto es el precio total de la compra";
 			c.preciototal=validarfloat();fclose(ptr);return true;
 			}
