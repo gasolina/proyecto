@@ -7,6 +7,7 @@
 using namespace std;
 #define fil 50
 //estructuras
+
 struct venta{
 	int idventa;
 	char fecha[10];
@@ -65,6 +66,17 @@ int dia;
 int mes;
 int anho;
 }; //contiene cmapos dia mes y anho
+struct rankingcliente
+{
+	cliente c;
+	float s;
+
+};
+struct rankingbomba
+{
+	bomba b;
+	float s;
+};
 //funciones
 bool validarplaca(char placa[]);//listo
 int buscaridplaca(char placa[]);//listo
@@ -129,6 +141,8 @@ compras buscarcompraporid(int idcompra);//listo
 int menucomprasid();//listo
 int menuventasid();//listo
 bool verificarbombasolounvendedor(int idvendedor);//listo
+ void ordenarmatrizbomba(rankingbomba mat[fil],int n);//listo
+ void ordenarmatrizcliente(rankingcliente mat[fil],int n);//listo
 
 
 
@@ -257,7 +271,7 @@ op=2;
 }
 //reportes por tiempo
 void rankingclientes()
-{char fecha1[10],fecha2[10];cliente c;int mat[fil][2],n=0;char nombre[30];
+{char fecha1[10],fecha2[10];cliente c;rankingcliente mat[fil];int n=0;char nombre[30];
   fechas f1,f2,aux;
 	cout<<"\ningrese fecha 1";
 	fecha(fecha1);
@@ -276,26 +290,26 @@ void rankingclientes()
 	{  fread(&c,sizeof(c),1,ptr);
        while(feof(ptr)==false)
 	   {  if(c.estado=='S')
-	        {
-				mat[n][0]=c.idcliente;
-           mat[n][1]=calcularventasporcliente(c.idcliente,f1,f2);
+	        {   
+				mat[n].c=c;
+           mat[n].s=calcularventasporcliente(c.idcliente,f1,f2);
 		   n++;
 	        }
 	      fread(&c,sizeof(c),1,ptr);
 	   }
 		   fclose(ptr);
 
-		   ordenarmatriz(mat,n);
+		   ordenarmatrizcliente(mat,n);
 		cout<<endl<<"---------TOP CLIENTES---------"<<endl;
 		cout<<"CLIENTE";
 			cout.width(20);
 			cout<<"COMPRAS TOTALES"<<endl;
 		for( int i =0;i<n;i++)
 		{
-			c=obtidcliente(mat[i][0]);
+			c=mat[i].c;
 			cout<<c.nombre;
 			cout.width(20);
-			cout<<mat[i][1]<<endl;
+			cout<<mat[i].s<<endl;
 		}
 	}
 	else
@@ -307,7 +321,7 @@ void rankingclientes()
 }
 void rankingbomba()
 {
-	char fecha1[10],fecha2[10];int mat[fil][2],n=0;vendedor ven;
+	char fecha1[10],fecha2[10];rankingbomba mat[fil];int n=0;vendedor ven;
   fechas f1,f2,aux;bomba b;
 	cout<<"\ningrese fecha 1";
 	fecha(fecha1);
@@ -327,25 +341,25 @@ void rankingbomba()
        while(feof(ptr)==false)
 	   {  if(b.estado=='S')
 	        {
-				mat[n][0]=b.idvendedor;
-				mat[n][1]=calcularventasporbomba(b.idbomba,f1,f2);
+				mat[n].b=b;
+				mat[n].s=calcularventasporbomba(b.idbomba,f1,f2);
 		   n++;
 	        }
 	      fread(&b,sizeof(b),1,ptr);
 	   }
 		   fclose(ptr);
 
-		   ordenarmatriz(mat,n);
+		   ordenarmatrizbomba(mat,n);
 		cout<<endl<<"---------TOP VENDEDORES---------"<<endl;
 		cout<<"VENDEDOR";
 			cout.width(20);
 			cout<<"VENTAS TOTALES"<<endl;
 		for( int i =0;i<n;i++)
 		{
-			ven=buscarvendedorporidvendedor(mat[i][0]);//busca nombre del cliente y lo guarda en char nombre
+			ven=buscarvendedorporidvendedor(mat[i].b.idvendedor);//busca nombre del cliente y lo guarda en char nombre
 			cout<<ven.nombre;
 			cout.width(20);
-			cout<<mat[i][1]<<endl;
+			cout<<mat[i].s<<endl;
 	      
 		}
 	}
@@ -459,16 +473,18 @@ void reportevendedorgenerales()
 {FILE *ptr;
 vendedor ven;
 bomba b;
+int q=1;
 ptr=fopen("Vendedor.dat","rb");
 if(ptr!=NULL&&existenciavendedor()==true)
 		{fread(&ven,sizeof(ven),1,ptr);
-		cout<<setw(15)<<"VENDEDOR"<<setw(30)<<"EMAIL"<<setw(15)<<"TELEFONO"<<setw(15)<<"BOMBA"<<endl;
+		cout<<"n"<<setw(25)<<"VENDEDOR"<<setw(30)<<"EMAIL"<<setw(15)<<"TELEFONO"<<setw(15)<<"BOMBA"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(ven.estado=='S')
 		    {	b=obtidbomba(ven.idvendedor);
-				cout<<setw(15)<<ven.nombre<<setw(30)<<ven.email<<setw(15)<<ven.telefono<<setw(15)<<b.idbomba<<endl;
+				cout<<q<<setw(25)<<ven.nombre<<setw(30)<<ven.email<<setw(15)<<ven.telefono<<setw(15)<<b.idbomba<<endl;
 		     }
 		  fread(&ven,sizeof(ven),1,ptr);
+		  q++;
 		 }
 	
 		fclose(ptr);}
@@ -481,17 +497,18 @@ void reporteclientesgenerales()
 
 {FILE *ptr;
 cliente c;
-
+int q=1;
 ptr=fopen("Cliente.dat","rb");
 if(ptr!=NULL&&existenciacliente()==true)
 		{fread(&c,sizeof(c),1,ptr);
-		cout<<setw(15)<<"CLIENTE"<<setw(30)<<"EMAIL"<<setw(15)<<"TELEFONO"<<setw(15)<<"NIT"<<endl;
+		cout<<"n"<<setw(25)<<"CLIENTE"<<setw(30)<<"EMAIL"<<setw(15)<<"TELEFONO"<<setw(15)<<"NIT"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(c.estado=='S')
 		    {
-				cout<<setw(15)<<c.nombre<<setw(30)<<c.email<<setw(15)<<c.telefono<<setw(15)<<c.nit<<endl;
+				cout<<q<<setw(25)<<c.nombre<<setw(30)<<c.email<<setw(15)<<c.telefono<<setw(15)<<c.nit<<endl;
 		     }
 		  fread(&c,sizeof(c),1,ptr);
+		  q++;
 		 }
 	
 		}
@@ -503,16 +520,18 @@ if(ptr!=NULL&&existenciacliente()==true)
 void reporteproductosgenerales()
 {FILE *ptr;
 producto p;
+int q=1;
 ptr=fopen("Producto.dat","rb");
 if(ptr!=NULL&&existenciaproducto()==true)
 		{fread(&p,sizeof(p),1,ptr);
-		cout<<setw(20)<<"NOMBRE DEL PRODUCTO"<<setw(15)<<"PRECIO UNITARIO"<<setw(15)<<"STOCK"<<endl;
+		cout<<"n"<<setw(20)<<"NOMBRE DEL PRODUCTO"<<setw(15)<<"PRECIO UNITARIO"<<setw(15)<<"STOCK"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(p.estado=='S')
 		    {
-				cout<<setw(20)<<p.nombre<<setw(15)<<p.preciounit<<setw(15)<<p.stock<<endl;
+				cout<<q<<setw(20)<<p.nombre<<setw(15)<<p.preciounit<<setw(15)<<p.stock<<endl;
 		     }
 		  fread(&p,sizeof(p),1,ptr);
+		  q++;
 		 }
 	
 		}
@@ -524,18 +543,20 @@ if(ptr!=NULL&&existenciaproducto()==true)
 void reporteautomotorgenerales()
 	{FILE *ptr;
 automotor a;
+int q=1;
 cliente c;
 ptr=fopen("Automotor.dat","rb");
 		if(ptr!=NULL&&existenciaautomotor()==true)
 		{fread(&a,sizeof(a),1,ptr);
-		cout<<setw(20)<<"PLACA"<<setw(20)<<"CLIENTE DUENHO"<<endl;
+		cout<<"n"<<setw(20)<<"PLACA"<<setw(20)<<"CLIENTE DUENHO"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(a.estado=='S')
 		    {
 				c=obtidcliente(a.idcliente);
-				cout<<setw(20)<<a.placa<<setw(20)<<c.nombre<<endl;
+				cout<<q<<setw(20)<<a.placa<<setw(20)<<c.nombre<<endl;
 		     }
 		  fread(&a,sizeof(a),1,ptr);
+		  q++;
 		 }
 	
 		}
@@ -547,19 +568,22 @@ ptr=fopen("Automotor.dat","rb");
 void reportebombagenerales()
 	{FILE *ptr;
 bomba b;
+producto p;
+int q=1;
 vendedor ven;
 ptr=fopen("Bomba.dat","rb");
 		if(ptr!=NULL&&existenciabomba()==true)
 		{fread(&b,sizeof(b),1,ptr);
 		   
-		cout<<setw(20)<<"NOMBRE DEL PRODUCTO"<<setw(20)<<"NOMBRE DEL VENDEDOR"<<endl;
+		cout<<"n"<<setw(20)<<"NOMBRE DEL PRODUCTO"<<setw(20)<<"NOMBRE DEL VENDEDOR"<<setw(20)<<"PRODUCTO"<<endl;
 		 while(feof(ptr)==false)
 		 {  if(b.estado=='S')
-		    {
+		    {    p=buscarproducto(b.idprod);
 				ven=obtidvendedor(b.idvendedor);
-				cout<<setw(20)<<b.descripcion<<setw(20)<<ven.nombre<<endl;
+				cout<<q<<setw(20)<<b.descripcion<<setw(20)<<ven.nombre<<setw(20)<<p.nombre<<endl;
 		     }
 		  fread(&b,sizeof(b),1,ptr);
+		  q++;
 		 }
 		 fclose(ptr);
 	          
@@ -609,14 +633,14 @@ int cont=1;
 ptr=fopen("Ventas.dat","rb");
 if(ptr!=NULL)
 {fread(&v,sizeof(v),1,ptr);
-cout<<"N"<<setw(12)<<"FECHA"<<setw(15)<<"PRODUCTO"<<setw(10)<<"CANTIDAD"<<setw(10)<<"PRECIO TOTAL"<<setw(10)<<"CLIENTE"<<setw(15)<<"VENDEDOR"<<endl;
+cout<<"N"<<setw(12)<<"FECHA"<<setw(15)<<"PRODUCTO"<<setw(10)<<"CANTIDAD"<<setw(15)<<"PRECIO UNIT"<<setw(15)<<"PRECIO TOTAL"<<setw(10)<<"CLIENTE"<<setw(15)<<"VENDEDOR"<<endl;
  while(feof(ptr)==0)
 	 {if(v.estado=='S')
 	 {
 		 prod=buscarproducto(v.idprod);
 		 c=buscarclienteporidauto(v.idauto);
 		 ven=buscarvendedorporidbomba(v.idbomba);
-		 cout<<cont<<setw(12)<<v.fecha<<setw(15)<<prod.nombre<<setw(10)<<v.cantidad<<setw(10)<<v.preciototal<<setw(15)<<c.nombre<<setw(15)<<ven.nombre<<endl;
+		 cout<<cont<<setw(12)<<v.fecha<<setw(15)<<prod.nombre<<setw(10)<<v.cantidad<<setw(15)<<prod.preciounit<<setw(15)<<v.preciototal<<setw(15)<<c.nombre<<setw(20)<<ven.nombre<<endl;
 		
 	 }
 	 fread(&v,sizeof(v),1,ptr);
@@ -1851,6 +1875,7 @@ do{band=1;
 ptr=fopen("Cliente.dat","rb");
 if (ptr!=NULL&&existenciacliente()==true)
 	{fread(&c,sizeof(c),1,ptr);
+      cout<<"\nSELECCIONE UN CLIENTE\n";
       cout<<"N"<<setw(20)<<"NOMBRE"<<setw(20)<<"EMAIL"<<setw(28)<<"TELEFONO"<<endl;
      while(feof(ptr)==0)
 	 {if(c.estado=='S')
@@ -1859,7 +1884,7 @@ if (ptr!=NULL&&existenciacliente()==true)
 	  fread(&c,sizeof(c),1,ptr);
 	  y++;
 	 }
-	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 cout<<"\nElige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0){
 	 fclose(ptr);
@@ -1898,13 +1923,14 @@ do{band=1;
 ptr=fopen("Producto.dat","rb");
 if (ptr!=NULL&&existenciaproducto()==true)
 	{fread(&p,sizeof(p),1,ptr);
+    cout<<"\nSELECCIONE UN PRODUCTO\n";
 	cout<<"n"<<"."<<setw(20)<<"NOMBRE"<<setw(20)<<"PRECIO UNITARIO"<<setw(20)<<"STOCK"<<endl;
      while(feof(ptr)==false)
 	 {if(p.estado=='S')
 	 {cout<<y<<"."<<setw(20)<<p.nombre<<setw(20)<<p.preciounit<<setw(20)<<p.stock<<endl;}
 	  fread(&p,sizeof(p),1,ptr);y++;
 	 }
-	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 cout<<"\nElige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0){
 	fclose(ptr);
@@ -1941,13 +1967,14 @@ do{band=1;
 ptr=fopen("Vendedor.dat","a+b");
 if (ptr!=NULL&&existenciavendedor()==true)
 	{fread(&ven,sizeof(ven),1,ptr);
+    cout<<"\nSELECCIONE UN VENDEDOR\n";
 	cout<<"n"<<"."<<"NOMBRE"<<setw(30)<<"EMAIL"<<setw(30)<<"TELEFONO"<<endl;
      while(feof(ptr)==false)
 	 {if(ven.estado=='S')
 	 {cout<<y<<"."<<ven.nombre<<setw(30)<<ven.email<<setw(30)<<ven.telefono<<endl;}
 	  fread(&ven,sizeof(ven),1,ptr);y++;
 	 }
-	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 cout<<"\nElige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0)
 	 {
@@ -2004,7 +2031,7 @@ bool menuventas(venta &v){
 		  }cont++;
 		  fread(&bom,sizeof(bom),1,ptr);
 	  }
-	  cout<<"\n0.-salir";
+	  cout<<"\n0.-salir\n";
 	  op=validarentero();
 	  if(op!=0)
 	  {fseek(ptr,(op-1)*sizeof(bom),SEEK_SET);
@@ -2015,26 +2042,26 @@ bool menuventas(venta &v){
 			prod=buscarproducto(bom.idprod);
 			v.idprod=prod.idprod;
 			
-			do{cout<<"ingrese la cantidad a vender";
+			do{cout<<"\ningrese la cantidad a vender\n";
 			v.cantidad=validarfloat();
 			if(v.cantidad>prod.stock||v.cantidad<0)
 			{
-				cout<<"\n la cantidad sobrepasa el stock";getch();
+				cout<<"\n la cantidad sobrepasa el stock\n";getch();
 			}
 			}while(v.cantidad>prod.stock||v.cantidad<0);
 			v.preciototal=v.cantidad*prod.preciounit;
-			cout<<"\n el precio total sera "<<v.preciototal<<endl;return true;
+			cout<<"\n el precio total sera \n"<<v.preciototal<<endl;return true;
 		}
 		else{
 		
-			cout<<"no existe el registro seleccionado";
+			cout<<"\nno existe el registro seleccionado\n";
 			op=-5;fclose(ptr);
 		}
 
 	  }
 	}
 	else{
-	cout<"\nno existe ningun vendedor registrado";return false;
+	cout<"\nno existe ningun vendedor registrado\n";return false;
 	getch();
 	}
 	}
@@ -2048,7 +2075,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
    if(ptr!=NULL&&existenciaproducto()==true)
 	   {
 		   fread(&p,sizeof(p),1,ptr);
-		   cout<<"\n seleccione su producto";
+		   cout<<"\n seleccione su producto\n";
 		   cout<<"\nproducto";
 		   cout.width(20);
 		   cout<<"stock"<<endl;
@@ -2066,7 +2093,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			   cont++;
 			   fread(&p,sizeof(p),1,ptr);
 		   }
-		   cout<<"\n0.-salir";
+		   cout<<"\n0.-salir\n";
 		   op=validarentero();
 		   if(op!=0)
 		   {
@@ -2075,21 +2102,21 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			if((feof(ptr)==0||op==1)&&p.estado=='S')
 			{ 
 			c.idprod=p.idprod;
-			do{cout<<"\n que cantidad comprara?";
+			do{cout<<"\n que cantidad comprara?\n";
 			c.cantidad=validarfloat();
 			p.stock=p.stock+c.cantidad;
 			}while(c.cantidad<0);
-			cout<<"\n cuanto es el precio total de la compra";
+			cout<<"\n cuanto es el precio total de la compra\n";
 			c.preciototal=validarfloat();fclose(ptr);return true;
 			}
 			else{
-			cout<<"no existe el registro seleccionado";
+			cout<<"\nno existe el registro seleccionado\n";
 				op=-5;
 			}
 		   }fclose(ptr);
 	   }
 	   else{
-		 cout<<"\n no existe producto registrado,primero registrar";fclose(ptr);return false;
+		 cout<<"\n no existe producto registrado,primero registrar\n";fclose(ptr);return false;
 		 getch();
 	   }
 	}while(op==-5);
@@ -2103,6 +2130,7 @@ do{band=1;y=1;
 ptr=fopen("Automotor.dat","rb");
 	if (ptr!=NULL&&existenciaautomotor()==true)
 	{fread(&a,sizeof(a),1,ptr);
+	cout<<"\nSELECCIONE UN AUTOMOTOR\n";
 	cout<<"n"<<" . "<<setw(20)<<"Placa"<<setw(20)<<"Cliente"<<endl;
      while(feof(ptr)==false)
 	 {if(a.estado=='S')
@@ -2111,7 +2139,7 @@ ptr=fopen("Automotor.dat","rb");
 	  }fread(&a,sizeof(a),1,ptr);
 	 y++;
 	 }
-	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 cout<<"\nElige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0)
 	 {
@@ -2130,7 +2158,7 @@ ptr=fopen("Automotor.dat","rb");
 	 }
 	 else
 	 {
-		 cout<<"\n el registro seleccionado no esta";getch();
+		 cout<<"\n el registro seleccionado no esta\n";getch();
 	 }
 	 }
 }
@@ -2150,6 +2178,7 @@ do{band=1,y=1;
 ptr=fopen("Bomba.dat","rb");
 	if (ptr!=NULL&&existenciabomba()==true)
 	{fread(&b,sizeof(b),1,ptr);
+	cout<<"\nSELECCIONE UNA BOMBA\n";
 	cout<<"n"<<" . "<<"DESCRIPCION"<<endl;
      while(feof(ptr)==false)
 	 {if(b.estado=='S')
@@ -2158,7 +2187,7 @@ ptr=fopen("Bomba.dat","rb");
 	 }y++;
 	 fread(&b,sizeof(b),1,ptr);
 	 }
-	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
+	 cout<<"\nElige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0)
 	 {
@@ -2196,7 +2225,7 @@ int y=1,z,band;
 do{band=1;
 ptr=fopen("Compras.dat","rb");
 if (ptr!=NULL&&existenciacompra()==true)
-{reportecompragenerales();
+{    reportecompragenerales();
 	 cout<<"Elige una opcion...si no es ninguno de ellos presione 0 \n";
 	 z=validarentero();
 	 if(z==0){
@@ -2888,7 +2917,7 @@ do{band=1;
 						else{
 							if (day < 10 && month < 10)
 								{
-							fechatotal=year+month*pow(10,4)+day*pow(10,6);
+							fechatotal=year+month*powf(10,4)+day*powf(10,6);
 							fecha[0]='0';
 							fecha[1]='\0';
 							itoa(fechatotal,fechaaux,10);
@@ -2899,7 +2928,7 @@ do{band=1;
 							{
 								if (day < 10 && month >= 10)
 									{
-								        fechatotal=year+month*pow(10,4)+day*pow(10,6);
+								        fechatotal=year+month*powf(10,4)+day*powf(10,6);
 							fecha[0]='0';
 							fecha[1]='\0';
 							itoa(fechatotal,fechaaux,10);
@@ -2909,7 +2938,7 @@ do{band=1;
 
 								else
 								{
-									  fechatotal=year+month*pow(10,4)+day*pow(10,6);
+									  fechatotal=year+month*powf(10,4)+day*powf(10,6);
 							            itoa(fechatotal,fecha,10);
 
 								}
@@ -3084,8 +3113,8 @@ void anhadircompra(compras c)
 	fclose(ptr);
 	
 }
-int calcularventasporcliente(int id,fechas f1,fechas f2)
-{int s=0;automotor a;venta v;fechas f3;char fechaaux[10];
+float calcularventasporcliente(int id,fechas f1,fechas f2)
+{float s=0;automotor a;venta v;fechas f3;char fechaaux[10];
 	
              FILE *ptr2=fopen("Ventas.dat","rb");
 			 if(ptr2!=NULL)
@@ -3128,9 +3157,9 @@ void ordenarmatriz(int mat[fil][2],int n)
 		}
 	}
 }
-int calcularventasporbomba(int idbomba,fechas f1,fechas f2)
+float calcularventasporbomba(int idbomba,fechas f1,fechas f2)
 {
-	venta v;char fechaaux[10];fechas f3;int s=0;
+	venta v;char fechaaux[10];fechas f3;float s=0;
 
              FILE *ptr2=fopen("Ventas.dat","rb");
 			 if(ptr2!=NULL)
@@ -3189,6 +3218,38 @@ void aumentarstock(int x, int id)
 	}
 	fclose(ptr);
 }
+void  ordenarmatrizbomba(rankingbomba mat[fil],int n)
+{
+	rankingbomba aux;
+	for(int i=0;i<(n-1);i++)
+	{
+		for(int j=i;j<n;j++)
+		{
+			if(mat[i].s<mat[j].s)
+			{
+				aux=mat[i];
+				mat[i]=mat[j];
+				mat[j]=aux;
+			}
+		}
+	}
+}
+void  ordenarmatrizcliente(rankingcliente mat[fil],int n)
+{
+	rankingcliente aux;
+	for(int i=0;i<(n-1);i++)
+	{
+		for(int j=i;j<n;j++)
+		{
+			if(mat[i].s<mat[j].s)
+			{
+				aux=mat[i];
+				mat[i]=mat[j];
+				mat[j]=aux;
+			}
+		}
+	}
+}
 
 //amb
 void ambclientes()
@@ -3196,7 +3257,7 @@ void ambclientes()
 		
 do{
 		do{  
-		cout<<"\n1.-anhadir cliente\n2.-modificar cliente\n3.-borrar cliente\n4.-salir";
+		cout<<"\n1.-anhadir cliente\n2.-modificar cliente\n3.-borrar cliente\n4.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
@@ -3221,7 +3282,7 @@ void ambvendedor()
 		
 do{
 		do{  
-		cout<<"\n1.-anhadir vendedor\n2.-modificar vendedor\n3.-borrar vendedor\n4.-salir";
+		cout<<"\n1.-anhadir vendedor\n2.-modificar vendedor\n3.-borrar vendedor\n4.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
@@ -3245,7 +3306,7 @@ void ambautomotor()
 		
 do{
 		do{  
-		cout<<"\n1.-anhadir automotor\n2.-modificar automotor\n3.-borrar automotor\n4.-salir";
+		cout<<"\n1.-anhadir automotor\n2.-modificar automotor\n3.-borrar automotor\n4.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
@@ -3261,6 +3322,7 @@ do{
 		case 4:
 			break;
 		}
+system("cls");
 }while(op!=4);
 }
 void ambproducto()
@@ -3269,7 +3331,7 @@ void ambproducto()
 		
 do{
 		do{  
-		cout<<"\n1.-anhadir producto\n2.-modificar producto\n3.-borrar producto\n4.-salir";
+		cout<<"\n1.-anhadir producto\n2.-modificar producto\n3.-borrar producto\n4.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
@@ -3285,6 +3347,7 @@ do{
 		case 4:
 			break;
 		}
+		system("cls");
 }while(op!=4);
 }
 void ambbomba()
@@ -3293,7 +3356,7 @@ void ambbomba()
 		
 do{
 		do{  
-		cout<<"\n1.-anhadir bomba\n2.-modificar bomba\n3.-borrar bomba\n4.-salir";
+		cout<<"\n1.-anhadir bomba\n2.-modificar bomba\n3.-borrar bomba\n4.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=3&&op!=4);
 		switch(op){
@@ -3309,6 +3372,7 @@ do{
 		case 4:
 			break;
 		}
+		system("cls");
 }while(op!=4);
 }
 void ambventas()
@@ -3317,7 +3381,7 @@ int op;
 		
 do{
 		do{  
-		cout<<"1.-modificar venta\n2.-borrar venta\n0.-salir";
+		cout<<"\n1.-modificar venta\n2.-borrar venta\n0.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=0);
 		switch(op){
@@ -3330,6 +3394,7 @@ do{
 		case 0:
 			break;
 		}
+		system("cls");
 }while(op!=0);
 }
 void ambcompras()
@@ -3338,7 +3403,7 @@ int op;
 		
 do{
 		do{  
-		cout<<"1.-modificar compra\n2.-borrar compra\n0.-salir";
+		cout<<"\n1.-modificar compra\n2.-borrar compra\n0.-salir\n";
 		op=validarentero();
 		}while(op!=1&&op!=2&&op!=0);
 		switch(op){
@@ -3351,5 +3416,6 @@ do{
 		case 0:
 			break;
 		}
+		system("cls");
 }while(op!=0);
 }
