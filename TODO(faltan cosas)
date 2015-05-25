@@ -128,6 +128,7 @@ void aumentarstock(int x,int id);//listo
 compras buscarcompraporid(int idcompra);//listo
 int menucomprasid();//listo
 int menuventasid();//listo
+bool verificarbombasolounvendedor(int idvendedor);//listo
 
 
 
@@ -150,6 +151,7 @@ void vender()
 				if(ptr!=NULL){
 				fseek(ptr,-sizeof(v),SEEK_END);
 				fread(&vaux,sizeof(v),1,ptr);
+				quitarbarrasfecha(vaux.fecha);
 				convertirfecha(f2,vaux.fecha);
 				fclose(ptr);
 				}
@@ -829,7 +831,7 @@ do{ band=1;
 void añadirbomba()
 {FILE *ptr;
 bomba b;
-producto p;
+producto p;vendedor ven;
 int band=1,band2;
 do{ band=1;
     ptr=fopen("Bomba.dat","ab");
@@ -849,7 +851,10 @@ do{ band=1;
 				  }
 				  if(b.idprod!=-1)
 				  {
-				    b.idvendedor=menuvendedor();
+				   do{ b.idvendedor=menuvendedor();
+				   if(verificarbombasolounvendedor(b.idvendedor)==false)
+					cout<<"\neste vendedor ya tiene una bomba asignada, seleccione otro\n";
+				   }while(verificarbombasolounvendedor(b.idvendedor)==false);
 				 if(b.idvendedor==-1)
 				  {cout<<"El vendedor no esta registrado..agreguelo!!!";
 				  getch();band=3;
@@ -2012,11 +2017,11 @@ bool menuventas(venta &v){
 			
 			do{cout<<"ingrese la cantidad a vender";
 			v.cantidad=validarfloat();
-			if(v.cantidad>prod.stock||v.cantidad<=0)
+			if(v.cantidad>prod.stock||v.cantidad<0)
 			{
 				cout<<"\n la cantidad sobrepasa el stock";getch();
 			}
-			}while(v.cantidad>prod.stock||v.cantidad<=0);
+			}while(v.cantidad>prod.stock||v.cantidad<0);
 			v.preciototal=v.cantidad*prod.preciounit;
 			cout<<"\n el precio total sera "<<v.preciototal<<endl;return true;
 		}
@@ -2073,7 +2078,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			do{cout<<"\n que cantidad comprara?";
 			c.cantidad=validarfloat();
 			p.stock=p.stock+c.cantidad;
-			}while(c.cantidad<=0);
+			}while(c.cantidad<0);
 			cout<<"\n cuanto es el precio total de la compra";
 			c.preciototal=validarfloat();fclose(ptr);return true;
 			}
@@ -2434,6 +2439,21 @@ bool verificarplacaunica(char placa[])
 	fclose(ptr);
 	return true;
 }
+bool verificarbombasolounvendedor(int idvendedor)
+{bomba b;
+	FILE *ptr=fopen("Bomba.dat","rb");
+	
+	while(fread(&b,sizeof(b),1,ptr),!feof(ptr))
+	{
+		if(b.idvendedor==idvendedor)
+		{fclose(ptr);
+			return false;
+		}
+	}
+	fclose(ptr);
+	return true;
+}
+
 //buscar
 int buscaridplaca(char placa[])
 {
