@@ -2389,7 +2389,7 @@ float validarfloat()
 bool validaremail(char e[80])
 
 {
-	int n,i,cont=0;
+	int n,i,cont=0,contcom=0;
 	n = strlen(e);
 	if(n<7)
 	return false;
@@ -2399,13 +2399,26 @@ bool validaremail(char e[80])
 
 	if (e[0] == '@')
 		return false;
-	for (i = 1; i < n-5; i++)
+	for (i = 1; i < n; i++)
 	{
+		if(e[i]=='.')
+		{
+			if(e[i+1]=='c')
+			{
+				if(e[i+2]=='o')
+				{
+					if(e[i+3]=='m')
+					{
+						contcom++;
+					}
+				}
+			}
+		}
 		if(e[i] == '@')
 		cont++;
 		
 	}
-	if (cont != 1)
+	if (cont != 1||contcom!=1)
 	{
 		return false;
 	}
