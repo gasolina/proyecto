@@ -144,6 +144,9 @@ int menuventasid();//listo
 bool verificarbombasolounvendedor(int idvendedor);//listo
  void ordenarmatrizbomba( rkbomba mat[fil],int n);//listo
  void ordenarmatrizcliente(rankingcliente mat[fil],int n);//listo
+ automotor buscarautomotorporidcliente(int idcliente);//listo
+ bool verificarsiestaenelvector(int idauto,int vec[fil],int n);//listo
+ void llenarvectorconidautos(int idcliente,int vec[fil],int &n);//listo
 
 
 
@@ -2483,6 +2486,18 @@ bool verificarbombasolounvendedor(int idvendedor)
 	fclose(ptr);
 	return true;
 }
+bool verificarsiestaenelvector(int idauto,int vec[fil],int n)
+{
+	for(int i=0;i<n;i++)
+	{
+		if(idauto==vec[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 
 //buscar
 int buscaridplaca(char placa[])
@@ -2688,6 +2703,27 @@ ptr=fopen("Compras.dat","rb");
 		}
 
 
+}
+automotor buscarautomotorporidcliente(int idcliente)
+{
+	automotor A;
+	FILE *ptr=fopen("Automotor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&A,sizeof(A),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(A.idcliente==idcliente&& A.estado=='S')
+			{fclose(ptr);
+				return A;
+			}
+			fread(&A,sizeof(A),1,ptr);
+		}fclose(ptr);
+		
+	}
+	else{fclose(ptr);
+	cout<<"no existe registro de auto";
+	}
 }
 //existencia
 bool existenciaventas()
@@ -3115,15 +3151,15 @@ void anhadircompra(compras c)
 	
 }
 float calcularventasporcliente(int id,fechas f1,fechas f2)
-{float s=0;automotor a;venta v;fechas f3;char fechaaux[10];
+{float s=0;automotor a;venta v;fechas f3;char fechaaux[10];int vec[fil],n;
 	
              FILE *ptr2=fopen("Ventas.dat","rb");
 			 if(ptr2!=NULL)
 			 {
 				 fread(&v,sizeof(v),1,ptr2);
 				 while(feof(ptr2)==false)
-				 {
-					 if(id==v.idauto&&v.estado=='S')
+				 {   llenarvectorconidautos(id,vec,n);
+					 if(verificarsiestaenelvector(v.idauto,vec,n)==true&&v.estado=='S')
 					 {   
 						 strcpy(fechaaux,v.fecha);
 						 quitarbarrasfecha(fechaaux);
@@ -3249,6 +3285,28 @@ void  ordenarmatrizcliente(rankingcliente mat[fil],int n)
 				mat[j]=aux;
 			}
 		}
+	}
+}
+void llenarvectorconidautos(int idcliente,int vec[fil],int &n)
+{
+	automotor A;n=0;
+	FILE *ptr=fopen("Automotor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&A,sizeof(A),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(A.idcliente==idcliente&& A.estado=='S')
+			{
+				vec[n]=A.idauto;
+				n++;
+			}
+			fread(&A,sizeof(A),1,ptr);
+		}fclose(ptr);
+		
+	}
+	else{fclose(ptr);
+	cout<<"no existe registro de auto";
 	}
 }
 
