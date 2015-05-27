@@ -147,6 +147,10 @@ bool verificarbombasolounvendedor(int idvendedor);//listo
  automotor buscarautomotorporidcliente(int idcliente);//listo
  bool verificarsiestaenelvector(int idauto,int vec[fil],int n);//listo
  void llenarvectorconidautos(int idcliente,int vec[fil],int &n);//listo
+int calcularventasporautomotor(int idautomotor);
+int calcularventasporproducto(int h);//listo
+int calcularventasporproducto(int h);//listo
+bomba buscarbombaporidvendedor(int h);//listo
 
 
 
@@ -1342,12 +1346,20 @@ void modificarventa()
 //borrar
 void borrarcliente()
 {FILE *ptr;
- cliente c;char nombre[30];
+ cliente c;char nombre[30];int s;fechas f1,f2;
+ f1.anho=0;f2.anho=999999;
  int h,band,y;
 ptr=fopen("Cliente.dat","r+b");
  if(ptr!=NULL)
  { h=menuclientes();
      c=obtidcliente(h);
+	 s=calcularventasporcliente(h,f1,f2);
+	 if(s>0)
+	 {
+		 cout<<"\n este cliente tiene ventas relacionadas no puede eliminarlo";
+		 getch();
+	 }
+	 else{
 		  if(h>0)
 			  {  
 			  do{
@@ -1363,6 +1375,7 @@ ptr=fopen("Cliente.dat","r+b");
                   fwrite(&c,sizeof(c),1,ptr);
 				  fflush(ptr);
 			   eliminarautomotoresporcliente(h);
+			   
 			  }
 			  else
 			  {band=3;
@@ -1375,6 +1388,7 @@ ptr=fopen("Cliente.dat","r+b");
 
   fclose(ptr);
 		}
+ }
  else
  {cout<<"No existe el archivo";
  getch();
@@ -1384,10 +1398,18 @@ ptr=fopen("Cliente.dat","r+b");
 void eliminarproducto()
 {FILE *ptr;
  producto p;
- int h,y;
+ int h,y,s=0;
  ptr=fopen("Producto.dat","r+b");
  if(ptr!=NULL)
 		 { h=menuproducto();
+         
+          s=calcularventasporproducto(h);
+		  if(s>0)
+		  {
+			  cout<<"\neste producto tiene ventas relacionadas no puede eliminarla";
+			  getch();
+		  }
+		  else{
 		  if(h>0)
 		  {  p=buscarproducto(h);
 				  fseek(ptr,(h-1)*sizeof(p),SEEK_SET);
@@ -1411,6 +1433,7 @@ void eliminarproducto()
 
   fclose(ptr);
 		}
+ }
  else
  {cout<<"No existe el archivo";getch();
  }
@@ -1463,12 +1486,22 @@ void eliminarbombaporvendedor(int x)
 void borrarvendedor()
 {
 	FILE *ptr;
-	vendedor ven;
-	int h, band,y;
+	vendedor ven;bomba b;fechas f1,f2;
+	f1.anho=0;f2.anho=99999;
+	int h, band,y;float s;
 	ptr = fopen("Vendedor.dat", "r+b");
 	if (ptr != NULL)
 	{
 		h = menuvendedor();
+		
+		b=obtidbomba(h);
+		s=calcularventasporbomba(b.idbomba,f1,f2);
+		if(s>0)
+		{cout<<"\n este vendedor tine ventas no puede eliminarlo";
+		getch();
+
+		}
+		else{
 		if (h>0)
 		{    ven=obtidvendedor(h);
 			fseek(ptr, (h - 1)*sizeof(ven), SEEK_SET);
@@ -1496,6 +1529,7 @@ void borrarvendedor()
 
 		fclose(ptr);
 	}
+	}
 	else
 	{
 		cout << "No existe el archivo";
@@ -1504,12 +1538,20 @@ void borrarvendedor()
 void borrarbomba()
 {
 	FILE *ptr;
-	bomba b;
-	int h, band, y;
+	bomba b;fechas f1,f2;
+	f1.anho=0;f2.anho=99999;
+	int h, band, y;float s=0;
 	ptr = fopen("Bomba.dat", "r+b");
 	if (ptr != NULL)
 	{
 		h = menubomba();
+		s=calcularventasporbomba(h,f1,f2);
+	if(s>0)
+	{
+		cout<<"\n esta bomba tiene ventas relacionadas no la puede eliminar";
+		getch();
+	}
+	else{
 		if (h>0)
 		{   b=obtidbomba(h);
 			fseek(ptr, (h - 1)*sizeof(b), SEEK_SET);
@@ -1535,10 +1577,12 @@ void borrarbomba()
 
 		fclose(ptr);
 	}
+	}
 	else
 	{
 		cout << "No existe el archivo";
 	}
+	
 }
 void eliminarautomotoresporcliente(int x)
 {FILE *ptr;
@@ -1566,39 +1610,47 @@ int y;
 void eliminarautomor()
 {int op, idautomotor;
 	idautomotor=menuautomotor();
-	do{cout<<"\n esta seguro de que quiere eliminar?";
-	cout<<"\n1.-si\n2.-no";
-	op=validarentero();}while(op!=1&&op!=2);
-	if(op==1)
+	int s= calcularventasporautomotor(idautomotor);
+	if(s>0)
 	{
-				if(idautomotor!=-1)
-				{
-						FILE *ptr;
-					int y;
-					 automotor a;
-					 ptr=fopen("Automotor.dat","r+b");
-					 if(ptr!=NULL)
-					 {   fread(&a,sizeof(a),1,ptr);
-						 while(feof(ptr)==false)
-						{   if(idautomotor==a.idauto)
-							  {a.estado='N';fseek(ptr,(-1)*sizeof(a),SEEK_CUR);
-								fwrite(&a,sizeof(a),1,ptr);
-								fflush(ptr);
-							  }
-							 fread(&a,sizeof(a),1,ptr);
-						 }
-						 
-					 }
-					 else
-					 {cout<<"\nerror";getch();
-					 }
-					 fclose(ptr);
-			}
-	
-	else
-	{
-	cout<<"no existe ese automotor";
+		cout<<"\n este automotor tiene ventas relacionadas no puede eliminarlo";
 		getch();
+	}
+	else{
+		do{cout<<"\n esta seguro de que quiere eliminar?";
+		cout<<"\n1.-si\n2.-no";
+		op=validarentero();}while(op!=1&&op!=2);
+		if(op==1)
+		{
+					if(idautomotor!=-1)
+					{
+							FILE *ptr;
+						int y;
+						 automotor a;
+						 ptr=fopen("Automotor.dat","r+b");
+						 if(ptr!=NULL)
+						 {   fread(&a,sizeof(a),1,ptr);
+							 while(feof(ptr)==false)
+							{   if(idautomotor==a.idauto)
+								  {a.estado='N';fseek(ptr,(-1)*sizeof(a),SEEK_CUR);
+									fwrite(&a,sizeof(a),1,ptr);
+									fflush(ptr);
+								  }
+								 fread(&a,sizeof(a),1,ptr);
+							 }
+						 
+						 }
+						 else
+						 {cout<<"\nerror";getch();
+						 }
+						 fclose(ptr);
+				}
+	
+		else
+		{
+		cout<<"no existe ese automotor";
+			getch();
+		}
 	}
 	}
 
@@ -2048,7 +2100,7 @@ bool menuventas(venta &v){
 			
 			do{cout<<"\ningrese la cantidad a vender\n";
 			v.cantidad=validarfloat();
-			if(v.cantidad>prod.stock||v.cantidad<0)
+			if(v.cantidad>prod.stock||v.cantidad<=0)
 			{
 				cout<<"\n la cantidad sobrepasa el stock\n";getch();
 			}
@@ -2109,7 +2161,7 @@ do{   FILE *ptr=fopen("Producto.dat","rb");
 			do{cout<<"\n que cantidad comprara?\n";
 			c.cantidad=validarfloat();
 			p.stock=p.stock+c.cantidad;
-			}while(c.cantidad<0);
+			}while(c.cantidad<=0);
 			cout<<"\n cuanto es el precio total de la compra\n";
 			c.preciototal=validarfloat();fclose(ptr);return true;
 			}
@@ -2738,6 +2790,7 @@ automotor buscarautomotorporidcliente(int idcliente)
 	cout<<"no existe registro de auto";
 	}
 }
+
 //existencia
 bool existenciaventas()
 {venta v;
@@ -3322,6 +3375,37 @@ void llenarvectorconidautos(int idcliente,int vec[fil],int &n)
 	cout<<"no existe registro de auto";
 	}
 }
+int calcularventasporautomotor(int idautomotor)
+{
+	venta v;int s=0;
+	FILE *ptr=fopen("Ventas.dat","rb");
+	fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(v.estado=='S'&&v.idauto==idautomotor)
+		{s++;
+		}
+		fread(&v,sizeof(v),1,ptr);
+	}
+	fclose(ptr);
+	return s;
+}
+int calcularventasporproducto(int h)
+{
+	venta v;int s=0;
+	FILE *ptr=fopen("Ventas.dat","rb");
+	fread(&v,sizeof(v),1,ptr);
+	while(feof(ptr)==false)
+	{
+		if(v.estado=='S'&&v.idprod==h)
+		{s++;
+		}
+			fread(&v,sizeof(v),1,ptr);
+	}
+	fclose(ptr);
+	return s;
+}
+
 
 //amb
 void ambclientes()
