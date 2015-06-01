@@ -1,0 +1,3917 @@
+#include <iostream>
+#include<conio.h>
+#include<stdlib.h>
+#include <stdio.h>
+#include<string.h>
+#include<iomanip>
+using namespace std;
+#define fil 50
+//estructuras
+
+struct venta{
+	int idventa;
+	char fecha[10];
+	int idprod;
+	float cantidad;
+	float preciototal;
+	int idbomba;
+	int idauto;
+	char estado;
+};
+struct automotor{
+	int idauto;
+	char placa[10];
+	int idcliente;
+	char estado;
+};
+struct cliente{
+	int idcliente;
+	char nombre[30];
+	char email[30];
+	char telefono[12];
+	char nit[10];
+	char estado;
+};
+struct vendedor{
+	int idvendedor;
+	char nombre[30];
+	char email[30];
+	char telefono[12];
+	char estado;
+};
+struct producto{
+	int idprod;
+	char nombre[30];
+	float preciounit;
+	float stock;
+	char estado;
+};
+struct compras{
+	int idcompra;
+	char fecha[10];
+	int idprod;
+	float cantidad;
+	float preciototal;
+	char estado;
+};
+struct bomba{
+	int idbomba;
+	char descripcion[30];
+	int idprod;
+	int idvendedor;
+	char estado;
+};
+struct fechas{
+	int dia;
+	int mes;
+	int anho;
+}; //contiene cmapos dia mes y anho
+struct rankingcliente
+{
+	cliente c;
+	float s;
+
+};
+struct rkbomba
+{
+	bomba b;
+	float s;
+};
+
+//funciones
+bool validarplaca(char placa[]);//listo
+int buscaridplaca(char placa[]);//listo
+int generarid(int tipo);//listo
+void fecha(char fecha[10]);//listo
+bool menuventas(venta &v);//llena el preciototal,idprod,idbomba,cantidad//listo
+void anhadirventa(venta v);//listo
+void barrafecha(char fecha[10]);//listo
+int validarentero();//listo
+float validarfloat();//listo(revisar por si hubiera mas de un punto)
+vendedor buscarvendedorporidvendedor(int id);//listo
+producto buscarproducto(int id);//listo
+bool existenciavendedor();//listo
+bool menucompras(compras &c, producto &p);//listo
+void anhadircompra(compras c);//listo
+bool existenciaproducto();//listo
+void rankingclientes();//listo
+void convertirfecha(fechas &f, char fecha[10]);//listo ,convierte el char fecha a la estructura fechas para poder comparar
+bool existenciacliente();//listo
+float calcularventasporcliente(int id, fechas f1, fechas f2);//listo
+void ordenarmatriz(int mat[fil][2], int n);//listo
+void buscarnombrecliente(int id, char nombre[30]);//listo
+int compararfechas(fechas f1, fechas f2);//listo
+bool existenciaventas();//listo
+void quitarbarrasfecha(char fecha[10]);//listo
+vendedor buscarvendedorporidbomba(int id);//listo
+automotor buscarautomotorporidauto(int id);//listo
+bomba obtidbomba(int x);//listo
+cliente obtidcliente(int x);//listo
+vendedor obtidvendedor(int x);//listo
+bool existenciaautomotor();//listo
+bool existenciabomba();//listo
+bool existenciacompra();//listo
+cliente buscarclienteporidauto(int idauto);//listo
+bool validaremail(char e[80]);//listo
+bool validarnombre(char nombre[30]);//listo
+bool validartelefono(char telefono[12]);//listo
+bool validarnit(char ni[10]);//listo
+int menuclientes();//listo
+int menuautomotor();//listo
+int menubomba();//listo
+int menuvendedor();//listo
+int menuproducto();//listo
+float calcularventasporbomba(int idbomba, fechas f1, fechas f2);//listo
+void eliminarautomotoresporcliente(int x);//listo
+void disminuirstock(int x, int id);//listo
+bool verificarplacaunica(char placa[]);//listo
+void eliminarbombaporvendedor(int x);//listo
+void borrarvendedor();//listo
+void borrarbomba();//listo
+void eliminarbombaporprod(int x);//listo
+void ambclientes();//listo
+void ambvendedor();//listo
+void ambproducto();//listo
+void ambautomotor();//listo
+void ambbomba();//listo
+void ambventas();//listo
+void ambcompras();//listo
+venta buscarventaporidventa(int idventa);//listo
+void aumentarstock(int x, int id);//listo
+compras buscarcompraporid(int idcompra);//listo
+int menucomprasid();//listo
+int menuventasid();//listo
+bool verificarbombasolounvendedor(int idvendedor);//listo
+void ordenarmatrizbomba(rkbomba mat[fil], int n);//listo
+void ordenarmatrizcliente(rankingcliente mat[fil], int n);//listo
+automotor buscarautomotorporidcliente(int idcliente);//listo
+bool verificarsiestaenelvector(int idauto, int vec[fil], int n);//listo
+void llenarvectorconidautos(int idcliente, int vec[fil], int &n);//listo
+int calcularventasporautomotor(int idautomotor);
+int calcularventasporproducto(int h);//listo
+int calcularventasporproducto(int h);//listo
+bomba buscarbombaporidvendedor(int h);//listo
+bool validarformatofecha(char f[10]);
+
+
+//desarrollo
+void vender()
+{
+	venta v, vaux; char placa[12]; int op; bool z; fechas f1, f2, f3; producto p, p2; compras c;
+	do{
+		op = 1;
+		do{
+			cout << "\ningrese placa";
+			fflush(stdin);
+			gets(placa);
+		} while (validarplaca(placa) == false);
+		v.idauto = buscaridplaca(placa);
+		if (v.idauto>0)
+		{
+			v.idventa = generarid(7);
+			fecha(v.fecha);
+			convertirfecha(f1, v.fecha);
+			barrafecha(v.fecha);
+			getch();
+			FILE*ptr = fopen("Ventas.dat", "rb");
+			if (ptr != NULL){
+				fseek(ptr, -sizeof(v), SEEK_END);
+				fread(&vaux, sizeof(v), 1, ptr);
+				quitarbarrasfecha(vaux.fecha);
+				convertirfecha(f2, vaux.fecha);
+				fclose(ptr);
+			}
+			else
+			{
+				fclose(ptr);
+				f2.anho = 0;
+			}
+			ptr = fopen("Compras.dat", "rb");
+			if (ptr != NULL){
+				fseek(ptr, -sizeof(c), SEEK_END);
+				fread(&c, sizeof(c), 1, ptr);
+				convertirfecha(f3, c.fecha);
+				fclose(ptr);
+			}
+			else
+			{
+				fclose(ptr);
+				f3.anho = 0;
+			}
+
+			if ((compararfechas(f2, f1) == 1 || compararfechas(f2, f1) == 0) && (compararfechas(f3, f1) == 1 || compararfechas(f3, f1) == 0))
+			{
+				z = menuventas(v);
+				if (z == true)
+				{
+					cout << "\n esta seguro de sus datos?";
+					do{
+						cout << "\n1.-si\n2.-vovler a intentar";
+						op = validarentero();
+					} while (op != 1 && op != 2);
+					if (op == 1)
+					{
+						disminuirstock(v.cantidad, v.idprod); v.estado = 'S';
+						anhadirventa(v); cout << "\nventa registrada"; getch();
+					}
+				}
+				else{
+					do{
+						cout << "\nquiere volver a intentarlo?";
+						cout << "\n1.-NO\n2.-SI";
+						cin >> op;
+					} while (op != 1 && op != 2);
+				}
+			}
+			else{
+				cout << "\n fecha incorrecta muy antigua";
+				getch();
+				op = 2;
+			}
+		}
+
+		else{
+			cout << "\n placa no registrada, vaya a registrarlo";
+			do{
+				cout << "\n1.-volver a menu\n2.-volver a intentar";
+				cin >> op;
+			} while (op != 1 && op != 2);
+		}
+
+	} while (op == 2);
+
+}
+void comprar()
+{
+	compras c, caux; bool z; int op; fechas f1, f2; producto p, p1;
+	if (existenciaproducto() == false)
+	{
+		cout << "no existe producto registrado" << endl;
+		getch();
+	}
+	else{
+		do{
+			op = 1;
+
+			fflush(stdin);
+			fecha(c.fecha);
+			convertirfecha(f1, c.fecha);
+			barrafecha(c.fecha);
+
+			FILE*ptr = fopen("Compras.dat", "a+b");
+			if (ptr != NULL){
+				fseek(ptr, -sizeof(c), SEEK_END);
+				fread(&caux, sizeof(c), 1, ptr);
+				convertirfecha(f2, caux.fecha);
+				fclose(ptr);
+			}
+			else
+			{
+				fclose(ptr);
+				f2.anho = 0;
+			}
+
+			if (compararfechas(f2, f1) == 1 || compararfechas(f2, f1) == 0)
+			{
+
+				c.idcompra = generarid(6);
+				z = menucompras(c, p);
+
+				if (z == true)
+				{
+					cout << "\n esta seguro de sus datos?";
+					do{
+						cout << "\n1.-si\n2.-vovler a intentar";
+						cin >> op;
+					} while (op != 1 && op != 2);
+					if (op == 1)
+					{
+						anhadircompra(c);
+						aumentarstock(c.cantidad, c.idprod);
+						cout << "\ncompra registrada"; getch();
+					}
+					else{
+						op = 2;
+					}
+				}
+				else{
+					do{
+						cout << "\nquiere volver a intentarlo?";
+						cout << "\n1.-volver a menu \n2.-SI";
+						cin >> op;
+					} while (op != 1 && op != 2);
+				}
+			}
+			else{
+				cout << "\n la fecha esta mal";
+				op = 2;
+			}
+		} while (op == 2);
+	}
+}
+//reportes por tiempo
+void rankingclientes()
+{
+	char fecha1[10], fecha2[10]; cliente c; rankingcliente mat[fil]; int n = 0; char nombre[30];
+	fechas f1, f2, aux;
+	cout << "\ningrese fecha 1";
+	fecha(fecha1);
+	cout << "\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1, fecha1);
+	convertirfecha(f2, fecha2);
+	if (compararfechas(f1, f2) == -1)//asegurarse que f1 es menor a f2
+	{
+		aux = f1;
+		f1 = f2;
+		f2 = aux;
+	}
+	FILE *ptr = fopen("Cliente.dat", "rb");
+	if (ptr != NULL&&existenciacliente() == true)
+	{
+		fread(&c, sizeof(c), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (c.estado == 'S')
+			{
+				mat[n].c = c;
+				mat[n].s = calcularventasporcliente(c.idcliente, f1, f2);
+				n++;
+			}
+			fread(&c, sizeof(c), 1, ptr);
+		}
+		fclose(ptr);
+
+		ordenarmatrizcliente(mat, n);
+		cout << endl << "---------TOP CLIENTES---------" << endl;
+		cout << "CLIENTE";
+		cout.width(20);
+		cout << "COMPRAS TOTALES" << endl;
+		for (int i = 0; i<n; i++)
+		{
+			c = mat[i].c;
+			cout << c.nombre;
+			cout.width(20);
+			cout << mat[i].s << endl;
+		}
+	}
+	else
+	{
+		cout << "\n no existe clientes registrados";
+		getch(); fclose(ptr);
+	}
+
+}
+void rankingbomba()
+{
+	char fecha1[10], fecha2[10]; rkbomba mat[fil]; int n = 0; vendedor ven;
+	fechas f1, f2, aux; bomba b;
+	cout << "\ningrese fecha 1";
+	fecha(fecha1);
+	cout << "\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1, fecha1);
+	convertirfecha(f2, fecha2);
+	if (compararfechas(f1, f2) == -1)//asegurarse que f1 es menor a f2
+	{
+		aux = f1;
+		f1 = f2;
+		f2 = aux;
+	}
+	FILE *ptr = fopen("Bomba.dat", "rb");
+	if (ptr != NULL&&existenciacliente() == true)
+	{
+		fread(&b, sizeof(b), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (b.estado == 'S')
+			{
+				mat[n].b = b;
+				mat[n].s = calcularventasporbomba(b.idbomba, f1, f2);
+				n++;
+			}
+			fread(&b, sizeof(b), 1, ptr);
+		}
+		fclose(ptr);
+
+		ordenarmatrizbomba(mat, n);
+		cout << endl << "---------TOP VENDEDORES---------" << endl;
+		cout << "VENDEDOR";
+		cout.width(20);
+		cout << "VENTAS TOTALES" << endl;
+		for (int i = 0; i<n; i++)
+		{
+			ven = buscarvendedorporidvendedor(mat[i].b.idvendedor);//busca nombre del cliente y lo guarda en char nombre
+			cout << ven.nombre;
+			cout.width(20);
+			cout << mat[i].s << endl;
+
+		}
+	}
+	else
+	{
+		cout << "\n no existe clientes registrados";
+		getch(); fclose(ptr);
+	}
+
+}
+void reporteporfechaventas()
+{
+	char fecha1[10], fecha2[10]; venta v; char fechaaux[10], nombrecliente[30]; vendedor ven; automotor a; producto p; cliente c;
+	fechas f1, f2, f3;
+	cout << "\ningrese fecha 1";
+	fecha(fecha1);
+	cout << "\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1, fecha1);
+	convertirfecha(f2, fecha2);
+	FILE *ptr1 = fopen("Ventas.dat", "rb");
+	if (ptr1 != NULL&&existenciaventas() == true)
+	{
+		fread(&v, sizeof(v), 1, ptr1);
+		cout << "--------REPORTE VENTAS---------";
+		cout << endl;
+		cout << "nro" << setw(10) << "fecha" << setw(13) << "producto" << setw(10) << "cantidad" << setw(11) << "precio total" << setw(15) << "vendedor" << setw(15) << "cliente" << endl;
+		while (feof(ptr1) == false)
+		{
+			if (v.estado == 'S')
+			{
+				strcpy(fechaaux, v.fecha);
+				quitarbarrasfecha(fechaaux);
+				convertirfecha(f3, fechaaux);
+				if (((compararfechas(f1, f3) == 0) || (compararfechas(f1, f3) == 1)) && ((compararfechas(f3, f2) == 0) || (compararfechas(f3, f2) == 1)))
+				{
+					ven = buscarvendedorporidbomba(v.idbomba);
+					a = buscarautomotorporidauto(v.idauto);
+					p = buscarproducto(v.idprod);
+					c = obtidcliente(a.idcliente);
+					cout << v.idventa << setw(13) << v.fecha << setw(13) << p.nombre << setw(10) << v.cantidad << setw(11) << v.preciototal << setw(15) << ven.nombre << setw(15) << c.nombre << endl;
+
+				}
+
+			}
+
+			fread(&v, sizeof(v), 1, ptr1);
+		}
+
+		fclose(ptr1);
+
+	}
+	else
+	{
+		fclose(ptr1);
+		cout << "no existen ventas registradas"; getch();
+
+	}
+}
+void reporteporfechacompras()
+{
+	char fecha1[10], fecha2[10]; compras c; char fechaaux[10], nombrecliente[30]; producto p;
+	fechas f1, f2, f3;
+	cout << "\ningrese fecha 1";
+	fecha(fecha1);
+	cout << "\ningrese fecha 2";
+	fecha(fecha2);
+	convertirfecha(f1, fecha1);
+	convertirfecha(f2, fecha2);
+	if (compararfechas(f1, f2) == -1)//asegurarse que f1 es menor a f2
+	{
+		f3 = f1;
+		f1 = f2;
+		f2 = f3;
+	}
+	FILE *ptr1 = fopen("Compras.dat", "rb");
+	if (ptr1 != NULL&&existenciaventas() == true)
+	{
+		fread(&c, sizeof(c), 1, ptr1);
+		cout << "--------REPORTE COMPRAS---------";
+		cout << endl;
+		cout << "nro" << setw(15) << "fecha" << setw(20) << "producto" << setw(15) << "cantidad" << setw(10) << "precio total" << endl;
+		while (feof(ptr1) == false)
+		{
+			if (c.estado == 'S')
+			{
+				strcpy(fechaaux, c.fecha);
+				quitarbarrasfecha(fechaaux);
+				convertirfecha(f3, fechaaux);
+				if (((compararfechas(f1, f3) == 0) || (compararfechas(f1, f3) == 1)) && ((compararfechas(f3, f2) == 0) || (compararfechas(f3, f2) == 1)))
+				{
+
+
+					p = buscarproducto(c.idprod);
+
+					cout << c.idcompra << setw(15) << c.fecha << setw(20) << p.nombre << setw(15) << c.cantidad << setw(10) << c.preciototal << endl;
+				}
+			}
+			fread(&c, sizeof(c), 1, ptr1);
+		}
+		fclose(ptr1);
+
+	}
+	else
+	{
+		fclose(ptr1);
+		cout << "no existen compras registradas"; getch();
+
+	}
+}
+//reportes generales
+void reportevendedorgenerales()
+
+{
+	FILE *ptr;
+	vendedor ven;
+	bomba b;
+	int q = 1;
+	ptr = fopen("Vendedor.dat", "rb");
+	if (ptr != NULL&&existenciavendedor() == true)
+	{
+		fread(&ven, sizeof(ven), 1, ptr);
+		cout << "n" << setw(25) << "VENDEDOR" << setw(30) << "EMAIL" << setw(15) << "TELEFONO" << setw(15) << "BOMBA" << endl;
+		while (feof(ptr) == false)
+		{
+			if (ven.estado == 'S')
+			{
+				b = obtidbomba(ven.idvendedor);
+				cout << q << setw(25) << ven.nombre << setw(30) << ven.email << setw(15) << ven.telefono << setw(15) << b.idbomba << endl;
+			}
+			fread(&ven, sizeof(ven), 1, ptr);
+			q++;
+		}
+
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "No existen vendedores registrados";
+		fclose(ptr);
+	}
+
+}
+void reporteclientesgenerales()
+
+{
+	FILE *ptr;
+	cliente c;
+	int q = 1;
+	ptr = fopen("Cliente.dat", "rb");
+	if (ptr != NULL&&existenciacliente() == true)
+	{
+		fread(&c, sizeof(c), 1, ptr);
+		cout << "n" << setw(25) << "CLIENTE" << setw(30) << "EMAIL" << setw(15) << "TELEFONO" << setw(15) << "NIT" << endl;
+		while (feof(ptr) == false)
+		{
+			if (c.estado == 'S')
+			{
+				cout << q << setw(25) << c.nombre << setw(30) << c.email << setw(15) << c.telefono << setw(15) << c.nit << endl;
+			}
+			fread(&c, sizeof(c), 1, ptr);
+			q++;
+		}
+
+	}
+	else
+	{
+		cout << "No existen clientes registrados";
+	}
+	fclose(ptr);
+}
+void reporteproductosgenerales()
+{
+	FILE *ptr;
+	producto p;
+	int q = 1;
+	ptr = fopen("Producto.dat", "rb");
+	if (ptr != NULL&&existenciaproducto() == true)
+	{
+		fread(&p, sizeof(p), 1, ptr);
+		cout << "n" << setw(20) << "NOMBRE DEL PRODUCTO" << setw(15) << "PRECIO UNITARIO" << setw(15) << "STOCK" << endl;
+		while (feof(ptr) == false)
+		{
+			if (p.estado == 'S')
+			{
+				cout << q << setw(20) << p.nombre << setw(15) << p.preciounit << setw(15) << p.stock << endl;
+			}
+			fread(&p, sizeof(p), 1, ptr);
+			q++;
+		}
+
+	}
+	else
+	{
+		cout << "No existen productos registrados";
+	}fclose(ptr);
+
+}
+void reporteautomotorgenerales()
+{
+	FILE *ptr;
+	automotor a;
+	int q = 1;
+	cliente c;
+	ptr = fopen("Automotor.dat", "rb");
+	if (ptr != NULL&&existenciaautomotor() == true)
+	{
+		fread(&a, sizeof(a), 1, ptr);
+		cout << "n" << setw(20) << "PLACA" << setw(20) << "CLIENTE DUENHO" << endl;
+		while (feof(ptr) == false)
+		{
+			if (a.estado == 'S')
+			{
+				c = obtidcliente(a.idcliente);
+				cout << q << setw(20) << a.placa << setw(20) << c.nombre << endl;
+			}
+			fread(&a, sizeof(a), 1, ptr);
+			q++;
+		}
+
+	}
+	else
+	{
+		cout << "No existen automotores registrados";
+	}
+
+}
+void reportebombagenerales()
+{
+	FILE *ptr;
+	bomba b;
+	producto p;
+	int q = 1;
+	vendedor ven;
+	ptr = fopen("Bomba.dat", "rb");
+	if (ptr != NULL&&existenciabomba() == true)
+	{
+		fread(&b, sizeof(b), 1, ptr);
+
+		cout << "n" << setw(20) << "NOMBRE DEL PRODUCTO" << setw(20) << "NOMBRE DEL VENDEDOR" << setw(20) << "PRODUCTO" << endl;
+		while (feof(ptr) == false)
+		{
+			if (b.estado == 'S')
+			{
+				p = buscarproducto(b.idprod);
+				ven = obtidvendedor(b.idvendedor);
+				cout << q << setw(20) << b.descripcion << setw(20) << ven.nombre << setw(20) << p.nombre << endl;
+			}
+			fread(&b, sizeof(b), 1, ptr);
+			q++;
+		}
+		fclose(ptr);
+
+	}
+	else
+	{
+		cout << "No existen bombas registrados";
+	}
+
+
+}
+void reportecompragenerales()
+{
+	FILE *ptr;
+	compras c;
+	producto p;
+	int cont = 1;
+
+	ptr = fopen("Compras.dat", "rb");
+	if (ptr != NULL&&existenciacompra() == true)
+	{
+		fread(&c, sizeof(c), 1, ptr);
+		cout << "N" << setw(15) << "FECHA" << setw(20) << "PRODUCTO" << setw(15) << "CANTIDAD" << setw(15) << "PRECIO TOTAL" << endl;
+		while (feof(ptr) == false)
+		{
+			if (c.estado == 'S')
+			{
+				p = buscarproducto(c.idprod);
+				cout << cont << "." << setw(15) << c.fecha << setw(20) << p.nombre << setw(15) << c.cantidad << setw(15) << c.preciototal << endl;
+
+			}cont++;
+			fread(&c, sizeof(c), 1, ptr);
+		}
+
+	}
+	else
+	{
+		cout << "No existen compras registrados";
+	}
+
+
+}
+void reporteventa()
+{
+	FILE *ptr;
+	venta v;
+	cliente c;
+	vendedor ven;
+	producto prod;
+
+	int cont = 1;
+
+	ptr = fopen("Ventas.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&v, sizeof(v), 1, ptr);
+		cout << "N" << setw(12) << "FECHA" << setw(15) << "PRODUCTO" << setw(10) << "CANTIDAD" << setw(15) << "PRECIO UNIT" << setw(15) << "PRECIO TOTAL" << setw(10) << "CLIENTE" << setw(15) << "VENDEDOR" << endl;
+		while (feof(ptr) == 0)
+		{
+			if (v.estado == 'S')
+			{
+				prod = buscarproducto(v.idprod);
+				c = buscarclienteporidauto(v.idauto);
+				ven = buscarvendedorporidbomba(v.idbomba);
+				cout << cont << setw(12) << v.fecha << setw(15) << prod.nombre << setw(10) << v.cantidad << setw(15) << prod.preciounit << setw(15) << v.preciototal << setw(15) << c.nombre << setw(20) << ven.nombre << endl;
+
+			}
+			fread(&v, sizeof(v), 1, ptr);
+			cont++;
+		}
+		fclose(ptr);
+
+	}
+	else
+	{
+		cout << "NO SE HA REGISTRADO NINGUNA VENTA";
+		getch();
+	}
+
+}
+
+
+//anhadir
+void añadirvendedor()
+{
+	FILE *ptr;
+	vendedor ven;
+	int band = 0, telefono;
+	do{
+		band = 0;
+		ptr = fopen("Vendedor.dat", "ab");
+		if (ptr != NULL)
+		{
+			ven.estado = 'S';
+			ven.idvendedor = generarid(2);
+			do{
+				cout << "Introduzca nombre: ";
+				fflush(stdin);
+				gets(ven.nombre);
+			} while (validarnombre(ven.nombre) == false);
+			do{
+				cout << "Introduzca email";
+				gets(ven.email);
+			} while (validaremail(ven.email) == false);
+			do{
+				cout << "Introduzca telefono: ";
+				telefono = validarentero();
+				itoa(telefono, ven.telefono, 10);
+			} while (validartelefono(ven.telefono) == false);
+			ven.estado = 'S';
+			do{
+				cout << "\nesta seguro de sus datos?";
+				cout << "0.-si\n1.-volver a intentar";
+				band = validarentero();
+			} while (band != 0 && band != 1);
+			if (band == 0)
+				fwrite(&ven, sizeof(ven), 1, ptr);
+			fclose(ptr);
+
+		}
+		else
+		{
+			ptr = fopen("Vendedor.dat", "wb");
+			fclose(ptr);
+			band = 1;
+		}
+	} while (band == 1);
+
+}
+
+void anhadirclientes()
+{
+	int telfaux, band, nitaux, op;
+	cliente c;
+	c.estado = 'S';
+	do{
+		band = 1;
+		FILE *ptr = fopen("Cliente.dat", "ab");
+
+		if (ptr != NULL){
+			c.idcliente = generarid(1);
+			do
+			{
+
+				cout << "nombre del cliente: ";
+				fflush(stdin);
+				gets(c.nombre);
+			} while (validarnombre(c.nombre) != true);
+
+
+			do
+			{
+				cout << "email cliente: ";
+				gets(c.email);
+			} while (validaremail(c.email) != true);
+
+			do{
+				cout << "telefono: ";
+				telfaux = validarentero();
+				itoa(telfaux, c.telefono, 10);
+			} while (validartelefono(c.telefono) != true);
+
+			do
+			{
+				cout << "NIT: ";
+				nitaux = validarentero();
+				itoa(nitaux, c.nit, 10);
+			} while (validarnit(c.nit) != true);
+			do{
+				cout << "Esta seguro de haber colocado bien sus datos?: ";
+				cout << "1.si\n 2.volver a intentar\n";
+				op = validarentero();
+			} while (op != 1 && op != 2);
+			if (op == 2)
+			{
+				band = -1; fclose(ptr);
+			}
+			else{
+				c.estado = 'S';
+				fwrite(&c, sizeof(c), 1, ptr);
+				fclose(ptr);
+			}
+
+		}
+		else
+		{
+			ptr = fopen("Cliente.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+
+}
+
+void añadirproducto()
+{
+	FILE *ptr;
+	producto p;
+	int band = 1, band2;
+	do{
+		band = 1;
+		ptr = fopen("Producto.dat", "ab");
+		if (ptr != NULL)
+		{
+			do{
+				p.estado = 'S';
+				p.idprod = generarid(3);
+				p.stock = 0;
+				cout << "\nIntroduzca nombre: ";
+				fflush(stdin);
+				gets(p.nombre);
+			} while (validarnombre(p.nombre) == false);
+
+			cout << "\nIntroduzca precio unitario: ";
+			p.preciounit = validarfloat();
+
+			cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+			do{
+				cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+				band2 = validarentero();
+			} while (band2 != 1 && band2 != 2);
+			if (band2 == 1){
+				p.estado = 'S';
+				fwrite(&p, sizeof(p), 1, ptr);
+				fclose(ptr);
+			}
+			else{
+				band = -1;
+			}
+
+		}
+		else
+		{
+			ptr = fopen("Producto.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+
+}
+void añadirautomotor()
+{
+	FILE *ptr;
+	automotor a;
+	int band = 1, band2;
+	do{
+		band = 1;
+		ptr = fopen("Automotor.dat", "ab");
+		if (ptr != NULL)
+		{
+			do{
+				a.estado = 'S';
+				a.idauto = generarid(4);
+				do{
+					cout << "Introduzca placa: ";
+					fflush(stdin);
+					gets(a.placa);
+					if (verificarplacaunica(a.placa) == false)
+					{
+						cout << "\nesta  placa ya esta registrada\n";
+
+					}
+				} while (validarplaca(a.placa) == false || verificarplacaunica(a.placa) == false);
+				a.idcliente = menuclientes();
+				if (a.idcliente == -1)
+				{
+					cout << "El usuario no esta registrado..agreguelo!!!";
+					getch(); band = 3;
+				}
+				if (band != 3)
+				{
+					do{
+						cout << "Esta seguro de sus datos?";
+						cout << "1.SI    2.NO.VOLVER A INTENTAR";
+						band2 = validarentero();
+					} while (band2 != 0 && band != 1);
+
+					if (band2 == 1)
+					{
+						a.estado = 'S';
+						fwrite(&a, sizeof(a), 1, ptr);
+						fclose(ptr);
+					}
+
+				}
+			} while (band2 == 2);
+
+		}
+		else
+		{
+			ptr = fopen("Producto.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+}
+void añadirbomba()
+{
+	FILE *ptr;
+	bomba b;
+	producto p; vendedor ven;
+	int band = 1, band2;
+	do{
+		band = 1;
+		ptr = fopen("Bomba.dat", "ab");
+		if (ptr != NULL)
+		{
+			do{
+				b.estado = 'S';
+				b.idbomba = generarid(5);
+				do{
+					cout << "Introduzca descripcion: ";
+					fflush(stdin);
+					gets(b.descripcion);
+				} while (validarnombre(b.descripcion) == false);
+				b.idprod = menuproducto();
+
+				if (b.idprod == -1)
+				{
+					cout << "\npuede agregar poducto desde el menu";
+					band = 3;
+				}
+				if (b.idprod != -1)
+				{
+					do{
+						b.idvendedor = menuvendedor();
+						if (verificarbombasolounvendedor(b.idvendedor) == false)
+							cout << "\neste vendedor ya tiene una bomba asignada, seleccione otro\n";
+					} while (verificarbombasolounvendedor(b.idvendedor) == false);
+					if (b.idvendedor == -1)
+					{
+						cout << "El vendedor no esta registrado..agreguelo!!!";
+						getch(); band = 3;
+					}
+				}
+				if (band != 3){
+					do{
+
+						cout << "Esta seguro de sus datos?";
+						cout << "1.SI    2.NO.VOLVER A INTENTAR";
+						band2 = validarentero();
+					} while (band2 != 0 && band2 != 1);
+					if (band2 == 1)
+					{
+						fwrite(&b, sizeof(b), 1, ptr);
+						fclose(ptr);
+					}
+					else
+					{
+						fclose(ptr);
+					}
+				}
+
+			} while (band2 == 2);
+
+		}
+		else
+		{
+			ptr = fopen("Bomba.dat", "wb");
+			fclose(ptr);
+			band = -1;
+		}
+	} while (band == -1);
+}
+//modificar
+void modificarcliente()
+{
+	cliente c; int idcliente, op, telfaux, nitaux;
+	idcliente = menuclientes();
+	do{
+		if (idcliente != -1)
+		{
+			c = obtidcliente(idcliente);
+			do
+			{
+				cout << "nombre del cliente: ";
+				gets(c.nombre);
+			} while (validarnombre(c.nombre) != true);
+
+
+			do
+			{
+				cout << "email cliente: ";
+				gets(c.email);
+			} while (validaremail(c.email) != true);
+
+			do{
+				cout << "telefono: ";
+				telfaux = validarentero();
+				itoa(telfaux, c.telefono, 10);
+			} while (validartelefono(c.telefono) != true);
+
+			do
+			{
+				cout << "NIT: ";
+				nitaux = validarentero();
+				itoa(nitaux, c.nit, 10);
+			} while (validarnit(c.nit) != true);
+			do{
+				cout << "Esta seguro de haber colocado bien sus datos?: ";
+				cout << "1.si\n 2.volver a intentar\n";
+				op = validarentero();
+			} while (op != 1 && op != 2);
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Cliente.dat", "r+b");
+				fseek(ptr, (c.idcliente - 1)*sizeof(c), SEEK_SET);
+				fwrite(&c, sizeof(c), 1, ptr);
+				fclose(ptr);
+			}
+
+		}
+		else{
+			cout << "\n no existe el cliente seleccionado";
+			getch();
+		}
+	} while (op == 2);
+}
+void modificarproducto()
+{
+	producto p;
+	int idproducto, band2;
+	idproducto = menuproducto();
+	do{
+		if (idproducto != -1)
+		{
+			p = buscarproducto(idproducto);
+			do{
+				cout << "\nIntroduzca nombre: ";
+				gets(p.nombre);
+			} while (validarnombre(p.nombre) == false);
+
+			cout << "\nIntroduzca precio unitario: ";
+			p.preciounit = validarfloat();
+
+
+			do{
+				cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+				cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+				band2 = validarentero();
+			} while (band2 != 1 && band2 != 2);
+			if (band2 == 1)
+			{
+				FILE *ptr = fopen("Producto.dat", "r+b");
+				fseek(ptr, (p.idprod - 1)*sizeof(p), SEEK_SET);
+				fwrite(&p, sizeof(p), 1, ptr);
+				fclose(ptr);
+			}
+		}
+		else{
+			band2 = 3; cout << "\nno existe producto registrado";
+		}
+	} while (band2 == 2);
+}
+void modificarautomotor()
+{
+	automotor A;
+	int idautomotor, idcliente, op;
+	idautomotor = menuautomotor();
+	do{
+		if (idautomotor != -1)
+		{
+			A = buscarautomotorporidauto(idautomotor);
+			do{
+				cout << "Introduzca placa: ";
+				gets(A.placa);
+			} while (validarplaca(A.placa) == false);
+			cout << "\n escoja el cliente";
+			idcliente = menuclientes();
+			if (idcliente == -1)
+			{
+				cout << "El usuario no esta registrado..agreguelo!!!";
+				getch(); op = 3;
+			}
+			else{
+				A.idcliente = idcliente;
+			}
+			if (op != 3)
+			{
+				do{
+					cout << "\n Esta seguro de haber colocado sus datos correctamente?";
+					cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+					op = validarentero();
+				} while (op != 1 && op != 2);
+			}
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Automotor.dat", "r+b");
+				fseek(ptr, (A.idauto - 1)*sizeof(A), SEEK_SET);
+				fwrite(&A, sizeof(A), 1, ptr);
+				fclose(ptr);
+			}
+		}
+		else{
+			cout << "\nno existe automotor registrado";
+			op = 3; getch();
+		}
+	} while (op == 2);
+}
+void modificarvendedor()
+{
+	FILE *ptr;
+	vendedor ven;
+	int band, y = 0, b, telefono;
+	do{
+		ptr = fopen("Vendedor.dat", "r+b");
+		if (ptr != NULL&& existenciavendedor() == true)
+		{
+			b = menuvendedor();
+			if (b == -1)
+			{
+				cout << "el vendedor no se encuentra registrado...agreguelo!!!";
+				getch();
+				fclose(ptr);
+			}
+			else{
+				ven = buscarvendedorporidvendedor(b);
+				do{
+					cout << "Introduzca nombre: ";
+					gets(ven.nombre);
+				} while (validarnombre(ven.nombre) == false);
+				do{
+					cout << "Introduzca email";
+					gets(ven.email);
+				} while (validaremail(ven.email) == false);
+				do{
+					cout << "Introduzca telefono: ";
+					telefono = validarentero();
+					itoa(telefono, ven.telefono, 10);
+				} while (validartelefono(ven.telefono) == false);
+				ven.estado = 'S';
+				do{
+					cout << "\nesta seguro de sus datos?";
+					cout << "0.-si\n1.-volver a intentar";
+					band = validarentero();
+				} while (band != 0 && band != 1);
+				if (band == 0)
+				{
+					fseek(ptr, (b - 1)*sizeof(ven), SEEK_SET);
+					fwrite(&ven, sizeof(ven), 1, ptr);
+					fclose(ptr);
+				}
+			}
+		}
+		else
+		{
+			cout << "\nNo existe registro de vendedores";
+		}
+	} while (band == 1);
+}
+void modificarbomba()
+{
+	bomba b;
+	int op, idbomba, idproducto, idvendedor;
+	idbomba = menubomba();
+	do{
+		if (idbomba != -1)
+		{
+			b = obtidbomba(idbomba);
+			do{
+				cout << "introducir descripcion de la bomba: ";
+				fflush(stdin);
+				gets(b.descripcion);
+			} while (validarnombre(b.descripcion) == false);
+			idproducto = menuproducto();
+			if (idproducto == -1)
+			{
+				cout << "El producto no esta registrado..agreguelo!!!";
+				getch(); op = 3;
+			}
+			else
+			{
+				b.idprod = idproducto;
+			}
+			if (op != 3){
+				idvendedor = menuvendedor();
+				if (idvendedor == -1)
+				{
+					cout << "El vendedor no esta registrado..agreguelo!!!\n";
+					getch(); op = 3;
+				}
+				else
+				{
+					b.idvendedor = idvendedor;
+				}
+				if (op != 3)
+				{
+					do{
+						cout << "\n Esta seguro de haber colocado sus datos correctamente?\n";
+						cout << "\n1.SI     2.NO,VOLVER A INTENTAR.";
+						op = validarentero();
+					} while (op != 1 && op != 2);
+				}
+				if (op == 1)
+				{
+					FILE *ptr = fopen("Bomba.dat", "r+b");
+					fseek(ptr, (b.idbomba - 1)*sizeof(b), SEEK_SET);
+					fwrite(&b, sizeof(b), 1, ptr);
+					fflush(ptr);
+					fclose(ptr);
+				}
+			}
+		}
+	} while (op == 2);
+}
+void modificarcompra()
+{
+	int idcompra, op, cantidadaux; compras c; producto p, p2; bool z = true;
+	idcompra = menucomprasid();
+	if (idcompra != -1)
+	{
+		c = buscarcompraporid(idcompra);
+		cantidadaux = c.cantidad;
+		p2 = buscarproducto(c.idprod);
+		cout << "\nelegir el nuevo producto" << endl;
+		c.idprod = menuproducto();
+		if (c.idprod != -1)
+		{
+			p = buscarproducto(c.idprod);
+			fecha(c.fecha);
+			barrafecha(c.fecha);
+			do{
+				z = true;
+				cout << "\n cual sera la nueva cantidad?" << endl;
+				c.cantidad = validarfloat();
+				if (p.idprod == p2.idprod){
+					if ((p.stock - cantidadaux + c.cantidad)<0)
+					{
+						cout << "\n no es posible cambiar a esa cantidad ,generaria errores" << endl;
+						getch(); z = false;
+					}
+				}
+				else
+				{
+					if ((p2.stock - cantidadaux)<0)
+					{
+						cout << "\n no es posible cambiar esa cantidad a otro producto,generaria errores" << endl;
+						getch(); z = false;
+					}
+
+				}
+
+			} while (z == false);
+			do{
+				cout << "\ncuanto costo la compra en total?" << endl;
+				c.preciototal = validarentero();
+			} while (c.preciototal<0);
+			do{
+				cout << "\nesta seguro de los datos ingresados?\n1.-SI\n2.-NO" << endl;
+				op = validarentero();
+			} while (op != 1 && op != 2);
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Compras.dat", "r+b");
+				fseek(ptr, (c.idcompra - 1)*sizeof(c), SEEK_SET);
+				fwrite(&c, sizeof(c), 1, ptr);
+				fflush(ptr);
+				fclose(ptr);
+				if (p.idprod == p2.idprod)
+				{
+					int x = c.cantidad - cantidadaux;
+					if (x >= 0)
+					{
+						aumentarstock((x), p.idprod);
+					}
+					else{
+						x = x*(-1);
+						disminuirstock(x, p.idprod);
+					}
+				}
+				else{
+
+					disminuirstock((cantidadaux), p2.idprod);
+					aumentarstock((c.cantidad), p.idprod);
+				}
+			}
+
+
+		}
+		else{
+			cout << "\nno existe el producto seleccionado";
+			getch();
+		}
+
+	}
+	else
+	{
+		cout << "\nla compra seleccionada no existe";
+		getch();
+	}
+}
+void modificarventa()
+{
+	int idventa, x; venta v, v1; char placa[12]; vendedor ven; producto p1, p2; bool z = true; int op; bomba b;
+	idventa = menuventasid();
+	if (idventa != -1)
+	{
+		v = buscarventaporidventa(idventa);
+		p1 = buscarproducto(v.idprod);
+		v1 = v;
+		fecha(v.fecha);
+		barrafecha(v.fecha);
+		do{
+			cout << "\ningrese placa";
+			fflush(stdin);
+			gets(placa);
+		} while (validarplaca(placa) == false);
+		v.idauto = buscaridplaca(placa);
+		if (v.idauto != -1)
+		{
+			v.idbomba = menubomba();
+			b = obtidbomba(v.idbomba);
+			if (v.idbomba != -1)
+			{
+				p1 = buscarproducto(v.idprod);
+				v.idprod = b.idprod;
+
+				p2 = buscarproducto(b.idprod);
+				if (v.idprod != -1)
+				{
+					do{
+						z = true;
+						cout << "\n ingrese la nueva cantidad";
+						v.cantidad = validarfloat();
+						if (v.cantidad<0)
+							z = false;
+						x = v.cantidad - v1.cantidad;
+						if (x>0)
+						{
+							if (p1.idprod == v.idprod)
+							{
+								if ((p1.stock - x)<0)
+								{
+									z = false;
+								}
+							}
+							else{
+
+								if ((p2.stock - v.cantidad)<0)
+									z = false;
+							}
+						}
+						if (z == false)
+						{
+							cout << "\n la cantidad ingresada generara errores";
+							getch();
+						}
+					} while (z == false);
+					v.preciototal = v.cantidad*p2.preciounit;
+					do{
+						cout << "\nesta seguro de los datos ingresados?\n1.-SI\n2.-NO";
+						op = validarentero();
+					} while (op != 1 && op != 2);
+					if (op == 1)
+					{
+						FILE *ptr = fopen("Ventas.dat", "r+b");
+						fseek(ptr, (v.idventa - 1)*sizeof(v), SEEK_SET);
+						fwrite(&v, sizeof(v), 1, ptr);
+						fflush(ptr);
+						fclose(ptr);
+
+						if (p1.idprod == v.idprod)
+						{
+							if (x>0)
+							{
+								disminuirstock(x, p1.idprod);
+							}
+							else{
+								x = x*(-1);
+								aumentarstock(x, p1.idprod);
+							}
+						}
+						else
+						{
+							aumentarstock(v1.cantidad, p1.idprod);
+							disminuirstock(v.cantidad, v.idprod);
+						}
+					}
+
+				}
+				else{
+					cout << "\nel producto seleccionado no existe";
+					getch();
+				}
+			}
+			else{
+				cout << "\nla bomba seleccionada no existe";
+				getch();
+			}
+		}
+		else{
+			cout << "\n no esta registrada esta placa";
+			getch();
+		}
+
+	}
+	else
+	{
+		cout << "\nno existe la venta seleccionada";
+		getch();
+	}
+}
+//borrar
+void borrarcliente()
+{
+	FILE *ptr;
+	cliente c; char nombre[30]; int s; fechas f1, f2;
+	f1.anho = 0; f2.anho = 999999;
+	int h, band, y;
+	ptr = fopen("Cliente.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menuclientes();
+		c = obtidcliente(h);
+		s = calcularventasporcliente(h, f1, f2);
+		if (s>0)
+		{
+			cout << "\n este cliente tiene ventas relacionadas no puede eliminarlo";
+			getch();
+		}
+		else{
+			if (h>0)
+			{
+				do{
+					cout << "\nEsta seguro que quiere eliminar a:\n" << c.nombre << "  " << c.telefono << "   " << c.email << endl;
+					cout << "\n1.SI  2.NO\n";
+					cout << "\nEscoja una opcion: \n";
+					cin >> y;
+
+				} while (y != 1 && y != 0);
+				if (y == 1){
+					fseek(ptr, (h - 1)*sizeof(c), SEEK_SET);
+					c.estado = 'N';
+					fwrite(&c, sizeof(c), 1, ptr);
+					fflush(ptr);
+					eliminarautomotoresporcliente(h);
+
+				}
+				else
+				{
+					band = 3;
+				}
+			}
+			else
+			{
+				cout << "El cliente a eliminar no existe";
+				getch();
+			}
+
+			fclose(ptr);
+		}
+	}
+	else
+	{
+		cout << "No existe el archivo";
+		getch();
+	}
+
+}
+void eliminarproducto()
+{
+	FILE *ptr;
+	producto p;
+	int h, y, s = 0;
+	ptr = fopen("Producto.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menuproducto();
+
+		s = calcularventasporproducto(h);
+		if (s>0)
+		{
+			cout << "\neste producto tiene ventas relacionadas no puede eliminarla";
+			getch();
+		}
+		else{
+			if (h>0)
+			{
+				p = buscarproducto(h);
+				fseek(ptr, (h - 1)*sizeof(p), SEEK_SET);
+				do{
+					cout << "\nEsta seguro que quiere eliminar a:\n" << p.nombre << "  " << p.preciounit << "   " << p.stock << endl;
+					cout << "\n1.SI  2.NO\n";
+					cout << "\nEscoja una opcion: \n";
+					y = validarentero();
+
+				} while (y != 1 && y != 0);
+				if (y == 1){
+					p.estado = 'N';
+					fwrite(&p, sizeof(p), 1, ptr);
+					eliminarbombaporprod(p.idprod);
+				}
+			}
+			else
+			{
+				cout << "El producto a eliminar no existe";
+				getch();
+			}
+
+			fclose(ptr);
+		}
+	}
+	else
+	{
+		cout << "No existe el archivo"; getch();
+	}
+
+}
+void eliminarbombaporprod(int x)
+{
+	FILE *ptr;
+	bomba b;
+	ptr = fopen("Bomba.dat", "r+b");
+	if (ptr != NULL)
+	{
+		fread(&b, sizeof(b), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (b.idprod == x)
+			{
+				b.estado = 'N';
+			}
+			fread(&b, sizeof(b), 1, ptr);
+		}
+	}
+	else
+	{
+		cout << "No existe el archivo";
+	}
+	fclose(ptr);
+
+}
+void eliminarbombaporvendedor(int x)
+{
+	FILE *ptr = fopen("Bomba.dat", "r+b");
+	bomba b;
+	if (ptr != NULL)
+	{
+		fread(&b, sizeof(b), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (b.idvendedor == x)
+			{
+				b.estado = 'N';
+			}
+			fread(&b, sizeof(b), 1, ptr);
+		}
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "el archivo bomba no existe.... ";
+	}
+
+}
+void borrarvendedor()
+{
+	FILE *ptr;
+	vendedor ven; bomba b; fechas f1, f2;
+	f1.anho = 0; f2.anho = 99999;
+	int h, band, y; float s;
+	ptr = fopen("Vendedor.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menuvendedor();
+
+		b = obtidbomba(h);
+		s = calcularventasporbomba(b.idbomba, f1, f2);
+		if (s>0)
+		{
+			cout << "\n este vendedor tine ventas no puede eliminarlo";
+			getch();
+
+		}
+		else{
+			if (h>0)
+			{
+				ven = obtidvendedor(h);
+				fseek(ptr, (h - 1)*sizeof(ven), SEEK_SET);
+
+				do{
+					cout << "\nEsta seguro que quiere eliminar a:\n" << ven.nombre << "  " << ven.email << "   " << ven.telefono << endl;
+					cout << "\n1.SI  2.NO\n";
+					cout << "\nEscoja una opcion: \n";
+					cin >> y;
+
+				} while (y != 1 && y != 0);
+				if (y == 1){
+					ven.estado = 'N';
+					eliminarbombaporvendedor(h);
+					fwrite(&ven, sizeof(ven), 1, ptr);
+
+				}
+
+			}
+			else
+			{
+				cout << "El vendedor a eliminar no existe";
+				getch();
+			}
+
+			fclose(ptr);
+		}
+	}
+	else
+	{
+		cout << "No existe el archivo";
+	}
+}
+void borrarbomba()
+{
+	FILE *ptr;
+	bomba b; fechas f1, f2;
+	f1.anho = 0; f2.anho = 99999;
+	int h, band, y; float s = 0;
+	ptr = fopen("Bomba.dat", "r+b");
+	if (ptr != NULL)
+	{
+		h = menubomba();
+		s = calcularventasporbomba(h, f1, f2);
+		if (s>0)
+		{
+			cout << "\n esta bomba tiene ventas relacionadas no la puede eliminar";
+			getch();
+		}
+		else{
+			if (h>0)
+			{
+				b = obtidbomba(h);
+				fseek(ptr, (h - 1)*sizeof(b), SEEK_SET);
+				do{
+					cout << "\nEsta seguro que quiere eliminar a:\n" << b.descripcion << endl;
+					cout << "\n1.SI  2.NO\n";
+					cout << "\nEscoja una opcion: \n";
+					cin >> y;
+
+				} while (y != 1 && y != 2);
+				if (y == 1){
+					b.estado = 'N';
+					fwrite(&b, sizeof(b), 1, ptr);
+				}
+
+
+			}
+			else
+			{
+				cout << "La bomba a eliminar no existe";
+				getch();
+			}
+
+			fclose(ptr);
+		}
+	}
+	else
+	{
+		cout << "No existe el archivo";
+	}
+
+}
+void eliminarautomotoresporcliente(int x)
+{
+	FILE *ptr;
+	int y;
+	automotor a;
+	ptr = fopen("Automotor.dat", "r+b");
+	if (ptr != NULL)
+	{
+		fread(&a, sizeof(a), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (a.idcliente == x)
+			{
+				a.estado = 'N';
+				fseek(ptr, (-1)*sizeof(a), SEEK_CUR);
+				fwrite(&a, sizeof(a), 1, ptr);
+				fflush(ptr);
+			}
+			fread(&a, sizeof(a), 1, ptr);
+		}
+		fclose(ptr);
+	}
+	else
+	{
+		cout << "El archivo automotor no existe"; getch();
+	}
+
+}
+void eliminarautomor()
+{
+	int op, idautomotor;
+	idautomotor = menuautomotor();
+	int s = calcularventasporautomotor(idautomotor);
+	if (s>0)
+	{
+		cout << "\n este automotor tiene ventas relacionadas no puede eliminarlo";
+		getch();
+	}
+	else{
+		do{
+			cout << "\n esta seguro de que quiere eliminar?";
+			cout << "\n1.-si\n2.-no";
+			op = validarentero();
+		} while (op != 1 && op != 2);
+		if (op == 1)
+		{
+			if (idautomotor != -1)
+			{
+				FILE *ptr;
+				int y;
+				automotor a;
+				ptr = fopen("Automotor.dat", "r+b");
+				if (ptr != NULL)
+				{
+					fread(&a, sizeof(a), 1, ptr);
+					while (feof(ptr) == false)
+					{
+						if (idautomotor == a.idauto)
+						{
+							a.estado = 'N'; fseek(ptr, (-1)*sizeof(a), SEEK_CUR);
+							fwrite(&a, sizeof(a), 1, ptr);
+							fflush(ptr);
+						}
+						fread(&a, sizeof(a), 1, ptr);
+					}
+
+				}
+				else
+				{
+					cout << "\nerror"; getch();
+				}
+				fclose(ptr);
+			}
+
+			else
+			{
+				cout << "no existe ese automotor";
+				getch();
+			}
+		}
+	}
+
+}
+void eliminarventa()
+{
+	int idventa, op; venta v;
+	idventa = menuventasid();
+	if (idventa != -1)
+	{
+		v = buscarventaporidventa(idventa);
+
+		do{
+			cout << "\nesta seguro que quiere eliminar la venta?";
+			cout << "\n1.-SI\n2.-NO)";
+			op = validarentero();
+		} while (op != 1 && op != 2);
+		if (op == 1)
+		{
+			FILE *ptr = fopen("Ventas.dat", "r+b");
+			fseek(ptr, (idventa - 1)*sizeof(v), SEEK_SET);
+			v.estado = 'N';
+			fwrite(&v, sizeof(v), 1, ptr);
+			fflush(ptr);
+			fclose(ptr);
+			aumentarstock(v.cantidad, v.idprod);
+		}
+	}
+
+}
+void eliminarcompra()
+{
+	int idcompra, op; compras c; producto p;
+	idcompra = menucomprasid();
+	c = buscarcompraporid(idcompra);
+	p = buscarproducto(c.idprod);
+	if (idcompra != -1)
+	{
+		if (c.cantidad>p.stock)
+		{
+			cout << "\n no se puede eliminar esta compra es necesaria para ventas realisadas";
+			getch();
+		}
+		else{
+			do{
+				cout << "\nesta seguro que quiere eliminar la venta?";
+				cout << "\n1.-SI\n2.-NO)";
+				op = validarentero();
+			} while (op != 1 && op != 2);
+			if (op == 1)
+			{
+				FILE *ptr = fopen("Compras.dat", "r+b");
+				fseek(ptr, (idcompra - 1)*sizeof(c), SEEK_SET);
+				c.estado = 'N';
+				fwrite(&c, sizeof(c), 1, ptr);
+				fflush(ptr);
+				fclose(ptr);
+				disminuirstock(c.cantidad, c.idprod);
+			}
+
+		}
+
+	}
+	else{
+		cout << "\ncompra seleccionada inexistente";
+		getch();
+	}
+
+
+}
+//menu
+void reportesmenu()
+{
+	int i, p, q;
+	do{
+		cout << "\t REPORTES:\t";
+		cout << "\n1.GENERALES\n";
+		cout << "\n2.POR TIEMPO\n";
+		cout << "\n0.SALIR";
+		cout << "\nElija una opcion:";
+		i = validarentero();
+		system("cls");
+		switch (i)
+		{
+		case 1: do{
+			cout << "\n1.Clientes";
+			cout << "\n2.Vendedores";
+			cout << "\n3.Productos";
+			cout << "\n4.Automotores";
+			cout << "\n5.Bombas";
+			cout << "\n6.Compras";
+			cout << "\n7.Ventas";
+			cout << "\n0.SALIR";
+			cout << "\nEscoja una opcion:\n ";
+			p = validarentero();
+			system("cls");
+			switch (p)
+			{
+			case 1:
+				reporteclientesgenerales();
+				getch();
+
+				break;
+			case 2:
+				reportevendedorgenerales();
+				getch();
+				break;
+			case 3:
+				reporteproductosgenerales();
+				getch();
+				break;
+			case 4:
+				reporteautomotorgenerales();
+				getch();
+				break;
+			case 5:
+				reportebombagenerales();
+				getch();
+				break;
+			case 6:
+				reportecompragenerales();
+				getch();
+				break;
+			case 7:
+				reporteventa();
+				getch();
+				break;
+			case 0: cout << "SALIR";
+				break;
+			default:cout << "ERROR";
+				getch();
+				break;
+			}
+			system("cls");
+		} while (p != 0);
+
+		break;
+		case 2: do{
+			cout << "\n1.Ranking Bomba";
+			cout << "\n2.Ranking Clientes";
+			cout << "\n3.Compras";
+			cout << "\n4.Ventas";
+			cout << "\n0.SALIR";
+			cout << "\nEscoja una opcion: \n";
+			q = validarentero();
+			system("cls");
+			switch (q)
+			{
+			case 1:
+				rankingbomba();
+				getch();
+				break;
+			case 2:
+				rankingclientes();
+				getch();
+				break;
+			case 3:
+				reporteporfechacompras();
+				getch();
+				break;
+			case 4:
+				reporteporfechaventas();
+				getch();
+				break;
+			case 0:cout << "SALIR";
+				break;
+			default:cout << "ERROR";
+				getch();
+				break;
+			}
+			system("cls");
+
+		} while (q != 0);
+		break;
+		case 0: cout << "SALIR";
+			break;
+		default:cout << "ERROR";
+			getch();
+			break;
+
+		}
+		system("cls");
+
+	} while (i != 0);
+}
+void ABMreporte()
+{
+	int y;
+	do{
+		cout << "A\244adir/Modificar/Borrar";
+		cout << "\n1.Clientes";
+		cout << "\n2.Vendedores";
+		cout << "\n3.Productos";
+		cout << "\n4.Automotores";
+		cout << "\n5.Bombas";
+		cout << "\n6.compras";
+		cout << "\n7.ventas";
+		cout << "\n0.SALIR";
+		cout << "\nEscoja una opcion:\n ";
+		y = validarentero();
+		system("cls");
+		switch (y)
+		{
+		case 1:
+			ambclientes();
+			break;
+		case 2:
+			ambvendedor();
+
+			break;
+		case 3:
+			ambproducto();
+
+			break;
+		case 4:
+			ambautomotor();
+
+			break;
+		case 5:
+			ambbomba();
+
+			break;
+		case 6:
+			ambcompras();
+			break;
+		case 7:
+			ambventas();
+			break;
+		case 0: cout << "SALIR";
+			break;
+		default:cout << "ERROR";
+			getch();
+			break;
+		}
+		system("cls");
+	} while (y != 0);
+
+}
+
+
+void main()
+{
+	int o;
+
+	do{
+		cout << "\tMENU\t";
+		cout << "\n1.Vender\n";
+		cout << "\n2.Comprar\n";
+		cout << "\n3.Reportes\n";
+		cout << "\n4.A\244adir/Borrar/Modificar\n";
+		cout << "\n0.SALIR";
+		cout << "\nEscoja una opcion: \n";
+		o = validarentero();
+		system("cls");
+		switch (o)
+		{
+		case 1:
+			vender();
+			break;
+		case 2:
+			comprar();
+			break;
+		case 3:reportesmenu();
+
+			break;
+		case 4:ABMreporte();
+
+			break;
+		case 0: cout << "SALIR";
+			break;
+		default: cout << "ERROR";
+			getch();
+			break;
+		}
+		system("cls");
+	} while (o != 0);
+}
+//desarrollo de funciones
+//menus
+int menuclientes()
+{
+	FILE *ptr;
+	cliente c;
+	int y = 1, z, band;
+	do{
+		band = 1;
+		ptr = fopen("Cliente.dat", "rb");
+		if (ptr != NULL&&existenciacliente() == true)
+		{
+			fread(&c, sizeof(c), 1, ptr);
+			cout << "\nSELECCIONE UN CLIENTE\n";
+			cout << "N" << setw(20) << "NOMBRE" << setw(20) << "EMAIL" << setw(28) << "TELEFONO" << endl;
+			while (feof(ptr) == 0)
+			{
+				if (c.estado == 'S')
+				{
+					cout << y << " . " << setw(15) << c.nombre << setw(30) << c.email << setw(20) << c.telefono << endl;
+				}
+				fread(&c, sizeof(c), 1, ptr);
+				y++;
+			}
+			cout << "\nElige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0){
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(c), SEEK_SET);
+
+				fread(&c, sizeof(c), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || c.estado == 'N')
+				{
+					band = -1;
+				}
+				fclose(ptr);
+				if (band != -1)
+				{
+					return c.idcliente;
+				}
+				else{
+
+					return -1;
+				}
+			}
+		}
+		else
+		{
+			fclose(ptr);
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+int menuproducto()
+{
+	FILE *ptr;
+	producto p;
+	int y = 1, z, band;
+	do{
+		band = 1;
+		ptr = fopen("Producto.dat", "rb");
+		if (ptr != NULL&&existenciaproducto() == true)
+		{
+			fread(&p, sizeof(p), 1, ptr);
+			cout << "\nSELECCIONE UN PRODUCTO\n";
+			cout << "n" << "." << setw(20) << "NOMBRE" << setw(20) << "PRECIO UNITARIO" << setw(20) << "STOCK" << endl;
+			while (feof(ptr) == false)
+			{
+				if (p.estado == 'S')
+				{
+					cout << y << "." << setw(20) << p.nombre << setw(20) << p.preciounit << setw(20) << p.stock << endl;
+				}
+				fread(&p, sizeof(p), 1, ptr); y++;
+			}
+			cout << "\nElige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0){
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(p), SEEK_SET);
+				fread(&p, sizeof(p), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || p.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return p.idprod;
+				}
+				else{
+					return -1;
+				}
+			}
+		}
+		else
+		{
+			fclose(ptr);
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+int menuvendedor()
+{
+	FILE *ptr;
+	vendedor ven;
+	int y = 1, z, band;
+	do{
+		band = 1;
+		ptr = fopen("Vendedor.dat", "a+b");
+		if (ptr != NULL&&existenciavendedor() == true)
+		{
+			fread(&ven, sizeof(ven), 1, ptr);
+			cout << "\nSELECCIONE UN VENDEDOR\n";
+			cout << "n" << "." << "NOMBRE" << setw(30) << "EMAIL" << setw(30) << "TELEFONO" << endl;
+			while (feof(ptr) == false)
+			{
+				if (ven.estado == 'S')
+				{
+					cout << y << "." << ven.nombre << setw(30) << ven.email << setw(30) << ven.telefono << endl;
+				}
+				fread(&ven, sizeof(ven), 1, ptr); y++;
+			}
+			cout << "\nElige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0)
+			{
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(ven), SEEK_SET);
+				fread(&ven, sizeof(ven), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || ven.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return ven.idvendedor;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+		}
+		else
+		{
+			fclose(ptr);
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+bool menuventas(venta &v){
+	vendedor ven; producto prod; bomba bom; int cont = 1; int op;
+	do{
+		FILE *ptr = fopen("Bomba.dat", "rb");
+		if (ptr != NULL&&existenciavendedor() == true)
+		{
+			fread(&bom, sizeof(bom), 1, ptr);
+			cout << "\nseleccione que vendedor es usted";
+			cout << "\n  vendedor";
+			cout.width(20);
+			cout << "producto";
+			cout.width(20);
+			cout << "precio unitario" << endl;
+			cont = 1;
+			while (feof(ptr) == 0)
+			{
+				if (bom.estado == 'S')
+				{
+					ven = buscarvendedorporidvendedor(bom.idvendedor);
+					prod = buscarproducto(bom.idprod);
+					cout << cont << ".-" << ven.nombre;
+					cout.width(20);
+					cout << prod.nombre;
+					cout.width(20);
+					cout << prod.preciounit << endl;
+
+				}cont++;
+				fread(&bom, sizeof(bom), 1, ptr);
+			}
+			cout << "\n0.-salir\n";
+			op = validarentero();
+			if (op != 0)
+			{
+				fseek(ptr, (op - 1)*sizeof(bom), SEEK_SET);
+				fread(&bom, sizeof(bom), 1, ptr);
+				if ((feof(ptr) == 0 || op == 1) && bom.estado == 'S')
+				{
+					v.idbomba = bom.idbomba;
+					prod = buscarproducto(bom.idprod);
+					v.idprod = prod.idprod;
+
+					do{
+						cout << "\ningrese la cantidad a vender\n";
+						v.cantidad = validarfloat();
+						if (v.cantidad>prod.stock || v.cantidad <= 0)
+						{
+							cout << "\n la cantidad sobrepasa el stock\n"; getch();
+						}
+					} while (v.cantidad>prod.stock || v.cantidad<0);
+					v.preciototal = v.cantidad*prod.preciounit;
+					cout << "\n el precio total sera \n" << v.preciototal << endl; return true;
+				}
+				else{
+
+					cout << "\nno existe el registro seleccionado\n";
+					op = -5; fclose(ptr);
+				}
+
+			}
+		}
+		else{
+			cout << "\nno existe ningun vendedor registrado\n"; return false;
+			getch();
+		}
+	} while (op == -5);
+
+}
+bool menucompras(compras &c, producto &p)
+{
+	int cont = 1, op;
+	do{
+		FILE *ptr = fopen("Producto.dat", "rb");
+
+		if (ptr != NULL&&existenciaproducto() == true)
+		{
+			fread(&p, sizeof(p), 1, ptr);
+			cout << "\n seleccione su producto\n";
+			cout << "\nproducto";
+			cout.width(20);
+			cout << "stock" << endl;
+			c.estado = 'S';
+			cont = 1;
+			while (feof(ptr) == 0)
+			{
+				if (p.estado == 'S')
+				{
+					cout << cont << ".-";
+					cout << p.nombre;
+					cout.width(20);
+					cout << p.stock;
+					cout << endl;
+				}
+				cont++;
+				fread(&p, sizeof(p), 1, ptr);
+			}
+			cout << "\n0.-salir\n";
+			op = validarentero();
+			if (op != 0)
+			{
+				fseek(ptr, (op - 1)*sizeof(p), SEEK_SET);
+				fread(&p, sizeof(p), 1, ptr);
+				if ((feof(ptr) == 0 || op == 1) && p.estado == 'S')
+				{
+					c.idprod = p.idprod;
+					do{
+						cout << "\n que cantidad comprara?\n";
+						c.cantidad = validarfloat();
+						p.stock = p.stock + c.cantidad;
+					} while (c.cantidad <= 0);
+					cout << "\n cuanto es el precio total de la compra\n";
+					c.preciototal = validarfloat(); fclose(ptr); return true;
+				}
+				else{
+					cout << "\nno existe el registro seleccionado\n";
+					op = -5;
+				}
+			}fclose(ptr);
+		}
+		else{
+			cout << "\n no existe producto registrado,primero registrar\n"; fclose(ptr); return false;
+			getch();
+		}
+	} while (op == -5);
+}
+int menuautomotor()
+{
+	FILE *ptr;
+	automotor a;
+	cliente c;
+	int y = 1, z, band;
+	do{
+		band = 1; y = 1;
+		ptr = fopen("Automotor.dat", "rb");
+		if (ptr != NULL&&existenciaautomotor() == true)
+		{
+			fread(&a, sizeof(a), 1, ptr);
+			cout << "\nSELECCIONE UN AUTOMOTOR\n";
+			cout << "n" << " . " << setw(20) << "Placa" << setw(20) << "Cliente" << endl;
+			while (feof(ptr) == false)
+			{
+				if (a.estado == 'S')
+				{
+					c = obtidcliente(a.idcliente);
+					cout << y << " . " << setw(20) << a.placa << setw(20) << c.nombre << endl;
+				}fread(&a, sizeof(a), 1, ptr);
+				y++;
+			}
+			cout << "\nElige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0)
+			{
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(a), SEEK_SET);
+				fread(&a, sizeof(a), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || a.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return a.idauto;
+				}
+				else
+				{
+					cout << "\n el registro seleccionado no esta\n"; getch();
+				}
+			}
+		}
+		else
+		{
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+int menubomba()
+{
+	FILE *ptr;
+	bomba b;
+	int y = 1, z, band;
+	do{
+		band = 1, y = 1;
+		ptr = fopen("Bomba.dat", "rb");
+		if (ptr != NULL&&existenciabomba() == true)
+		{
+			fread(&b, sizeof(b), 1, ptr);
+			cout << "\nSELECCIONE UNA BOMBA\n";
+			cout << "n" << " . " << "DESCRIPCION" << endl;
+			while (feof(ptr) == false)
+			{
+				if (b.estado == 'S')
+				{
+					cout << y << " . " << b.descripcion << endl;
+
+				}y++;
+				fread(&b, sizeof(b), 1, ptr);
+			}
+			cout << "\nElige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0)
+			{
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(b), SEEK_SET);
+				fread(&b, sizeof(b), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || b.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return b.idbomba;
+				}
+				else
+				{
+					cout << "\n el registro no se encuentra\n"; getch();
+				}
+			}
+		}
+		else
+		{
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+int menucomprasid()
+{
+	FILE *ptr;
+	compras c; int num;
+	int y = 1, z, band;
+	do{
+		band = 1;
+		ptr = fopen("Compras.dat", "rb");
+		if (ptr != NULL&&existenciacompra() == true)
+		{
+			reportecompragenerales();
+			cout << "Elige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0){
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(c), SEEK_SET);
+				fread(&c, sizeof(c), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || c.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return c.idcompra;
+				}
+				else
+				{
+					cout << "\n el registro no se encuentra"; getch(); cout << endl;
+				}
+			}
+		}
+		else
+		{
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+int menuventasid()
+{
+	FILE *ptr;
+	venta v;
+	int y = 1, z, band;
+	do{
+		band = 1;
+		ptr = fopen("Ventas.dat", "rb");
+		if (ptr != NULL&&existenciaventas() == true)
+		{
+			reporteventa();
+			cout << "Elige una opcion...si no es ninguno de ellos presione 0 \n";
+			z = validarentero();
+			if (z == 0){
+				fclose(ptr);
+				return -1;
+			}
+			else{
+				fseek(ptr, (z - 1)*sizeof(v), SEEK_SET);
+				fread(&v, sizeof(v), 1, ptr);
+				if ((feof(ptr) != 0 && z != 1) || v.estado == 'N')
+					band = -1;
+				fclose(ptr);
+				if (band != -1)
+				{
+					return v.idventa;
+				}
+				else
+				{
+					cout << "\n el registro no se encuentra\n"; getch(); cout << endl;
+				}
+			}
+		}
+		else
+		{
+			return -1;
+
+		}
+
+	} while (band == -1);
+}
+
+//validar
+bool validarplaca(char placa[])
+{
+	int i = 0;
+	if (strlen(placa) != 7)
+	{
+		cout << "error en placa"; getch();
+		return false;
+	}
+	else {
+		for (i = 0; i<4; i++)
+		{
+			if (placa[i] != '0'&&placa[i] != '1'&&placa[i] != '2'&&placa[i] != '3'&&placa[i] != '4'&&placa[i] != '5'&&placa[i] != '6'&&placa[i] != '7'&&placa[i] != '8'&&placa[i] != '9')
+			{
+				cout << "error en placa"; getch();
+				return false;
+			}
+		}
+		for (i = i; i<7; i++)
+		{
+			if (placa[i]<'A' || placa[i]>'Z')
+			{
+				cout << "error en placa"; getch(); return false;
+			}
+		}
+	}
+	return true;
+}
+int validarentero()
+{
+	int r, i; bool k;
+	char num[12];
+	do{
+		do{
+			cout << "\ningrese numero: ";
+			fflush(stdin);
+			gets(num);
+		} while (strlen(num) == 0);
+		i = 0; k = true;
+		if (num[0] == '-')
+		{
+			i++;
+			if (strlen(num) == 1)
+				k = false;
+		}
+		while (i<strlen(num))
+		{
+			if ((num[i] != '0') && (num[i] != '1') && (num[i] != '2') && (num[i] != '3') && (num[i] != '4') && (num[i] != '5') && (num[i] != '6') && (num[i] != '7') && (num[i] != '8') && (num[i] != '9'))
+			{
+				k = false; break;
+			}
+			i++;
+		}
+		if (k == false){ cout << "ERROR FATAL : DATO NO NUMERICO"; }
+	} while (k == false);
+	r = atoi(num);
+	return(r);
+}
+float validarfloat()
+{
+	float r; int i; bool k;
+	char num[12];
+	do{
+		do{
+			cout << "\ningrese numero: ";
+			gets_s(num);
+		} while (strlen(num) == 0);
+		i = 0; k = true;
+		if (num[0] == '.')
+		{
+			k = false;
+		}
+		if (num[0] == '-')
+		{
+			i++;
+			if (strlen(num) == 1)
+				k = false;
+		}
+		while (i<strlen(num))
+		{
+			if ((num[i] != '.') && (num[i] != '0') && (num[i] != '1') && (num[i] != '2') && (num[i] != '3') && (num[i] != '4') && (num[i] != '5') && (num[i] != '6') && (num[i] != '7') && (num[i] != '8') && (num[i] != '9'))
+			{
+				k = false; break;
+			}
+			i++;
+		}
+		if (k == false){ cout << "ERROR FATAL : DATO NO NUMERICO"; }
+	} while (k == false);
+	r = atof(num);
+
+	return(r);
+}
+bool validaremail(char e[80])
+
+{
+	int n, i, cont = 0, contcom = 0;
+	n = strlen(e);
+	if (n<7)
+		return false;
+	if (e[n - 1] != 'm' || e[n - 2] != 'o' || e[n - 3] != 'c' || e[n - 4] != '.')
+		return false;
+
+
+	if (e[0] == '@')
+		return false;
+	for (i = 1; i < n; i++)
+	{
+		if (e[i] == '.')
+		{
+			if (e[i + 1] == 'c')
+			{
+				if (e[i + 2] == 'o')
+				{
+					if (e[i + 3] == 'm')
+					{
+						contcom++;
+					}
+				}
+			}
+		}
+		if (e[i] == '@')
+			cont++;
+
+	}
+	if (cont != 1 || contcom != 1)
+	{
+		return false;
+	}
+
+	return true;
+
+}
+bool validarnombre(char nombre[30])
+{
+	if (strlen(nombre) == 0)
+		return false;
+	if (nombre[0] == ' ')
+		return false;
+	for (int i = 0; i<strlen(nombre); i++)
+	{
+		if (nombre[i] == ' ')
+		{
+		}
+		else{
+			if (nombre[i]<'A' || nombre[i]>'Z')
+			{
+				cout << "\nerror en nombre"; getch(); return false;
+			}
+		}
+	}
+	return true;
+}
+bool validarnit(char ni[10])
+{
+	int n;
+	n = strlen(ni);
+	if (n >= 7 && n <= 10)
+	{
+		return true;
+	}
+	return false;
+}
+bool validartelefono(char t[12])
+{
+	int n;
+	n = strlen(t);
+	if (t[0] == '3'&&n == 7)
+	{
+		return true;
+	}
+
+	if (t[0] == '7'&&n == 8)
+	{
+		return true;
+	}
+	if (t[0] == '6'&&n == 8)
+	{
+		return true;
+	}
+
+	return false;
+}
+bool verificarplacaunica(char placa[])
+{
+	automotor a;
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	while (feof(ptr) == 0)
+	{
+		if (a.estado == 'S')
+		{
+			if (strcmp(placa, a.placa) == 0)
+			{
+				fclose(ptr);
+				return false;
+			}
+		}
+		fread(&a, sizeof(a), 1, ptr);
+	}
+	fclose(ptr);
+	return true;
+}
+bool verificarbombasolounvendedor(int idvendedor)
+{
+	bomba b;
+	FILE *ptr = fopen("Bomba.dat", "rb");
+
+	while (fread(&b, sizeof(b), 1, ptr), !feof(ptr))
+	{
+		if (b.idvendedor == idvendedor)
+		{
+			fclose(ptr);
+			return false;
+		}
+	}
+	fclose(ptr);
+	return true;
+}
+bool verificarsiestaenelvector(int idauto, int vec[fil], int n)
+{
+	for (int i = 0; i<n; i++)
+	{
+		if (idauto == vec[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+//buscar
+int buscaridplaca(char placa[])
+{
+	automotor A;
+	FILE * ptr = fopen("Automotor.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&A, sizeof(A), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (strcmp(A.placa, placa) == 0)
+			{
+				fclose(ptr);
+				return A.idauto;
+			}
+			fread(&A, sizeof(A), 1, ptr);
+		}
+		fclose(ptr);
+		return -1;
+	}
+}
+vendedor buscarvendedorporidvendedor(int id)
+{
+	vendedor v;
+
+	FILE *ptr = fopen("Vendedor.dat", "rb");
+	fread(&v, sizeof(v), 1, ptr);
+	while (feof(ptr) == 0)
+	{
+		if (v.idvendedor == id)
+		{
+			fclose(ptr);
+			return v;
+		}
+		fread(&v, sizeof(v), 1, ptr);
+	}
+}
+producto buscarproducto(int idprod)
+{
+	producto p;
+
+	FILE *ptr = fopen("Producto.dat", "rb");
+	fread(&p, sizeof(p), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (p.idprod == idprod)
+		{
+			fclose(ptr);
+			return p;
+		}
+		fread(&p, sizeof(p), 1, ptr);
+	}
+}
+void buscarnombrecliente(int id, char nombre[30])
+{
+	cliente c;
+	FILE *ptr = fopen("Cliente.dat", "rb");
+	fread(&c, sizeof(c), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (c.idcliente == id)
+		{
+			strcpy(nombre, c.nombre);
+		}
+
+	}
+	fclose(ptr);
+}
+vendedor buscarvendedorporidbomba(int id)
+{
+	vendedor v; bomba b;
+	FILE *ptr = fopen("Bomba.dat", "rb");
+	fread(&b, sizeof(b), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (b.idbomba == id)
+		{
+			fclose(ptr);
+			v = buscarvendedorporidvendedor(b.idvendedor); return v;
+		}
+		fread(&b, sizeof(b), 1, ptr);
+	}
+
+}
+automotor buscarautomotorporidauto(int id)
+{
+	automotor A;
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&A, sizeof(A), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (A.idauto == id&& A.estado == 'S')
+			{
+				fclose(ptr);
+				return A;
+			}
+			fread(&A, sizeof(A), 1, ptr);
+		}fclose(ptr);
+
+	}
+	else{
+		fclose(ptr);
+		cout << "no existe registro de auto";
+	}
+}
+bomba obtidbomba(int x)
+{
+	FILE *ptr;
+	bomba b;
+	ptr = fopen("Bomba.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&b, sizeof(b), 1, ptr);
+		while (feof(ptr) == false && b.idvendedor != x)
+		{
+			fread(&b, sizeof(b), 1, ptr);
+		}
+		fclose(ptr);
+		if (b.estado == 'S')
+		{
+			return b;
+		}
+	}
+}
+cliente obtidcliente(int x)
+{
+	FILE *ptr;
+	cliente c;
+	ptr = fopen("Cliente.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&c, sizeof(c), 1, ptr);
+		while (feof(ptr) == 0)
+		{
+			if (x == c.idcliente)
+			{
+				fclose(ptr);
+				if (c.estado == 'S')
+					return c;
+			}
+			fread(&c, sizeof(c), 1, ptr);
+		}
+
+	}
+}
+vendedor obtidvendedor(int x)
+{
+	FILE *ptr;
+	vendedor ven;
+	ptr = fopen("Vendedor.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&ven, sizeof(ven), 1, ptr);
+		while (feof(ptr) == false && ven.idvendedor != x)
+		{
+			fread(&ven, sizeof(ven), 1, ptr);
+		}
+		fclose(ptr);
+		if (ven.estado == 'S')
+			return ven;
+	}
+}
+cliente buscarclienteporidauto(int idauto)
+{
+	automotor a;
+	cliente c;
+
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	fread(&a, sizeof(a), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (a.estado == 'S')
+		{
+			if (a.idauto == idauto)
+			{
+				c = obtidcliente(a.idcliente);
+				fclose(ptr);
+				return c;
+			}
+		}
+		fread(&a, sizeof(a), 1, ptr);
+	}
+
+}
+venta buscarventaporidventa(int idventa)
+{
+	FILE *ptr;
+	venta ven;
+	ptr = fopen("Ventas.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&ven, sizeof(ven), 1, ptr);
+		while (feof(ptr) == false && ven.idventa != idventa)
+		{
+			fread(&ven, sizeof(ven), 1, ptr);
+		}
+		fclose(ptr);
+		if (ven.estado == 'S')
+			return ven;
+	}
+}
+compras buscarcompraporid(int idcompra)
+{
+	FILE *ptr;
+	compras c;
+	ptr = fopen("Compras.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&c, sizeof(c), 1, ptr);
+		while (feof(ptr) == false && c.idcompra != idcompra)
+		{
+			fread(&c, sizeof(c), 1, ptr);
+		}
+		fclose(ptr);
+		if (c.estado == 'S')
+			return c;
+	}
+
+
+}
+automotor buscarautomotorporidcliente(int idcliente)
+{
+	automotor A;
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&A, sizeof(A), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (A.idcliente == idcliente&& A.estado == 'S')
+			{
+				fclose(ptr);
+				return A;
+			}
+			fread(&A, sizeof(A), 1, ptr);
+		}fclose(ptr);
+
+	}
+	else{
+		fclose(ptr);
+		cout << "no existe registro de auto";
+	}
+}
+
+//existencia
+bool existenciaventas()
+{
+	venta v;
+	FILE *ptr = fopen("Ventas.dat", "rb");
+	fread(&v, sizeof(v), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (v.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+
+	}
+	fclose(ptr);
+	return false;
+}
+bool existenciaautomotor()
+{
+	automotor a;
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	fflush(ptr);
+	fread(&a, sizeof(a), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (a.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+		fread(&a, sizeof(a), 1, ptr);
+	}
+	fclose(ptr);
+	return false;
+
+}
+bool existenciabomba()
+{
+	bomba c;
+	FILE *ptr = fopen("Bomba.dat", "rb");
+	fread(&c, sizeof(c), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (c.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+		fread(&c, sizeof(c), 1, ptr);
+	}
+	fclose(ptr);
+	return false;
+}
+bool existenciacompra(){
+	compras c;
+	FILE *ptr = fopen("Compras.dat", "rb");
+	fread(&c, sizeof(c), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (c.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+		fread(&c, sizeof(c), 1, ptr);
+	}
+	fclose(ptr);
+	return false;
+}
+bool existenciacliente()
+{
+	cliente c;
+	FILE *ptr = fopen("Cliente.dat", "rb");
+	fread(&c, sizeof(c), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (c.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+		fread(&c, sizeof(c), 1, ptr);
+	}
+	fclose(ptr);
+	return false;
+
+}
+bool existenciavendedor()
+{
+	vendedor v;
+	FILE *ptr = fopen("Vendedor.dat", "rb");
+	fread(&v, sizeof(v), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (v.estado == 'S')
+		{
+			fclose(ptr);
+			return true;
+		}
+		fread(&v, sizeof(v), 1, ptr);
+
+	}
+	fclose(ptr);
+	return false;
+
+}
+bool existenciaproducto()
+{
+	producto p;
+	FILE *ptr = fopen("Producto.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&p, sizeof(p), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (p.estado == 'S')
+			{
+				fclose(ptr);
+				return true;
+			}
+
+		}
+		fclose(ptr);
+		return false;
+	}
+	else
+	{
+	}
+
+}
+//fecha
+
+int compararfechas(fechas f1, fechas f2)
+{
+	if (f1.anho<f2.anho)
+	{
+		return 1;
+	}
+	else
+	{
+		if (f1.anho>f2.anho)
+		{
+			return -1;
+		}
+		else
+		{
+			if (f1.anho == f2.anho)
+			{
+				if (f1.mes<f2.mes)
+				{
+					return 1;
+				}
+				else
+				{
+					if (f1.mes>f2.mes)
+						return -1;
+					else
+					{
+						if (f1.mes == f2.mes)
+						{
+							if (f1.dia<f2.dia)
+							{
+								return 1;
+							}
+							else
+							{
+								if (f1.dia>f2.dia)
+									return -1;
+								else
+									return 0;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+void convertirfecha(fechas &f, char fecha[10])
+{
+	char dia[2], mes[2], anho[4];
+	dia[0] = fecha[0];
+	dia[1] = fecha[1];
+	dia[2] = '\0';
+	mes[0] = fecha[2];
+	mes[1] = fecha[3];
+	mes[2] = '\0';
+	anho[0] = fecha[4];
+	anho[1] = fecha[5];
+	anho[2] = fecha[6];
+	anho[3] = fecha[7];
+
+	f.dia = atoi(dia);
+	f.mes = atoi(mes);
+	f.anho = atoi(anho);
+}
+void barrafecha(char fecha[10])
+{
+	char aux[10];
+	aux[0] = fecha[0];
+	aux[1] = fecha[1];
+	aux[2] = '/';
+	aux[3] = fecha[2];
+	aux[4] = fecha[3];
+	aux[5] = '/';
+	aux[6] = fecha[4];
+	aux[7] = fecha[5];
+	aux[8] = fecha[6];
+	aux[9] = fecha[7];
+	aux[10] = '\0';
+	strcpy(fecha, aux);
+
+}
+void fecha(char fecha[]){
+	int day, month, year, fechatotal, band = 1; char fechas[10], dia[2], mes[2], anho[4];
+	char fechaaux[10];
+
+	do{
+		band = 1;
+		do{
+			cout << endl << "ingrese la fecha" << endl;
+			fflush(stdin);
+			gets(fechas);
+			if (validarformatofecha(fechas) == false)
+				cout << "\n ingreso mal la fecha" << endl;
+		} while (validarformatofecha(fechas) == false);
+
+		dia[0] = fechas[0];
+		dia[1] = fechas[1];
+		dia[2] = '\0';
+		mes[0] = fechas[3];
+		mes[1] = fechas[4];
+		mes[2] = '\0';
+		anho[0] = fechas[6];
+		anho[1] = fechas[7];
+		anho[2] = fechas[8];
+		anho[3] = fechas[9];
+		anho[4] = '\0';
+		day = atoi(dia);
+		month = atoi(mes);
+		year = atoi(anho);
+
+		if ((month == 2) && !((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 28) || (day <= 0)))
+		{
+			cout << "\n\nFecha incorrecta: Este mes solo tiene 28 d\241as"; band = 2;
+		}
+
+		else
+		{
+			if ((month == 2) && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) && ((day > 29) || (day <= 0)))
+			{
+				cout << "\n\nFecha incorrecta: Este mes solo tiene 29 d\241as"; band = 2;
+			}
+
+
+
+
+			else
+			{
+				if (((month == 1) || (month == 3) || (month == 5) || (month == 7) || (month == 8) || (month == 10) || (month == 12)) && ((day > 31) || (day <= 0)))
+				{
+					cout << "\n\nFecha incorrecta: Este mes solo tiene 31 d\241as"; band = 2;
+				}
+
+				else
+				{
+					if (((month == 4) || (month == 6) || (month == 9) || (month == 11)) && ((day > 30) || (day <= 0)))
+					{
+						cout << "\n\nFecha incorrecta: Este mes solo tiene 30 d\241as"; band = 2;
+					}
+
+					else
+					{
+						if ((month > 12) || (month <= 0))
+						{
+							cout << "\n\nFecha incorrecta: El a\244o solo tiene 12 meses"; band = 2;
+						}
+						else{
+							if (year<2000 || year>2100)
+							{
+								cout << "\n\nFecha incorrecta"; band = 2;
+							}
+							else{
+								if (day < 10 && month < 10)
+								{
+									fechatotal = year + month*powf(10, 4) + day*powf(10, 6);
+									fecha[0] = '0';
+									fecha[1] = '\0';
+									itoa(fechatotal, fechaaux, 10);
+									strcat(fecha, fechaaux);
+
+								}
+								else
+								{
+									if (day < 10 && month >= 10)
+									{
+										fechatotal = year + month*powf(10, 4) + day*powf(10, 6);
+										fecha[0] = '0';
+										fecha[1] = '\0';
+										itoa(fechatotal, fechaaux, 10);
+										strcat(fecha, fechaaux);
+									}
+
+
+									else
+									{
+										fechatotal = year + month*powf(10, 4) + day*powf(10, 6);
+										itoa(fechatotal, fecha, 10);
+
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} while (band == 2);
+
+}
+void quitarbarrasfecha(char fecha[30])
+{
+	char aux[30];
+	aux[0] = fecha[0];
+	aux[1] = fecha[1];
+	aux[2] = fecha[3];
+	aux[3] = fecha[4];
+	aux[4] = fecha[6];
+	aux[5] = fecha[7];
+	aux[6] = fecha[8];
+	aux[7] = fecha[9];
+	aux[8] = '\0';
+	strcpy(fecha, aux);
+}
+bool validarformatofecha(char f[10])
+{
+	char  dia[2], mes[2], anho[4]; int d, m, a;
+	if (strlen(f) <10 || strlen(f)>10)
+		return false;
+	dia[0] = f[0];
+	dia[1] = f[1];
+	dia[2] = '\0';
+	mes[0] = f[3];
+	mes[1] = f[4];
+	mes[2] = '\0';
+	anho[0] = f[6];
+	anho[1] = f[7];
+	anho[2] = f[8];
+	anho[3] = f[9];
+	
+	d = atoi(dia);
+	m = atoi(mes);
+	a = atoi(anho);
+	if ((f[2] != '/') || (f[5] != '/') || (d <= 0) || (m <= 0) || (a <= 0))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+
+
+}
+
+
+//otros
+int generarid(int tipo){
+	FILE *ptr;
+	switch (tipo){
+	case 1:
+		cliente c;
+		ptr = fopen("Cliente.dat", "rb");
+		fread(&c, sizeof(c), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			c.idcliente = 1; return c.idcliente;
+
+		}
+		else{
+			fseek(ptr, -sizeof(c), SEEK_END);
+			fread(&c, sizeof(c), 1, ptr);
+			fclose(ptr);
+			c.idcliente++; return c.idcliente;
+		}
+		break;
+	case 2:
+		vendedor ven;
+		ptr = fopen("Vendedor.dat", "rb");
+		fread(&ven, sizeof(ven), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			ven.idvendedor = 1; return ven.idvendedor;
+
+		}
+		else{
+			fseek(ptr, -sizeof(ven), SEEK_END);
+			fread(&ven, sizeof(ven), 1, ptr);
+			fclose(ptr);
+			ven.idvendedor++; return ven.idvendedor;
+		}
+		break;
+	case 3:
+		producto p;
+		ptr = fopen("Producto.dat", "rb");
+		fread(&p, sizeof(p), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			return 1;
+
+		}
+		else{
+			fseek(ptr, (-1)*sizeof(p), SEEK_END);
+			fread(&p, sizeof(p), 1, ptr);
+			fclose(ptr);
+			p.idprod++; return p.idprod;
+		}
+		break;
+	case 4:
+		automotor a;
+		ptr = fopen("Automotor.dat", "rb");
+		fread(&a, sizeof(a), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			a.idauto = 1; return a.idauto;
+
+		}
+		else{
+			fseek(ptr, -sizeof(a), SEEK_END);
+			fread(&a, sizeof(a), 1, ptr);
+			fclose(ptr);
+			a.idauto++; return a.idauto;
+		}
+		break;
+	case 5:
+		bomba b;
+		ptr = fopen("Bomba.dat", "rb");
+		fread(&b, sizeof(b), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			b.idbomba = 1; return b.idbomba;
+
+		}
+		else{
+			fseek(ptr, -sizeof(b), SEEK_END);
+			fread(&b, sizeof(b), 1, ptr);
+			fclose(ptr);
+			b.idbomba++; return b.idbomba;
+		}
+		break;
+	case 6:
+		compras com;
+		ptr = fopen("Compras.dat", "a+b");
+		fread(&com, sizeof(com), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			com.idcompra = 1; return com.idcompra;
+
+		}
+		else{
+			fseek(ptr, -sizeof(com), SEEK_END);
+			fread(&com, sizeof(com), 1, ptr);
+			fclose(ptr);
+			com.idcompra++; return com.idcompra;
+		}
+		break;
+	case 7:
+		venta v;
+		ptr = fopen("Ventas.dat", "a+b");
+		fread(&v, sizeof(v), 1, ptr);
+		if (feof(ptr) != 0)
+		{
+			fclose(ptr);
+			v.idventa = 1; return v.idventa;
+
+		}
+		else{
+			fseek(ptr, -sizeof(v), SEEK_END);
+			fread(&v, sizeof(v), 1, ptr);
+			fclose(ptr);
+			v.idventa++; return v.idventa;
+		}
+		break;
+	}
+
+}
+void anhadirventa(venta v)
+{
+	producto p;
+	int band = 0;
+	do{
+		band = 0;
+		FILE *ptr = fopen("Ventas.dat", "ab");
+
+		if (ptr != NULL)
+		{
+			fwrite(&v, sizeof(v), 1, ptr);
+			fclose(ptr);
+		}
+		else
+		{
+			ptr = fopen("Ventas.dat", "wb");
+			fclose(ptr);
+			band = -1;
+
+		}
+	} while (band == -1);
+}
+void anhadircompra(compras c)
+{
+	producto p;
+	FILE *ptr = fopen("Compras.dat", "ab");
+	fwrite(&c, sizeof(c), 1, ptr);
+	fclose(ptr);
+
+}
+float calcularventasporcliente(int id, fechas f1, fechas f2)
+{
+	float s = 0; automotor a; venta v; fechas f3; char fechaaux[10]; int vec[fil], n;
+
+	FILE *ptr2 = fopen("Ventas.dat", "rb");
+	if (ptr2 != NULL)
+	{
+		fread(&v, sizeof(v), 1, ptr2);
+		while (feof(ptr2) == false)
+		{
+			llenarvectorconidautos(id, vec, n);
+			if (verificarsiestaenelvector(v.idauto, vec, n) == true && v.estado == 'S')
+			{
+				strcpy(fechaaux, v.fecha);
+				quitarbarrasfecha(fechaaux);
+				convertirfecha(f3, fechaaux);
+				if (((compararfechas(f1, f3) == 0) || (compararfechas(f1, f3) == 1)) && ((compararfechas(f3, f2) == 0) || (compararfechas(f3, f2) == 1)))
+				{
+					s = s + v.preciototal;
+				}
+			}
+
+			fread(&v, sizeof(v), 1, ptr2);
+		}
+		fclose(ptr2);
+		return s;
+
+	}
+}
+void ordenarmatriz(int mat[fil][2], int n)
+{
+	int aux;
+	for (int i = 0; i<(n - 1); i++)
+	{
+		for (int j = i; j<n; j++)
+		{
+			if (mat[i][1]<mat[j][1])
+			{
+				aux = mat[i][1];
+				mat[i][1] = mat[j][1];
+				mat[j][1] = aux;
+				aux = mat[i][0];
+				mat[i][0] = mat[j][0];
+				mat[j][0] = aux;
+
+			}
+		}
+	}
+}
+float calcularventasporbomba(int idbomba, fechas f1, fechas f2)
+{
+	venta v; char fechaaux[10]; fechas f3; float s = 0;
+
+	FILE *ptr2 = fopen("Ventas.dat", "rb");
+	if (ptr2 != NULL)
+	{
+		fread(&v, sizeof(v), 1, ptr2);
+		while (feof(ptr2) == 0)
+		{
+			if (idbomba == v.idbomba&&v.estado == 'S')
+			{
+				strcpy(fechaaux, v.fecha);
+				quitarbarrasfecha(fechaaux);
+				convertirfecha(f3, fechaaux);
+				if (((compararfechas(f1, f3) == 0) || (compararfechas(f1, f3) == 1)) && ((compararfechas(f3, f2) == 0) || (compararfechas(f3, f2) == 1)))
+				{
+					s = s + v.preciototal;
+				}
+
+			}
+
+			fread(&v, sizeof(v), 1, ptr2);
+		}
+		fclose(ptr2);
+		return s;
+	}
+}
+void disminuirstock(int x, int id)
+{
+	producto p;
+	bool w = true;
+	FILE *ptr = fopen("Producto.dat", "r+b");
+	while (fread(&p, sizeof(p), 1, ptr), feof(ptr) == false)
+	{
+		if (p.idprod == id)
+		{
+			p.stock -= x;
+			fseek(ptr, -1 * sizeof(p), SEEK_CUR);
+
+			fwrite(&p, sizeof(p), 1, ptr);
+			fflush(ptr);
+		}
+	}
+	fclose(ptr);
+}
+void aumentarstock(int x, int id)
+{
+	producto p;
+	FILE *ptr = fopen("Producto.dat", "r+b");
+	while (fread(&p, sizeof(p), 1, ptr), feof(ptr) == false)
+	{
+		if (p.idprod == id)
+		{
+			p.stock += x;
+			fseek(ptr, -1 * sizeof(p), SEEK_CUR);
+
+			fwrite(&p, sizeof(p), 1, ptr);
+			fflush(ptr);
+		}
+	}
+	fclose(ptr);
+}
+void  ordenarmatrizbomba(rkbomba mat[fil], int n)
+{
+	rkbomba aux;
+	for (int i = 0; i<(n - 1); i++)
+	{
+		for (int j = i; j<n; j++)
+		{
+			if (mat[i].s<mat[j].s)
+			{
+				aux = mat[i];
+				mat[i] = mat[j];
+				mat[j] = aux;
+			}
+		}
+	}
+}
+void  ordenarmatrizcliente(rankingcliente mat[fil], int n)
+{
+	rankingcliente aux;
+	for (int i = 0; i<(n - 1); i++)
+	{
+		for (int j = i; j<n; j++)
+		{
+			if (mat[i].s<mat[j].s)
+			{
+				aux = mat[i];
+				mat[i] = mat[j];
+				mat[j] = aux;
+			}
+		}
+	}
+}
+void llenarvectorconidautos(int idcliente, int vec[fil], int &n)
+{
+	automotor A; n = 0;
+	FILE *ptr = fopen("Automotor.dat", "rb");
+	if (ptr != NULL)
+	{
+		fread(&A, sizeof(A), 1, ptr);
+		while (feof(ptr) == false)
+		{
+			if (A.idcliente == idcliente&& A.estado == 'S')
+			{
+				vec[n] = A.idauto;
+				n++;
+			}
+			fread(&A, sizeof(A), 1, ptr);
+		}fclose(ptr);
+
+	}
+	else{
+		fclose(ptr);
+		cout << "no existe registro de auto";
+	}
+}
+int calcularventasporautomotor(int idautomotor)
+{
+	venta v; int s = 0;
+	FILE *ptr = fopen("Ventas.dat", "rb");
+	fread(&v, sizeof(v), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (v.estado == 'S'&&v.idauto == idautomotor)
+		{
+			s++;
+		}
+		fread(&v, sizeof(v), 1, ptr);
+	}
+	fclose(ptr);
+	return s;
+}
+int calcularventasporproducto(int h)
+{
+	venta v; int s = 0;
+	FILE *ptr = fopen("Ventas.dat", "rb");
+	fread(&v, sizeof(v), 1, ptr);
+	while (feof(ptr) == false)
+	{
+		if (v.estado == 'S'&&v.idprod == h)
+		{
+			s++;
+		}
+		fread(&v, sizeof(v), 1, ptr);
+	}
+	fclose(ptr);
+	return s;
+}
+
+
+//amb
+void ambclientes()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-anhadir cliente\n2.-modificar cliente\n3.-borrar cliente\n4.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 3 && op != 4);
+		switch (op){
+		case 1:
+			anhadirclientes();
+			break;
+		case 2:
+			modificarcliente();
+			break;
+		case 3:
+			borrarcliente();
+			break;
+		case 4:
+			break;
+		}
+		system("cls");
+	} while (op != 4);
+}
+void ambvendedor()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-anhadir vendedor\n2.-modificar vendedor\n3.-borrar vendedor\n4.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 3 && op != 4);
+		switch (op){
+		case 1:
+			añadirvendedor();
+			break;
+		case 2:
+			modificarvendedor();
+			break;
+		case 3:
+			borrarvendedor();
+			break;
+		case 4:
+			break;
+		}
+	} while (op != 4);
+}
+void ambautomotor()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-anhadir automotor\n2.-modificar automotor\n3.-borrar automotor\n4.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 3 && op != 4);
+		switch (op){
+		case 1:
+			añadirautomotor();
+			break;
+		case 2:
+			modificarautomotor();
+			break;
+		case 3:
+			eliminarautomor();
+			break;
+		case 4:
+			break;
+		}
+		system("cls");
+	} while (op != 4);
+}
+void ambproducto()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-anhadir producto\n2.-modificar producto\n3.-borrar producto\n4.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 3 && op != 4);
+		switch (op){
+		case 1:
+			añadirproducto();
+			break;
+		case 2:
+			modificarproducto();
+			break;
+		case 3:
+			eliminarproducto();
+			break;
+		case 4:
+			break;
+		}
+		system("cls");
+	} while (op != 4);
+}
+void ambbomba()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-anhadir bomba\n2.-modificar bomba\n3.-borrar bomba\n4.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 3 && op != 4);
+		switch (op){
+		case 1:
+			añadirbomba();
+			break;
+		case 2:
+			modificarbomba();
+			break;
+		case 3:
+			borrarbomba();
+			break;
+		case 4:
+			break;
+		}
+		system("cls");
+	} while (op != 4);
+}
+void ambventas()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-modificar venta\n2.-borrar venta\n0.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 0);
+		switch (op){
+		case 1:
+			modificarventa();
+			break;
+		case 2:
+			eliminarventa();
+			break;
+		case 0:
+			break;
+		}
+		system("cls");
+	} while (op != 0);
+}
+void ambcompras()
+{
+	int op;
+
+	do{
+		do{
+			cout << "\n1.-modificar compra\n2.-borrar compra\n0.-salir\n";
+			op = validarentero();
+		} while (op != 1 && op != 2 && op != 0);
+		switch (op){
+		case 1:
+			modificarcompra();
+			break;
+		case 2:
+			eliminarcompra();
+			break;
+		case 0:
+			break;
+		}
+		system("cls");
+	} while (op != 0);
+}
