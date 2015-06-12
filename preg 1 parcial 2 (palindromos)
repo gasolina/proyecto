@@ -1,0 +1,89 @@
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+#include "stdlib.h"
+#define N 100
+
+using namespace std;
+
+struct palabra{
+	char cad[N];
+};
+
+void cargarmatriz(palabra M[N][N],int n,int m)
+{int i,j;
+for(i=0;i<n;i++)
+  {for(j=0;j<m;j++)
+    {cout<<"Ingrese una cadena: ";
+     gets(M[i][j].cad);
+}
+}
+}
+void mostrarmatriz(palabra M[N][N],int n,int m)
+{int i,j;
+for(i=0;i<n;i++)
+  {for(j=0;j<m;j++)
+    {cout<<M[i][j].cad<<" ";
+}
+cout<<endl;
+}
+}
+
+bool palindromo(char cadena[])
+{int i,n;
+n=strlen(cadena);
+for(i=0;i<n/2;i++)
+{
+	if(cadena[i]!=cadena[n-i-1])
+	return false;
+}
+return true;
+}
+
+bool serepite(palabra C[],char cadena[],int n)
+{int i;
+ for(i=0;i<n;i++)
+ {if(strcmp(C[i].cad,cadena)==0)
+  {return true;
+ }
+ }
+ return false;
+}
+void cargarelvector(palabra M[N][N],char cadenaultima[N],palabra C[],int n,int m,int &tv)
+{int i,j,tam=0,k=0;
+	for(i=0;i<n;i++)
+		{for(j=0;j<m;j++)
+			{if(palindromo(M[i][j].cad)==true)
+	            {if(serepite(C,M[i][j].cad,tam)==false)
+	                {strcpy(C[tam].cad,M[i][j].cad);
+	                  tam++;
+	                }
+	            }
+	       }
+	}
+tv=tam;
+for(i=0;i<tv;i++)
+{for(j=0;j<strlen(C[i].cad);j++)
+  {cadenaultima[k]=C[i].cad[j];
+   k++;
+  }
+}
+cadenaultima[k]='\0';
+}   
+
+
+void main()
+{palabra M[N][N],V[N];
+int n,m,tv;
+char cadenaultima[N];
+cout<<"Ingrese las filas: ";
+cin>>n;
+cout<<"Ingrese las columnas: ";
+cin>>m;
+fflush(stdin);
+cargarmatriz(M,n,m);
+mostrarmatriz(M,n,m);
+cargarelvector(M,cadenaultima,V,n,m,tv);
+cout<<cadenaultima;
+getch();
+}
