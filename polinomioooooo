@@ -1,0 +1,115 @@
+struct monomio
+{
+	int base;
+	int exp;
+};
+void cargardatos(monomio vec[], int n)
+{
+	int i;
+	
+	for (i = 0; i < n; i++)
+	{
+		cout << "introduzca base: ";
+		cin >> vec[i].base;
+		cout << "introduzca exp: ";
+		cin >> vec[i].exp;
+	}
+	i = 0;
+	for (int i = 0; i < n; i++)
+	{
+		cout << vec[i].base << " x^" << vec[i].exp;
+		if (i != n - 1)
+			cout << " + ";
+	}
+	cout << endl;
+}
+void ordenarpolis(monomio vec[], int n)
+{
+	monomio aux;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n - 1; j++)
+		{
+			if (vec[j].exp > vec[j+1].exp)
+			{
+				aux = vec[j];
+				vec[j] = vec[j + 1];
+				vec[j + 1] = aux;
+			}
+		}
+	}
+}
+void suma(monomio vecA[], int n1, monomio vecB[], int n2,monomio vecC[],int &n3)
+{
+	int i = 0,j=0,k=0;
+	ordenarpolis(vecA, n1);
+	ordenarpolis(vecB, n2);
+	while (i<n1 && j < n2)
+	{
+		if (vecA[i].exp == vecB[j].exp)
+		{
+			vecC[k].base = vecA[i].base + vecB[j].base;
+			vecC[k].exp = vecA[i].exp;
+			i++;
+			j++;
+			k++;
+		}
+		else
+		{
+			if (vecA[i].exp < vecB[j].exp)
+			{
+				vecC[k].base = vecA[i].base;
+				vecC[k].exp = vecA[i].exp;
+				k++;
+				i++;
+			}
+			else
+			{
+				vecC[k].base = vecB[j].base;
+				vecC[k].exp = vecB[j].exp;
+				k++;
+				j++;
+			}
+		}
+	}
+	while (i < n1)
+	{
+		vecC[k] = vecA[i];
+		i++;
+		k++;
+	}
+	while (j < n2)
+	{
+		vecC[k] = vecB[j];
+		j++;
+		k++;
+	}
+	n3 = k;
+}
+void mostrar(monomio vec[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << vec[i].base << " x^" << vec[i].exp;
+		if (i != n - 1)
+			cout << " + ";
+	}
+	cout << endl;
+}
+void main()
+{
+	int a, b,c;
+	monomio vecA[TAM], vecB[TAM],vecC[TAM];
+	cout << "introduzca numero de terminos para el polinomio A: ";
+	cin >> a;
+	cargardatos(vecA,a);
+	//mostrarpolinomio(vecA,a);
+	cout << "introduzca numero de terminos para el polinomio B: ";
+	cin >> b;
+	cargardatos(vecB,b);
+	//mostrarpolinomio(vecB, b);
+	suma(vecA, a, vecB, b, vecC, c);
+	cout << "\n la suma de los monomios es: \n";
+	mostrar(vecC, c);
+	getch();
+	}
